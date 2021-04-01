@@ -27,7 +27,8 @@
       "@pages/*": ["pages/*"],
       "@styles/*": ["styles/*"],
       "@typings/*": ["typings/*"],
-      "@utils/*": ["utils/*"]
+      "@utils/*": ["utils/*"],
+      "@views/*": ["views/*"]
     },
   },
   "exclude": [
