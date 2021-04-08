@@ -38,13 +38,14 @@ const AppLayout: FC = ({ children }) => {
           </Link>
         </Menu.Item>
       </Menu>
-      <Row gutter={10}>
-        <Col xs={24} md={6}>
-          {dummy.isLoggedIn ? <UserProfile /> : <LoginForm />}
+      <Row gutter={10} style={{ marginTop: '10px' }}>
+        <Col xs={24} md={4}>
+          {/* {dummy.isLoggedIn ? <UserProfile /> : <LoginForm />} */}
         </Col>
-        <Col xs={24} md={18}>
+        <Col xs={24} md={16}>
           {children}
         </Col>
+        <Col xs={24} md={4} />
       </Row>
     </div>
   );
