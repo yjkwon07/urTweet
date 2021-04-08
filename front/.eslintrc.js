@@ -49,7 +49,11 @@ module.exports = {
   /* extends와 plugins에 대한 세부 설정을 변경 */
   rules: {
     'no-console': 'off',
+    'func-names': 'off',
+    'import/no-named-as-default': 'off',
+    '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
+    'no-param-reassign': ['error', { props: true, ignorePropertyModificationsFor: ['state'] }],
     'react/prop-types': 'off',
     'react/jsx-props-no-spreading': ['error', { custom: 'ignore' }],
     'react/jsx-filename-extension': ['error', { extensions: ['.js', '.jsx', '.tsx', '.ts'] }],
