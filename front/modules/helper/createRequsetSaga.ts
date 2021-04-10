@@ -27,6 +27,7 @@ export const createRequestSaga = <R, S, F, M>(
       yield put(success({ type: asyncActionCreator.TYPE, data: result }));
       if (action.resolve) action.resolve(result, action.meta);
     } catch (error) {
+      if (!error.response?.data) error.response = { data: '네트워크 오류' };
       yield put(asyncActionCreator.failure(error));
       yield put(fail({ type: asyncActionCreator.TYPE, data: error }));
       if (action.reject) action.reject(error, action.meta);

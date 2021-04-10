@@ -3,7 +3,6 @@ import React, { useMemo, VFC } from 'react';
 import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Form, Input, Checkbox, Button, Typography, message } from 'antd';
-import debounce from 'lodash/debounce';
 import Head from 'next/head';
 import Router from 'next/router';
 import { Controller, useForm } from 'react-hook-form';
@@ -42,16 +41,14 @@ const Signup: VFC = () => {
   });
 
   const handleSubmit = useMemo(() => {
-    return checkSubmit(
-      debounce(async (formData) => {
-        try {
-          await dispatch(requestAsyncSignup(formData));
-          message.success('회원가입에 성공하셨습니다.').then(() => Router.push('/').then());
-        } catch (error) {
-          message.error(JSON.stringify(error.response.data)).then();
-        }
-      }, 1000),
-    );
+    return checkSubmit(async (formData) => {
+      try {
+        await dispatch(requestAsyncSignup(formData));
+        message.success('회원가입에 성공하셨습니다.').then(() => Router.push('/').then());
+      } catch (error) {
+        message.error(JSON.stringify(error.response.data)).then();
+      }
+    });
   }, [checkSubmit, dispatch]);
 
   return (
