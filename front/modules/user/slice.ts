@@ -10,6 +10,7 @@ export const USER = 'USER';
 
 // Action
 export const requsetLogin = createRequestAction<ILoginBodyQuery, IMyUser>(`${USER}/login`);
+export const requsetLogout = createRequestAction(`${USER}/logout`);
 
 export const requestSignup = createRequestAction<ISignupBodyQuery, ISignup>(`${USER}/signup`);
 export const requestAsyncSignup = createRequestAsyncThunk<ISignupBodyQuery, ISignup>(requestSignup.requset);
@@ -32,6 +33,9 @@ const slice = createSlice({
     builder
       .addCase(requsetLogin.success, (state, { payload: data }) => {
         state.MyInfo = data;
+      })
+      .addCase(requsetLogout.success, (state) => {
+        state.MyInfo = null;
       })
       .addDefaultCase(() => {}),
 });

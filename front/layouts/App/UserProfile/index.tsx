@@ -1,44 +1,48 @@
-import React, { VFC } from 'react';
+import React, { useCallback, VFC } from 'react';
 
 import { Card, Avatar, Button } from 'antd';
 import Link from 'next/link';
+import { useDispatch, useSelector } from 'react-redux';
 
-const dummy = {
-  id: 1234,
-  Posts: [],
-  Followings: [],
-  Followers: [],
-  nickname: 'okok',
-};
+import { requsetLogout, userSelector } from '@modules/user';
+import { PASS_HREF } from '@utils/urls';
 
 const UserProfile: VFC = () => {
+  const dispatch = useDispatch();
+  const myData = useSelector(userSelector.myData);
+  console.log('myData :>> ', myData);
+  const handleLogout = useCallback(() => {
+    dispatch(requsetLogout.requset({}));
+  }, [dispatch]);
+
+  if (!myData) return null;
   return (
     <Card
       actions={[
         <div key="twit">
-          <Link href={`/user/${dummy.id}`}>
-            <a>
-              짹짹
+          <Link href={`/user/${myData.id}`} passHref>
+            <a href={PASS_HREF}>
+              게시글
               <br />
-              {dummy.Posts.length}
+              {myData.Posts?.length}
             </a>
           </Link>
         </div>,
         <div key="followings">
-          <Link href="/profile">
-            <a>
+          <Link href="/profile" passHref>
+            <a href={PASS_HREF}>
               팔로잉
               <br />
-              {dummy.Followings.length}
+              {myData.Followings.length}
             </a>
           </Link>
         </div>,
         <div key="followings">
-          <Link href="/profile">
-            <a>
+          <Link href="/profile" passHref>
+            <a href={PASS_HREF}>
               팔로워
               <br />
-              {dummy.Followers.length}
+              {myData.Followers?.length}
             </a>
           </Link>
         </div>,
@@ -46,13 +50,13 @@ const UserProfile: VFC = () => {
     >
       <Card.Meta
         avatar={
-          <Link href={`/user/${dummy.id}`} prefetch={false}>
-            <Avatar>{dummy.nickname[0]}</Avatar>
+          <Link href={`/user/${myData.id}`} prefetch={false}>
+            <Avatar>{myData.nickname[0]}</Avatar>
           </Link>
         }
-        title={dummy.nickname}
+        title={myData.nickname}
       />
-      <Button>로그아웃</Button>
+      <Button onClick={handleLogout}>로그아웃</Button>
     </Card>
   );
 };

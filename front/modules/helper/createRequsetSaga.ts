@@ -1,3 +1,4 @@
+import { AxiosResponse } from 'axios';
 import { call, put } from 'redux-saga/effects';
 
 import { request, success, fail } from '../fetchStatus';
@@ -22,10 +23,10 @@ export const createRequestSaga = <R, S, F, M>(
   return function* (action: IPromiseAction<R, S, M>) {
     try {
       yield put(request({ type: asyncActionCreator.TYPE }));
-      const result: S = yield call(requestCall, action.payload);
-      yield put(asyncActionCreator.success(result));
-      yield put(success({ type: asyncActionCreator.TYPE, data: result }));
-      if (action.resolve) action.resolve(result, action.meta);
+      const { data }: AxiosResponse<S> = yield call(requestCall, action.payload);
+      yield put(asyncActionCreator.success(data));
+      yield put(success({ type: asyncActionCreator.TYPE, data }));
+      if (action.resolve) action.resolve(data, action.meta);
     } catch (error) {
       if (!error.response?.data) error.response = { data: '네트워크 오류' };
       yield put(asyncActionCreator.failure(error));

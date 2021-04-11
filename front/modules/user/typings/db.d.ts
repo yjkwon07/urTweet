@@ -1,9 +1,11 @@
+import { IPost } from '@modules/post/typings/db';
+
 export type ISignup = 'ok';
 
 export interface IMyUser extends IUser {
   Followers: IUser[];
   Followings: IUser[];
-  Posts: IPost[];
+  Posts: IPost['id'][];
 }
 
 export interface IUser {
@@ -12,8 +14,4 @@ export interface IUser {
   id: number;
   nickname: string;
   updatedAt: Date;
-}
-
-export interface IPost {
-  id: number;
 }
