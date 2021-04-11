@@ -1,52 +1,45 @@
 import React, { FC } from 'react';
 
-import { Menu, Row, Col } from 'antd';
+import { Menu, Col } from 'antd';
 import Link from 'next/link';
+import { useSelector } from 'react-redux';
+
+import { userSelector } from '@modules/user';
+import { PASS_HREF, HOME_URL, PROFILE_URL } from '@utils/urls';
 
 import LoginForm from './LoginForm';
-import { SearchInput } from './styles';
+import { MainWrapper, SearchInput } from './styles';
 import UserProfile from './UserProfile';
 
-const dummy = {
-  nickname: 'okok',
-  Posts: [],
-  Followings: [],
-  Followers: [],
-  isLoggedIn: false,
-};
-
 const AppLayout: FC = ({ children }) => {
+  const myData = useSelector(userSelector.myData);
+
   return (
     <div>
       <Menu mode="horizontal">
         <Menu.Item>
-          <Link href="/">
-            <a>HOME</a>
+          <Link href={HOME_URL} passHref>
+            <a href={PASS_HREF}>HOME</a>
           </Link>
         </Menu.Item>
         <Menu.Item>
-          <Link href="/profile">
-            <a>PROFILE</a>
+          <Link href={PROFILE_URL} passHref>
+            <a href={PASS_HREF}>PROFILE</a>
           </Link>
         </Menu.Item>
         <Menu.Item>
           <SearchInput enterButton />
         </Menu.Item>
-        <Menu.Item>
-          <Link href="/signup">
-            <a>SIGNUP</a>
-          </Link>
-        </Menu.Item>
       </Menu>
-      <Row gutter={10} style={{ marginTop: '10px' }}>
+      <MainWrapper gutter={10}>
         <Col xs={24} md={4}>
-          {/* {dummy.isLoggedIn ? <UserProfile /> : <LoginForm />} */}
+          {myData ? <UserProfile /> : <LoginForm />}
         </Col>
         <Col xs={24} md={16}>
           {children}
         </Col>
         <Col xs={24} md={4} />
-      </Row>
+      </MainWrapper>
     </div>
   );
 };

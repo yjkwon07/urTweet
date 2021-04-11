@@ -1,4 +1,4 @@
-import { all, fork, takeLatest } from 'redux-saga/effects';
+import { all, debounce, fork, takeLatest } from 'redux-saga/effects';
 
 import { createRequestSaga } from '@modules/helper';
 
@@ -13,7 +13,7 @@ function* watchLogIn() {
 }
 
 function* watchSinup() {
-  yield takeLatest(requestSignup.requset, signupSaga);
+  yield debounce(300, requestSignup.requset, signupSaga);
 }
 
 export default function* userSaga() {

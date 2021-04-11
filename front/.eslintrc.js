@@ -55,10 +55,11 @@ module.exports = {
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     'no-param-reassign': ['error', { props: true, ignorePropertyModificationsFor: ['state'] }],
     'react/prop-types': 'off',
-    'react/jsx-props-no-spreading': ['error', { custom: 'ignore' }],
+    'react/jsx-props-no-spreading': 'off',
     'react/jsx-filename-extension': ['error', { extensions: ['.js', '.jsx', '.tsx', '.ts'] }],
     'no-use-before-define': 'off', // 정의되기 전에 사용되도록 허용 ('React' was used before it was defined)
     '@typescript-eslint/no-use-before-define': ['error'],
+    'import/no-cycle': ['error', { maxDepth: 1 }],
     'import/prefer-default-export': 'off',
     // airbnb ESLint 구성의 문제를 해결하기 위함
     'import/extensions': [

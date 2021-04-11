@@ -2,7 +2,7 @@ import { combineReducers, AnyAction } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 
 import { IFetchReducer, FETCH_STATUS, fetchStatusReducer } from '../fetchStatus';
-import { IUser, USER, userReducer } from '../user';
+import { IState as IUser, USER, userReducer } from '../user';
 
 export interface State {
   [FETCH_STATUS]: IFetchReducer;
