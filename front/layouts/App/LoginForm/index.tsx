@@ -1,8 +1,8 @@
-import React, { useMemo, VFC } from 'react';
+import React, { useEffect, useMemo, VFC } from 'react';
 
 import { LockOutlined, LoginOutlined, MailOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Input, Button, Form } from 'antd';
+import { Input, Button, Form, message } from 'antd';
 import Link from 'next/link';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
@@ -22,12 +22,18 @@ const LOGIN_SCHEMA = yup.object({
 type FormData = yup.InferType<typeof LOGIN_SCHEMA>;
 
 const LoginForm: VFC = () => {
-  const { status } = useFetchStatus(requsetLogin.TYPE);
+  const { status, data } = useFetchStatus(requsetLogin.TYPE);
   const dispatch = useDispatch();
   const { control, handleSubmit: checkSubmit, errors } = useForm<FormData>({
     mode: 'onBlur',
     resolver: yupResolver(LOGIN_SCHEMA),
   });
+
+  useEffect(() => {
+    if (status === 'FAIL') {
+      message.error(JSON.stringify(data.response.data));
+    }
+  }, [data, status]);
 
   const handleSubmit = useMemo(() => {
     return checkSubmit((formData) => {

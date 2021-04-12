@@ -1,5 +1,6 @@
 import React, { useCallback, VFC } from 'react';
 
+import { LogoutOutlined } from '@ant-design/icons';
 import { Card, Avatar, Button } from 'antd';
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,7 +11,7 @@ import { PASS_HREF } from '@utils/urls';
 const UserProfile: VFC = () => {
   const dispatch = useDispatch();
   const myData = useSelector(userSelector.myData);
-  console.log('myData :>> ', myData);
+
   const handleLogout = useCallback(() => {
     dispatch(requsetLogout.requset({}));
   }, [dispatch]);
@@ -56,7 +57,10 @@ const UserProfile: VFC = () => {
         }
         title={myData.nickname}
       />
-      <Button onClick={handleLogout}>로그아웃</Button>
+      <Button onClick={handleLogout}>
+        <LogoutOutlined />
+        로그아웃
+      </Button>
     </Card>
   );
 };
