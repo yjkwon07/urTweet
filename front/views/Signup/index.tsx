@@ -1,4 +1,4 @@
-import React, { useMemo, VFC } from 'react';
+import React, { useEffect, useMemo, VFC } from 'react';
 
 import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -6,12 +6,12 @@ import { Form, Input, Checkbox, Button, Typography, message } from 'antd';
 import Head from 'next/head';
 import Router from 'next/router';
 import { Controller, useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import * as yup from 'yup';
 
 import AppLayout from '@layouts/App';
 import { useFetchStatus } from '@modules/fetchStatus';
-import { requestAsyncSignup, requestSignup } from '@modules/user';
+import { requestAsyncSignup, requestSignup, userSelector } from '@modules/user';
 
 import { FormWrapper } from './styles';
 
@@ -33,8 +33,9 @@ const SIGNUP_SCHEMA = yup.object({
 type FormData = yup.InferType<typeof SIGNUP_SCHEMA>;
 
 const Signup: VFC = () => {
-  const { status } = useFetchStatus(requestSignup.TYPE);
   const dispatch = useDispatch();
+  const { status } = useFetchStatus(requestSignup.TYPE);
+  const myData = useSelector(userSelector.myData);
   const { control, handleSubmit: checkSubmit, errors } = useForm<FormData>({
     mode: 'onChange',
     resolver: yupResolver(SIGNUP_SCHEMA),
@@ -50,6 +51,12 @@ const Signup: VFC = () => {
       }
     });
   }, [checkSubmit, dispatch]);
+
+  useEffect(() => {
+    if (myData && myData.id) {
+      message.error('로그인한 상태에서는 회원가입이 불가능합니다.').then(() => Router.push('/').then());
+    }
+  }, [myData]);
 
   return (
     <AppLayout>
