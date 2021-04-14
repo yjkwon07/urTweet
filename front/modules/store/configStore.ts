@@ -1,18 +1,10 @@
-import { configureStore, EnhancedStore } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import { createWrapper, MakeStore } from 'next-redux-wrapper';
-import { TypedUseSelectorHook, useSelector } from 'react-redux';
-import { Store } from 'redux';
-import createSagaMiddleware, { Task } from 'redux-saga';
+import createSagaMiddleware from 'redux-saga';
 import thunkMiddleware from 'redux-thunk';
 
 import rootSaga from './sagas';
-import rootReducer from './slices';
-
-// Next Redux Toolkit Saga를 사용할때는
-// confugureStore에서 강제로 sagaTask를 만들어주기 위함
-interface SagaStore extends Store {
-  sagaTask?: Task;
-}
+import rootReducer, { RootState } from './slices';
 
 const devMode = process.env.NODE_ENV === 'development';
 const sagaMiddleware = createSagaMiddleware();
@@ -21,19 +13,13 @@ const store = configureStore({
   middleware: [thunkMiddleware, sagaMiddleware],
   devTools: devMode,
 });
-
 // Next Redux Toolkit 에서 saga를 사용해야할 때
-(store as SagaStore).sagaTask = sagaMiddleware.run(rootSaga);
+store.sagaTask = sagaMiddleware.run(rootSaga);
 
-const setupStore = (context: any): EnhancedStore => store;
-
-const makeStore: MakeStore = (context) => setupStore(context);
+// Next.js를 사용하게 되면 유저가 요청할 때 마다 redux store를 새로 생성하게 되므로 redux store가 여러 개가 될 수 있다.
+// etInitialProps, getServerSideProps 등에서 redux store에 접근할 수 있어야 하는데 그것을 next-redux-wrapper가 도와준다.
+const makeStore: MakeStore<RootState> = () => store;
 
 export const wrapper = createWrapper(makeStore, {
   debug: devMode,
 });
-
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
-export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
-export default wrapper;

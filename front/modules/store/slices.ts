@@ -1,27 +1,28 @@
 import { combineReducers, AnyAction } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
+import { TypedUseSelectorHook, useSelector } from 'react-redux';
 
 import { IFetchReducer, FETCH_STATUS, fetchStatusReducer } from '../fetchStatus';
 import { IState as IUser, USER, userReducer } from '../user';
 
-export interface State {
+export interface RootState {
   [FETCH_STATUS]: IFetchReducer;
   [USER]: IUser;
 }
 
-const rootReducer = (state: State | undefined, action: AnyAction) => {
+const rootReducer = (state: RootState | undefined, action: AnyAction) => {
   switch (action.type) {
     case HYDRATE:
       return action.payload;
 
     default: {
-      const combineReducer = combineReducers({
+      return combineReducers({
         [FETCH_STATUS]: fetchStatusReducer,
         [USER]: userReducer,
-      });
-      return combineReducer(state, action);
+      })(state, action);
     }
   }
 };
 
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 export default rootReducer;

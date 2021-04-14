@@ -3,7 +3,7 @@ import React from 'react';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 
-import wrapper from '@modules/store/configStore';
+import { wrapper } from '@modules/store/configStore';
 import 'antd/dist/antd.css';
 
 const App = ({ Component }: AppProps) => {
