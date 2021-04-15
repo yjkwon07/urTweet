@@ -1,4 +1,4 @@
-import { useAppSelector } from '@modules/store/configStore';
+import { useAppSelector } from '@modules/store/slices';
 
 import { FETCH_STATUS } from '../slice';
 
