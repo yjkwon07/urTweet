@@ -5,7 +5,7 @@ import { Card, Avatar, Button } from 'antd';
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { requsetLogout, userSelector } from '@modules/user';
+import { logout, userSelector } from '@modules/user';
 import { PASS_HREF } from '@utils/urls';
 
 const UserProfile: VFC = () => {
@@ -13,7 +13,7 @@ const UserProfile: VFC = () => {
   const myData = useSelector(userSelector.myData);
 
   const handleLogout = useCallback(() => {
-    dispatch(requsetLogout.requset({}));
+    dispatch(logout.requset({}));
   }, [dispatch]);
 
   if (!myData) return null;

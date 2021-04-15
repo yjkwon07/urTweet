@@ -3,17 +3,17 @@ import { createSlice } from '@reduxjs/toolkit';
 import { createRequestAsyncThunk } from '@modules/helper';
 import { createRequestAction } from '@modules/helper/createRequestAction';
 
-import { IMyUser, ISignup } from './typings/db';
-import { ILoginBodyQuery, ISignupBodyQuery } from './typings/type';
+import { IMyUser, ISignupRes } from './@types/db';
+import { ILoginBodyQuery, ISignupBodyQuery } from './@types/query';
 
 export const USER = 'USER';
 
 // Action
-export const requsetLogin = createRequestAction<ILoginBodyQuery, IMyUser>(`${USER}/login`);
-export const requsetLogout = createRequestAction(`${USER}/logout`);
+export const login = createRequestAction<ILoginBodyQuery, IMyUser>(`${USER}/login`);
+export const logout = createRequestAction(`${USER}/logout`);
 
-export const requestSignup = createRequestAction<ISignupBodyQuery, ISignup>(`${USER}/signup`);
-export const requestAsyncSignup = createRequestAsyncThunk<ISignupBodyQuery, ISignup>(requestSignup.requset);
+export const signup = createRequestAction<ISignupBodyQuery, ISignupRes>(`${USER}/signup`);
+export const SignupThunk = createRequestAsyncThunk<ISignupBodyQuery, ISignupRes>(signup.requset);
 
 // Type
 export interface IState {
@@ -31,10 +31,10 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (builder) =>
     builder
-      .addCase(requsetLogin.success, (state, { payload: data }) => {
+      .addCase(login.success, (state, { payload: data }) => {
         state.MyInfo = data;
       })
-      .addCase(requsetLogout.success, (state) => {
+      .addCase(logout.success, (state) => {
         state.MyInfo = null;
       })
       .addDefaultCase(() => {}),

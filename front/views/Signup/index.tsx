@@ -11,7 +11,7 @@ import * as yup from 'yup';
 
 import AppLayout from '@layouts/App';
 import { useFetchStatus } from '@modules/fetchStatus';
-import { requestAsyncSignup, requestSignup, userSelector } from '@modules/user';
+import { SignupThunk, signup, userSelector } from '@modules/user';
 
 import { FormWrapper } from './styles';
 
@@ -34,7 +34,7 @@ type FormData = yup.InferType<typeof SIGNUP_SCHEMA>;
 
 const Signup: VFC = () => {
   const dispatch = useDispatch();
-  const { status } = useFetchStatus(requestSignup.TYPE);
+  const { status } = useFetchStatus(signup.TYPE);
   const myData = useSelector(userSelector.myData);
   const { control, handleSubmit: checkSubmit, errors } = useForm<FormData>({
     mode: 'onChange',
@@ -44,7 +44,7 @@ const Signup: VFC = () => {
   const handleSubmit = useMemo(() => {
     return checkSubmit(async (formData) => {
       try {
-        await dispatch(requestAsyncSignup(formData));
+        await dispatch(SignupThunk(formData));
         message.success('회원가입에 성공하셨습니다.').then(() => Router.push('/').then());
       } catch (error) {
         message.error(JSON.stringify(error.response.data)).then();

@@ -1,4 +1,4 @@
-import { RootState } from '@modules/store/configStore';
+import { RootState } from '@modules/store/slices';
 
 // Select
 const userSelector = {

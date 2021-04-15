@@ -1,7 +1,7 @@
 import { axios } from '@modules/client';
 
-import { IMyUser, ISignup } from '../typings/db';
-import { IModifyNickNameBodyQuery, IReadUserURL, ILoginBodyQuery, ISignupBodyQuery } from '../typings/type';
+import { IMyUser, ISignupRes } from '../@types/db';
+import { IModifyNickNameBodyQuery, IUserURL, ILoginBodyQuery, ISignupBodyQuery } from '../@types/query';
 import {
   GET_MODIFY_NICKNAME_API,
   GET_READ_MY_USER_API,
@@ -19,7 +19,7 @@ export const requestReadMyUser = () => {
   return axios.get<IMyUser>(GET_READ_MY_USER_API());
 };
 
-export const requestReadUser = (url: IReadUserURL) => {
+export const requestReadUser = (url: IUserURL) => {
   return axios.get(GET_READ_USER_API(url));
 };
 
@@ -32,5 +32,5 @@ export const requestLogout = () => {
 };
 
 export const requestSignup = (data: ISignupBodyQuery) => {
-  return axios.post<ISignup>(GET_SIGNUP_API(), data);
+  return axios.post<ISignupRes>(GET_SIGNUP_API(), data);
 };

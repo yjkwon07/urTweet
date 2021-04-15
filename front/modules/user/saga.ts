@@ -2,23 +2,23 @@ import { all, debounce, fork, takeLatest } from 'redux-saga/effects';
 
 import { createRequestSaga } from '@modules/helper';
 
-import { requestLogin as login, requestSignup as signup, requestLogout as logout } from './api/requestAPI';
-import { requsetLogin, requestSignup, requsetLogout } from './slice';
+import { requestLogin, requestSignup, requestLogout } from './api/requestAPI';
+import { login, signup, logout } from './slice';
 
-const loginSaga = createRequestSaga(requsetLogin, login);
-const logoutSaga = createRequestSaga(requsetLogout, logout);
-const signupSaga = createRequestSaga(requestSignup, signup);
+const loginSaga = createRequestSaga(login, requestLogin);
+const logoutSaga = createRequestSaga(logout, requestLogout);
+const signupSaga = createRequestSaga(signup, requestSignup);
 
 function* watchLogIn() {
-  yield takeLatest(requsetLogin.requset, loginSaga);
+  yield takeLatest(login.requset, loginSaga);
 }
 
 function* watchLogout() {
-  yield takeLatest(requsetLogout.requset, logoutSaga);
+  yield takeLatest(logout.requset, logoutSaga);
 }
 
 function* watchSinup() {
-  yield debounce(300, requestSignup.requset, signupSaga);
+  yield debounce(300, signup.requset, signupSaga);
 }
 
 export default function* userSaga() {

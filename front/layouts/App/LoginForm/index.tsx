@@ -9,7 +9,7 @@ import { useDispatch } from 'react-redux';
 import * as yup from 'yup';
 
 import { useFetchStatus } from '@modules/fetchStatus';
-import { requsetLogin } from '@modules/user';
+import { login } from '@modules/user';
 import { PASS_HREF, SIGNUP_URL } from '@utils/urls';
 
 import { FormWrapper } from './styles';
@@ -22,7 +22,7 @@ const LOGIN_SCHEMA = yup.object({
 type FormData = yup.InferType<typeof LOGIN_SCHEMA>;
 
 const LoginForm: VFC = () => {
-  const { status, data } = useFetchStatus(requsetLogin.TYPE);
+  const { status, data } = useFetchStatus(login.TYPE);
   const dispatch = useDispatch();
   const { control, handleSubmit: checkSubmit, errors } = useForm<FormData>({
     mode: 'onBlur',
@@ -37,7 +37,7 @@ const LoginForm: VFC = () => {
 
   const handleSubmit = useMemo(() => {
     return checkSubmit((formData) => {
-      dispatch(requsetLogin.requset(formData));
+      dispatch(login.requset(formData));
     });
   }, [checkSubmit, dispatch]);
 

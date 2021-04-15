@@ -1,4 +1,4 @@
-import { IReadUserURL } from '../typings/type';
+import { IUserURL } from '../@types/query';
 
 /**
  * * 로그인 유저 정보 조회 GET
@@ -12,7 +12,7 @@ export function GET_READ_MY_USER_API() {
  * * 유저 정보 조회 GET
  * * /user/:userId
  */
-export function GET_READ_USER_API(url: IReadUserURL) {
+export function GET_READ_USER_API(url: IUserURL) {
   return `/user/${url.userId}`;
 }
 
@@ -45,5 +45,5 @@ export function GET_SIGNUP_API() {
  * * /user/nickname
  */
 export function GET_MODIFY_NICKNAME_API() {
-  return `user/nickname`;
+  return `/user/nickname`;
 }
