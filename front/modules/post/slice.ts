@@ -2,14 +2,16 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { createRequestAction } from '@modules/helper/createRequestAction';
 
-import { IComment, IImagePath, ILike, IPost, IRemovePostRes } from './@types/db';
+import { IComment, ILike, IPost } from './@types/db';
 import {
   ICommentBodyQuery,
+  IImagePath,
   IListReadHashtagPostURL,
   IListReadPostURL,
   IListReadUserPostURL,
   IPostBodyQuery,
   IPostURL,
+  IRemovePostRes,
 } from './@types/query';
 
 export const POST = 'POST';
@@ -25,7 +27,9 @@ export const listReadPost = createRequestAction<IListReadPostURL, IPost[]>(`${PO
 export const createPost = createRequestAction<IPostBodyQuery, IPost>(`${POST}/createPost`);
 export const modifyPost = createRequestAction<IPostBodyQuery, IPost>(`${POST}/modifyPost`);
 export const removePost = createRequestAction<IPostURL, IRemovePostRes>(`${POST}/removePost`);
-export const createComment = createRequestAction<IPostURL & ICommentBodyQuery, IComment>(`${POST}/createComment`);
+export const createComment = createRequestAction<{ url: IPostURL; body: ICommentBodyQuery }, IComment>(
+  `${POST}/createComment`,
+);
 export const retweetPost = createRequestAction<IPostURL, IPost>(`${POST}/retweetPost`);
 
 // Type

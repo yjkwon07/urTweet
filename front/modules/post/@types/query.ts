@@ -29,4 +29,22 @@ export interface IUploadImageBodyQuery {
 
 export interface ICommentBodyQuery {
   content: string;
+  userId: number;
 }
+
+// -- response
+export interface IRemovePostRes {
+  PostId: number;
+}
+
+export interface ILikePostRes {
+  PostId: number;
+  UserId: number;
+}
+
+export interface IUnlikePostRes {
+  PostId: number;
+  UserId: number;
+}
+
+export type IImagePath = string[];

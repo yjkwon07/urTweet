@@ -1,12 +1,11 @@
 import { IUser } from '@modules/user/@types/db';
 
-export type IImagePath = string[];
-
 export interface IPost {
   Comments: IComment[];
   Images: string[];
   Likers: ILikers[];
-  RetweetId: IPost | null;
+  Retweet: IPost | null;
+  RetweetId: number | null;
   User: IUser;
   UserId: number;
   content: string;
@@ -35,8 +34,4 @@ export interface IComment {
   UserId: number;
   PostId: number;
   User: IUser;
-}
-
-export interface IRemovePostRes {
-  PostId: number;
 }
