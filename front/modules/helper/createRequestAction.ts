@@ -14,5 +14,5 @@ export const createRequestAction = <R, S, F = AxiosError, M = any>(type: string)
     success: createAction(SUCCESS, (payload: S, meta?: M) => ({ payload, meta })),
     failure: createAction(FAILURE, (payload: F, meta?: M) => ({ payload, meta })),
   };
-  return { ...action, tunk: createRequestAsyncThunk(action.requset) };
+  return { ...action, asyncTunk: createRequestAsyncThunk<R, S, M>(action.requset) };
 };

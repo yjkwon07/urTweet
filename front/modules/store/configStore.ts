@@ -10,7 +10,7 @@ const devMode = process.env.NODE_ENV === 'development';
 const sagaMiddleware = createSagaMiddleware();
 const store = configureStore({
   reducer: rootReducer,
-  middleware: [thunkMiddleware, sagaMiddleware],
+  middleware: [thunkMiddleware, sagaMiddleware] as const,
   devTools: devMode,
 });
 // Next Redux Toolkit 에서 saga를 사용해야할 때
