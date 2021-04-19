@@ -1,37 +1,91 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState, VFC } from 'react';
 
 import { UploadOutlined } from '@ant-design/icons';
-import { Button, Space, Form, Input } from 'antd';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Button, Space, Form, Input, message } from 'antd';
+import { Controller, useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
+import * as yup from 'yup';
 
-const imagePaths = ['1'];
-const PostForm = () => {
+import { createPost, uploadImages } from '@modules/post';
+import { IImagePath } from '@modules/post/@types/query';
+
+const POST_SCHEMA = yup.object({
+  content: yup.string().min(3, '게시글은 3자 이상 입력하여 주십시오.').required('게시글은 필수 입력 항목 입니다.'),
+});
+
+type FormData = yup.InferType<typeof POST_SCHEMA>;
+
+const PostForm: VFC = () => {
+  const dispatch = useDispatch();
+  const { control, handleSubmit: checkSubmit, errors, reset } = useForm<FormData>({
+    mode: 'onBlur',
+    resolver: yupResolver(POST_SCHEMA),
+    defaultValues: { content: '' },
+  });
+
+  const [imageListPath, setImageListPath] = useState<IImagePath>([]);
   const imageInput = useRef<HTMLInputElement>(null);
-  const [text, setText] = useState('');
 
-  const handleChangeText = useCallback((e) => {
-    setText(e.target.value);
-  }, []);
-  const handleSubmit = useCallback(() => {}, []);
+  const handleSubmit = useMemo(() => {
+    return checkSubmit(async (formData) => {
+      try {
+        await dispatch(createPost.asyncTunk({ content: formData.content, image: imageListPath }));
+        message.success('게시글이 등록되었습니다.').then();
+      } catch (error) {
+        message.error(JSON.stringify(error.response.data)).then();
+      } finally {
+        reset();
+        setImageListPath([]);
+      }
+    });
+  }, [checkSubmit, dispatch, imageListPath, reset]);
+
   const handleClickImageUpload = useCallback(() => {
     if (imageInput.current) imageInput.current.click();
   }, []);
 
+  const handleChangeImage = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      try {
+        const imageFormData = new FormData();
+        [].forEach.call(e.target.files, (f) => {
+          imageFormData.append('image', f);
+        });
+        const listPath = await uploadImages.asyncTunk(imageFormData)(dispatch);
+        setImageListPath(listPath);
+      } catch (error) {
+        message.error(JSON.stringify(error.response.data)).then();
+      }
+    },
+    [dispatch],
+  );
+
+  const handleRemoveImage = useCallback(
+    (fileName) => () => {
+      setImageListPath((data) => data.filter((f) => f !== fileName));
+    },
+    [],
+  );
+
   return (
     <Form style={{ margin: '10px 0 20px' }} encType="multipart/form-data" onFinish={handleSubmit}>
-      <Form.Item name="content">
-        <Input.TextArea
-          value={text}
-          onChange={handleChangeText}
-          id="content"
+      <Form.Item
+        name="content"
+        validateStatus={errors.content ? 'error' : 'success'}
+        help={errors.content ? errors.content?.message : ''}
+        rules={[{ message: errors?.content?.message }]}
+      >
+        <Controller
+          control={control}
+          as={<Input.TextArea maxLength={140} autoSize={{ minRows: 3, maxRows: 5 }} defaultValue="" />}
           name="content"
-          maxLength={140}
+          id="content"
           placeholder="어떤 신기한 일이 있었나요?"
         />
       </Form.Item>
-      <Form.Item name="image">
-        <input type="file" name="image" multiple hidden ref={imageInput} />
-      </Form.Item>
       <div style={{ position: 'relative', margin: 0 }}>
+        <input type="file" name="image" multiple hidden ref={imageInput} onChange={handleChangeImage} />
         <Button style={{ position: 'absolute', right: 80, bottom: '-15px' }} onClick={handleClickImageUpload}>
           <UploadOutlined /> Images Upload
         </Button>
@@ -40,11 +94,13 @@ const PostForm = () => {
         </Button>
       </div>
       <Space size={8}>
-        {imagePaths.map((v) => (
-          <div key={v} style={{ margin: '5px 0 5px 0' }}>
-            <img src={v} alt={v} />
+        {imageListPath.map((f) => (
+          <div key={f} style={{ margin: '5px 0 5px 0' }}>
+            <img src={`http://localhost:3065/${f}`} alt={f} />
             <div style={{ marginTop: '5px' }}>
-              <Button type="dashed">제거</Button>
+              <Button type="dashed" onClick={handleRemoveImage(f)}>
+                제거
+              </Button>
             </div>
           </div>
         ))}

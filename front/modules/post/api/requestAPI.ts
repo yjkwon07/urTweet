@@ -12,6 +12,7 @@ import {
   IPostURL,
   IRemovePostRes,
   IUnlikePostRes,
+  IUploadImageBodyQuery,
 } from '../@types/query';
 import {
   GET_CREATE_POST_API,
@@ -68,8 +69,9 @@ export const requestRemoveLikePost = (url: IPostURL) => {
   return axios.delete<IUnlikePostRes>(GET_REMOVE_LIKE_POST_API(url));
 };
 
-export const requestUploadPostImages = () => {
-  return axios.post<IImagePath>(GET_UPLOAD_POST_IMAGES_API());
+export const requestUploadPostImages = (data: IUploadImageBodyQuery) => {
+  console.log(`data`, data);
+  return axios.post<IImagePath>(GET_UPLOAD_POST_IMAGES_API(), data);
 };
 
 export const requestCreatePostRetweet = (url: IPostURL) => {

@@ -12,12 +12,13 @@ import {
   IPostBodyQuery,
   IPostURL,
   IRemovePostRes,
+  IUploadImageBodyQuery,
 } from './@types/query';
 
 export const POST = 'POST';
 
 // Action
-export const uploadImages = createRequestAction<null, IImagePath>(`${POST}/uploadImages`);
+export const uploadImages = createRequestAction<IUploadImageBodyQuery, IImagePath>(`${POST}/uploadImages`);
 export const likePost = createRequestAction<IPostURL, ILike>(`${POST}/likePost`);
 export const unlikePost = createRequestAction<IPostURL, ILike>(`${POST}/unlikePost`);
 export const readPost = createRequestAction<IPostURL, IPost>(`${POST}/readPost`);
@@ -48,6 +49,12 @@ const slice = createSlice({
   name: POST,
   initialState,
   reducers: {},
+  extraReducers: (builder) =>
+    builder
+      .addCase(listReadPost.success, (state, { payload: data }) => {
+        state.list = data;
+      })
+      .addDefaultCase(() => {}),
 });
 
 export const postReducer = slice.reducer;

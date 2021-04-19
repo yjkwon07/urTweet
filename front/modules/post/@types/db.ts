@@ -2,7 +2,7 @@ import { IUser } from '@modules/user/@types/db';
 
 export interface IPost {
   Comments: IComment[];
-  Images: string[];
+  Images: IIMage[];
   Likers: ILikers[];
   Retweet: IPost | null;
   RetweetId: number | null;
@@ -34,4 +34,12 @@ export interface IComment {
   UserId: number;
   PostId: number;
   User: IUser;
+}
+
+export interface IIMage {
+  PostId: number;
+  createdAt: string;
+  id: number;
+  src: string;
+  updatedAt: string;
 }

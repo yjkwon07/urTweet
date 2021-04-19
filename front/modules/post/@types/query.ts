@@ -23,9 +23,7 @@ export interface IPostBodyQuery {
   image?: string[] | string;
 }
 
-export interface IUploadImageBodyQuery {
-  files: FormData;
-}
+export type IUploadImageBodyQuery = FormData;
 
 export interface ICommentBodyQuery {
   content: string;
