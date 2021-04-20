@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { createRequestAsyncThunk } from '@modules/helper';
 import { createRequestAction } from '@modules/helper/createRequestAction';
 
 import { IMyUser, ISignupRes } from './@types/db';
@@ -11,9 +10,9 @@ export const USER = 'USER';
 // Action
 export const login = createRequestAction<ILoginBodyQuery, IMyUser>(`${USER}/login`);
 export const logout = createRequestAction(`${USER}/logout`);
-
 export const signup = createRequestAction<ISignupBodyQuery, ISignupRes>(`${USER}/signup`);
-export const SignupThunk = createRequestAsyncThunk<ISignupBodyQuery, ISignupRes>(signup.requset);
+export const follow = createRequestAction<any, any>(`${USER}/follow`);
+export const unFollow = createRequestAction<any, any>(`${USER}/unFollow`);
 
 // Type
 export interface IState {

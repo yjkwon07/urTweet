@@ -9,6 +9,7 @@ import * as yup from 'yup';
 
 import { createPost, uploadImages } from '@modules/post';
 import { IImagePath } from '@modules/post/@types/query';
+import { GET_IMAGE_URL } from '@utils/urls';
 
 const POST_SCHEMA = yup.object({
   content: yup.string().min(3, '게시글은 3자 이상 입력하여 주십시오.').required('게시글은 필수 입력 항목 입니다.'),
@@ -49,10 +50,10 @@ const PostForm: VFC = () => {
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       try {
         const imageFormData = new FormData();
-        [].forEach.call(e.target.files, (f) => {
-          imageFormData.append('image', f);
+        [].forEach.call(e.target.files, (file) => {
+          imageFormData.append('image', file);
         });
-        const listPath = await uploadImages.asyncTunk(imageFormData)(dispatch);
+        const listPath = await dispatch(uploadImages.asyncTunk(imageFormData));
         setImageListPath(listPath);
       } catch (error) {
         message.error(JSON.stringify(error.response.data)).then();
@@ -63,13 +64,13 @@ const PostForm: VFC = () => {
 
   const handleRemoveImage = useCallback(
     (fileName) => () => {
-      setImageListPath((data) => data.filter((f) => f !== fileName));
+      setImageListPath((data) => data.filter((name) => name !== fileName));
     },
     [],
   );
 
   return (
-    <Form style={{ margin: '10px 0 20px' }} encType="multipart/form-data" onFinish={handleSubmit}>
+    <Form style={{ marginBottom: 45 }} encType="multipart/form-data" onFinish={handleSubmit}>
       <Form.Item
         name="content"
         validateStatus={errors.content ? 'error' : 'success'}
@@ -94,11 +95,11 @@ const PostForm: VFC = () => {
         </Button>
       </div>
       <Space size={8}>
-        {imageListPath.map((f) => (
-          <div key={f} style={{ margin: '5px 0 5px 0' }}>
-            <img src={`http://localhost:3065/${f}`} alt={f} />
+        {imageListPath.map((fileName) => (
+          <div key={fileName} style={{ margin: '5px 0 5px 0' }}>
+            <img src={GET_IMAGE_URL(fileName)} alt={fileName} />
             <div style={{ marginTop: '5px' }}>
-              <Button type="dashed" onClick={handleRemoveImage(f)}>
+              <Button type="dashed" onClick={handleRemoveImage(fileName)}>
                 제거
               </Button>
             </div>
