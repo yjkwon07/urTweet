@@ -1,7 +1,7 @@
 import React, { useCallback, useState, VFC } from 'react';
 
 import { EllipsisOutlined, HeartOutlined, HeartTwoTone, MessageOutlined, RetweetOutlined } from '@ant-design/icons';
-import { Card, Popover, Button, Avatar, Comment, List } from 'antd';
+import { Card, Popover, Button, Avatar, Comment, List, Divider } from 'antd';
 import moment from 'dayjs';
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,6 +13,7 @@ import { userSelector } from '@modules/user';
 import { GET_USER_URL, PASS_HREF } from '@utils/urls';
 
 import CommentForm from './CommentForm';
+import CommentList from './CommentList';
 import FollowButton from './FollowButton';
 import PostCardContent from './PostCardContent';
 import PostImages from './PostImages';
@@ -138,32 +139,14 @@ const PostCard: VFC<IProps> = ({ data }) => {
             />
           </>
         )}
+        {commentFormOpened && (
+          <div>
+            <Divider plain>{`${data.Comments.length}개의 댓글`}</Divider>
+            <CommentList data={data} />
+            {myId && <CommentForm data={data} />}
+          </div>
+        )}
       </Card>
-      {commentFormOpened && (
-        <div>
-          <CommentForm data={data} />
-          <List
-            header={`${data.Comments.length}개의 댓글`}
-            itemLayout="horizontal"
-            dataSource={data.Comments}
-            renderItem={(item) => (
-              <li>
-                <Comment
-                  author={item.User.nickname}
-                  avatar={
-                    <Link href={GET_USER_URL(item.User.id.toString())} prefetch={false} passHref>
-                      <a href={PASS_HREF}>
-                        <Avatar>{item.User.nickname[0]}</Avatar>
-                      </a>
-                    </Link>
-                  }
-                  content={item.content}
-                />
-              </li>
-            )}
-          />
-        </div>
-      )}
     </div>
   );
 };

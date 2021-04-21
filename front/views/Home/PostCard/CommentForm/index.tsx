@@ -52,6 +52,7 @@ const CommentForm: VFC<IProps> = ({ data }) => {
   return (
     <Form onFinish={handleSubmit}>
       <Form.Item
+        style={{ position: 'relative', margin: 0 }}
         validateStatus={errors.content ? 'error' : 'success'}
         help={errors.content ? errors.content?.message : ''}
         rules={[{ message: errors?.content?.message }]}
@@ -65,16 +66,14 @@ const CommentForm: VFC<IProps> = ({ data }) => {
           defaultValue=""
         />
       </Form.Item>
-      <div style={{ position: 'relative', margin: 0 }}>
-        <Button
-          style={{ position: 'absolute', right: 0, top: '-15px', zIndex: 1 }}
-          type="primary"
-          htmlType="submit"
-          loading={status === 'LOADING'}
-        >
-          댓글달기
-        </Button>
-      </div>
+      <Button
+        style={{ position: 'absolute', right: 0, top: '-15px', zIndex: 1 }}
+        type="primary"
+        htmlType="submit"
+        loading={status === 'LOADING'}
+      >
+        댓글달기
+      </Button>
     </Form>
   );
 };
