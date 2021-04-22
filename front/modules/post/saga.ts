@@ -1,4 +1,4 @@
-import { all, fork, takeLatest } from 'redux-saga/effects';
+import { all, fork, takeLatest, throttle } from 'redux-saga/effects';
 
 import { createRequestSaga } from '@modules/helper';
 
@@ -29,6 +29,7 @@ import {
   removePost,
   createComment,
   retweetPost,
+  infinteListReadPost,
 } from './slice';
 
 const uploadImagesSaga = createRequestSaga(uploadImages, requestUploadPostImages);
@@ -38,6 +39,7 @@ const readPostSaga = createRequestSaga(readPost, requestReadPost);
 const listReadUserPostSaga = createRequestSaga(listReadUserPost, requestListReadUserPost);
 const listReadHashTagPostSaga = createRequestSaga(listReadHashTagPost, requestListReadHashtagPost);
 const listReadPostSaga = createRequestSaga(listReadPost, requestListReadPost);
+const infiniteListReadPostSaga = createRequestSaga(infinteListReadPost, requestListReadPost);
 const createPostSaga = createRequestSaga(createPost, requestCreatePost);
 const modifyPostSaga = createRequestSaga(modifyPost, requestLikePost);
 const removePostSaga = createRequestSaga(removePost, requestUnlikePost);
@@ -72,6 +74,10 @@ function* watchListRead() {
   yield takeLatest(listReadPost.requset, listReadPostSaga);
 }
 
+function* watchInfiniteListRead() {
+  yield throttle(5000, infinteListReadPost.requset, infiniteListReadPostSaga);
+}
+
 function* watchCreatePost() {
   yield takeLatest(createPost.requset, createPostSaga);
 }
@@ -101,6 +107,7 @@ export default function* postSaga() {
     fork(watchListReadUserPost),
     fork(watchListReadHashTag),
     fork(watchListRead),
+    fork(watchInfiniteListRead),
     fork(watchCreatePost),
     fork(watchModifyPost),
     fork(watchRemovePost),

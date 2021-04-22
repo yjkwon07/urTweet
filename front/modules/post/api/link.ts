@@ -4,7 +4,7 @@ import { IListReadHashtagPostURL, IListReadPostURL, IListReadUserPostURL, IPostU
  * * post 게시글 리스트 정보 조회 GET
  */
 export function GET_LIST_READ_POST_API(url: IListReadPostURL) {
-  return `/posts?lastId=${url.lastId || 0}`;
+  return `/posts?offset=${url.offset || 0}&pageSize=${url.pageSize}`;
 }
 
 /**

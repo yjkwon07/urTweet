@@ -4,7 +4,8 @@ export interface IPostURL {
 }
 
 export interface IListReadPostURL {
-  lastId?: string;
+  offset?: number;
+  pageSize?: number;
 }
 
 export interface IListReadUserPostURL {

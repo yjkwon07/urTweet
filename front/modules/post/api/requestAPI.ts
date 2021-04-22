@@ -70,7 +70,6 @@ export const requestRemoveLikePost = (url: IPostURL) => {
 };
 
 export const requestUploadPostImages = (data: IUploadImageBodyQuery) => {
-  console.log(`data`, data);
   return axios.post<IImagePath>(GET_UPLOAD_POST_IMAGES_API(), data);
 };
 

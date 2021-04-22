@@ -3,7 +3,7 @@ import { AxiosError } from 'axios';
 
 import { createRequestAsyncThunk } from './createRequestAsyncThunk';
 
-export const createRequestAction = <R, S, F = AxiosError, M = any>(type: string) => {
+export const createRequestAction = <R, S, M = any, F = AxiosError>(type: string) => {
   const REQUEST = `${type}/request`;
   const SUCCESS = `${type}/success`;
   const FAILURE = `${type}/fail`;

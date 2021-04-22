@@ -25,6 +25,7 @@ export const readPost = createRequestAction<IPostURL, IPost>(`${POST}/readPost`)
 export const listReadUserPost = createRequestAction<IListReadUserPostURL, IPost[]>(`${POST}/listReadUserPost`);
 export const listReadHashTagPost = createRequestAction<IListReadHashtagPostURL, IPost[]>(`${POST}/listReadHashTagPost`);
 export const listReadPost = createRequestAction<IListReadPostURL, IPost[]>(`${POST}listReadPost`);
+export const infinteListReadPost = createRequestAction<IListReadPostURL, IPost[]>(`${POST}infinteListReadPost`);
 export const createPost = createRequestAction<IPostBodyQuery, IPost>(`${POST}/createPost`);
 export const modifyPost = createRequestAction<IPostBodyQuery, IPost>(`${POST}/modifyPost`);
 export const removePost = createRequestAction<IPostURL, IRemovePostRes>(`${POST}/removePost`);
@@ -36,12 +37,14 @@ export const retweetPost = createRequestAction<IPostURL, IPost>(`${POST}/retweet
 // Type
 export interface IState {
   list: IPost[];
+  infiniteList: IPost[];
   data: IPost | null;
 }
 
 // Reducer
 const initialState: IState = {
   list: [],
+  infiniteList: [],
   data: null,
 };
 
@@ -53,6 +56,9 @@ const slice = createSlice({
     builder
       .addCase(listReadPost.success, (state, { payload: data }) => {
         state.list = data;
+      })
+      .addCase(infinteListReadPost.success, (state, { payload: data }) => {
+        state.infiniteList.push(...data);
       })
       .addDefaultCase(() => {}),
 });
