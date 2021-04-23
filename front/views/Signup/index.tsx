@@ -11,7 +11,7 @@ import * as yup from 'yup';
 
 import AppLayout from '@layouts/App';
 import { useFetchStatus } from '@modules/fetchStatus';
-import { SignupThunk, signup, userSelector } from '@modules/user';
+import { signup, userSelector } from '@modules/user';
 
 import { FormWrapper } from './styles';
 
@@ -44,7 +44,7 @@ const Signup: VFC = () => {
   const handleSubmit = useMemo(() => {
     return checkSubmit(async (formData) => {
       try {
-        await dispatch(SignupThunk(formData));
+        await dispatch(signup.asyncTunk(formData));
         message.success('회원가입에 성공하셨습니다.').then(() => Router.push('/').then());
       } catch (error) {
         message.error(JSON.stringify(error.response.data)).then();
