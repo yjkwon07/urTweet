@@ -1,7 +1,7 @@
 const DataTypes = require('sequelize');
 const { Model } = DataTypes;
 
-module.exports = class Post extends Model {
+module.exports = class User extends Model {
   static init(sequelize) {
     return super.init(
       {
@@ -28,6 +28,7 @@ module.exports = class Post extends Model {
       },
     );
   }
+
   static associate(db) {
     db.User.hasMany(db.Post);
     db.User.hasMany(db.Comment);
