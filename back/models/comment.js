@@ -23,7 +23,7 @@ module.exports = class Comment extends Model {
   }
 
   static associate(db) {
-    db.Comment.belongsTo(db.User);
-    db.Comment.belongsTo(db.Post);
+    db.Comment.belongsTo(db.User); // [UserId 생성 => User 참조]
+    db.Comment.belongsTo(db.Post); // [PostId 생성 => Post 참조]
   }
 };

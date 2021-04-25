@@ -6,9 +6,9 @@ module.exports = class User extends Model {
     return super.init(
       {
         email: {
-          type: DataTypes.STRING(30), 
+          type: DataTypes.STRING(30),
           allowNull: false,
-          unique: true, 
+          unique: true,
         },
         nickname: {
           type: DataTypes.STRING(30),
@@ -30,10 +30,10 @@ module.exports = class User extends Model {
   }
 
   static associate(db) {
+    db.User.belongsToMany(db.Post, { through: 'Like', as: 'Liked' }); // [foreignKey 기준으로 UserId 가지고 => Liked를 리턴한다.]
+    db.User.belongsToMany(db.User, { through: 'Follow', as: 'Followers', foreignKey: 'FollowingId' }); // [foreignKey 기준으로 FollowingId 가지고 Followers를 리턴한다.]
+    db.User.belongsToMany(db.User, { through: 'Follow', as: 'Followings', foreignKey: 'FollowerId' }); // [foreignKey 기준으로 FollowerId를 가지고 Followings를 리턴한다.]
     db.User.hasMany(db.Post);
     db.User.hasMany(db.Comment);
-    db.User.belongsToMany(db.Post, { through: 'Like', as: 'Liked' });
-    db.User.belongsToMany(db.User, { through: 'Follow', as: 'Followers', foreignKey: 'FollowingId' }); // foreignKey 기준으로 FollowingId 가지고 Followers를 리턴한다.
-    db.User.belongsToMany(db.User, { through: 'Follow', as: 'Followings', foreignKey: 'FollowerId' }); // foreignKey 기준으로 FollowerId를 가지고 Followings를 리턴한다.
   }
 };
