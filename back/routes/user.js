@@ -4,22 +4,61 @@ const passport = require('passport');
 
 const { User, Post } = require('../models');
 const { SUCCESS, CLIENT_ERROR, USER_ERROR, DEFAULT_SUCCESS_MESSAGE } = require('../constant');
+
 const router = express.Router();
 
-// POST /login/ (로그인)
+// GET /user (나의 정보 가져오기)
+router.get('/', async (req, res, next) => {
+  try {
+    if (req.user) {
+      const fullUserWithoutPassword = await User.findOne({
+        where: { id: req.user.id },
+        attributes: {
+          exclude: ['password'],
+        },
+        include: [
+          {
+            model: Post,
+            attributes: ['id'],
+          },
+          {
+            model: User,
+            as: 'Followings',
+            attributes: ['id'],
+          },
+          {
+            model: User,
+            as: 'Followers',
+            attributes: ['id'],
+          },
+        ],
+      });
+      res.status(SUCCESS).send(fullUserWithoutPassword);
+    } else {
+      res.status(SUCCESS).send(null);
+    }
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+// POST /user/login (로그인)
 router.post('/login', (req, res, next) => {
+  // LocalStrategy
   passport.authenticate('local', (err, user, info) => {
     if (err) {
       console.error(err);
       return next(err);
     }
     if (info) return res.status(USER_ERROR).send(info.reason);
+    // req.login()시에 serializeUser 호출
     return req.login(user, async (loginErr) => {
       if (loginErr) {
         console.error(loginErr);
         return next(loginErr);
       }
-      const userWithoutPassword = await User.findOne({
+      const fullUserWithoutPassword = await User.findOne({
         where: { id: user.id },
         attributes: {
           exclude: ['password'],
@@ -29,7 +68,11 @@ router.post('/login', (req, res, next) => {
             model: Post,
             attributes: ['id'],
           },
-          { model: User, as: 'Followings', attributes: ['id'] },
+          {
+            model: User,
+            as: 'Followings',
+            attributes: ['id'],
+          },
           {
             model: User,
             as: 'Followers',
@@ -37,12 +80,12 @@ router.post('/login', (req, res, next) => {
           },
         ],
       });
-      return res.status(SUCCESS).json(userWithoutPassword);
+      return res.status(SUCCESS).send(fullUserWithoutPassword);
     });
-  })(req, res, next);
+  })(req, res, next); // 미들웨어 확장
 });
 
-// POST /user/ (회원가입)
+// POST /user (회원가입)
 router.post('/', async (req, res, next) => {
   try {
     const exUser = await User.findOne({
@@ -60,15 +103,15 @@ router.post('/', async (req, res, next) => {
     res.status(SUCCESS).send(DEFAULT_SUCCESS_MESSAGE);
   } catch (error) {
     console.error(error);
-    next(error); // status 500
+    next(error);
   }
 });
 
-// POST /logout/ (로그아웃)
+// POST /user/logout (로그아웃)
 router.post('/logout', (req, res) => {
   req.logout();
   req.session.destroy();
-  res.send('ok');
+  res.status(SUCCESS).send(DEFAULT_SUCCESS_MESSAGE);
 });
 
 module.exports = router;
