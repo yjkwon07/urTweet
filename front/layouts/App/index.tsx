@@ -34,12 +34,12 @@ const AppLayout: FC = ({ children }) => {
       <Global styles={globalStyles} />
       <Header style={{ position: 'fixed', zIndex: 1, width: '100%', backgroundColor: '#FFF' }}>
         <Menu mode="horizontal" defaultSelectedKeys={[router.pathname]}>
-          <Menu.Item key="/">
+          <Menu.Item key={HOME_URL}>
             <Link href={HOME_URL} passHref>
               <a href={PASS_HREF}>노드버드</a>
             </Link>
           </Menu.Item>
-          <Menu.Item key="/profile">
+          <Menu.Item key={PROFILE_URL}>
             <Link href={PROFILE_URL} passHref>
               <a href={PASS_HREF}>프로필</a>
             </Link>

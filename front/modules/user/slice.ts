@@ -11,6 +11,7 @@ export const USER = 'USER';
 export const login = createRequestAction<ILoginBodyQuery, IMyUser>(`${USER}/login`);
 export const logout = createRequestAction(`${USER}/logout`);
 export const signup = createRequestAction<ISignupBodyQuery, ISignupRes>(`${USER}/signup`);
+export const readMyUser = createRequestAction<void, IMyUser>(`${USER}/readMyUser`);
 export const follow = createRequestAction<any, any>(`${USER}/follow`);
 export const unFollow = createRequestAction<any, any>(`${USER}/unFollow`);
 
@@ -30,6 +31,9 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (builder) =>
     builder
+      .addCase(readMyUser.success, (state, { payload: data }) => {
+        state.MyInfo = data;
+      })
       .addCase(login.success, (state, { payload: data }) => {
         state.MyInfo = data;
       })

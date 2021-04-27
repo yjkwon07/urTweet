@@ -1,18 +1,17 @@
 import React, { useEffect } from 'react';
 
 import { Spin } from 'antd';
-import { useSelector } from 'react-redux';
 
 import AppLayout from '@layouts/App';
 import useInfiniteListPost from '@modules/post/hooks/useInfiniteListPost';
-import { userSelector } from '@modules/user';
+import useMyUser from '@modules/user/hooks/useUser';
 
 import PostCard from './PostCard';
 import PostForm from './PostForm';
 import { StyledCenter } from './styles';
 
 const Home = () => {
-  const myData = useSelector(userSelector.myData);
+  const myData = useMyUser();
   const { data: postListData, status, hasMoreRead, setPage } = useInfiniteListPost();
 
   useEffect(() => {

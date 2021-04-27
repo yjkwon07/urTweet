@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { logout, userSelector } from '@modules/user';
-import { PASS_HREF } from '@utils/urls';
+import { GET_USER_URL, PASS_HREF, PROFILE_URL } from '@utils/urls';
 
 const UserProfile: VFC = () => {
   const dispatch = useDispatch();
@@ -21,7 +21,7 @@ const UserProfile: VFC = () => {
     <Card
       actions={[
         <div key="twit">
-          <Link href={`/user/${myData.id}`} passHref>
+          <Link href={GET_USER_URL(myData.id.toString())} passHref>
             <a href={PASS_HREF}>
               게시글
               <br />
@@ -30,7 +30,7 @@ const UserProfile: VFC = () => {
           </Link>
         </div>,
         <div key="followings">
-          <Link href="/profile" passHref>
+          <Link href={PROFILE_URL} passHref>
             <a href={PASS_HREF}>
               팔로잉
               <br />
@@ -39,7 +39,7 @@ const UserProfile: VFC = () => {
           </Link>
         </div>,
         <div key="followings">
-          <Link href="/profile" passHref>
+          <Link href={PROFILE_URL} passHref>
             <a href={PASS_HREF}>
               팔로워
               <br />
@@ -51,7 +51,7 @@ const UserProfile: VFC = () => {
     >
       <Card.Meta
         avatar={
-          <Link href={`/user/${myData.id}`} prefetch={false}>
+          <Link href={GET_USER_URL(myData.id.toString())} prefetch={false}>
             <Avatar>{myData.nickname[0]}</Avatar>
           </Link>
         }
