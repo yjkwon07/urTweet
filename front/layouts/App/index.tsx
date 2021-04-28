@@ -4,9 +4,8 @@ import { Global } from '@emotion/react';
 import { Menu, Col, Layout, Row } from 'antd';
 import Link from 'next/link';
 import Router, { useRouter } from 'next/router';
-import { useSelector } from 'react-redux';
 
-import { userSelector } from '@modules/user';
+import { useMyUser } from '@modules/user';
 import { PASS_HREF, HOME_URL, PROFILE_URL, GET_HASHTAG_URL } from '@utils/urls';
 
 import LoginForm from './LoginForm';
@@ -17,7 +16,7 @@ const { Header, Content } = Layout;
 
 const AppLayout: FC = ({ children }) => {
   const router = useRouter();
-  const myData = useSelector(userSelector.myData);
+  const { data: myData } = useMyUser();
 
   const [searchInput, setSearchInput] = useState('');
 

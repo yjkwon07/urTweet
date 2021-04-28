@@ -14,7 +14,7 @@ export default function useMyUser() {
   const data = useAppSelector(userSelector.myData);
 
   useEffect(() => {
-    if (status === 'INIT') dispatch(readMyUser.requset());
+    if (status === undefined) dispatch(readMyUser.requset());
   }, [dispatch, status]);
 
   return { status, data };

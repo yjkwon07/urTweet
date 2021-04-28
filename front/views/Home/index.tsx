@@ -4,22 +4,22 @@ import { Spin } from 'antd';
 
 import AppLayout from '@layouts/App';
 import useInfiniteListPost from '@modules/post/hooks/useInfiniteListPost';
-import useMyUser from '@modules/user/hooks/useUser';
+import { useMyUser } from '@modules/user';
 
 import PostCard from './PostCard';
 import PostForm from './PostForm';
 import { StyledCenter } from './styles';
 
 const Home = () => {
-  const myData = useMyUser();
-  const { data: postListData, status, hasMoreRead, setPage } = useInfiniteListPost();
+  const { data: myData } = useMyUser();
+  const { data: postListData, status, hasMoreRead, setLastId } = useInfiniteListPost();
 
   useEffect(() => {
     function onScroll() {
       if (postListData && hasMoreRead && status !== 'LOADING') {
         if (window.scrollY + document.documentElement.clientHeight > document.documentElement.scrollHeight - 300) {
           window.scrollTo({ top: window.scrollY - 300 });
-          setPage((prevPage) => prevPage + 1);
+          setLastId(postListData[postListData.length - 1].id);
         }
       }
     }
@@ -27,7 +27,7 @@ const Home = () => {
     return () => {
       window.removeEventListener('scroll', onScroll);
     };
-  }, [status, postListData, hasMoreRead, setPage]);
+  }, [status, postListData, hasMoreRead, setLastId]);
 
   return (
     <AppLayout>

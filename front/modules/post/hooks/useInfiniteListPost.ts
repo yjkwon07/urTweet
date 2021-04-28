@@ -12,16 +12,16 @@ import { DEAFULT_PAGE_SIZE } from '../utils/constants';
 export default function useInfiniteListPost() {
   const dispatch = useDispatch();
   const status = useAppSelector((state) => state[FETCH_STATUS][infinteListReadPost.TYPE]?.status);
+  const fetchData = useAppSelector((state) => state[FETCH_STATUS][infinteListReadPost.TYPE]?.data);
   const data = useAppSelector(postSelector.infiniteList) || [];
 
-  const [page, setPage] = useState(1);
+  const [lastId, setLastId] = useState(0);
   const [pageSize, setPageSize] = useState(DEAFULT_PAGE_SIZE);
-  const offset = useMemo(() => (page - 1) * pageSize, [page, pageSize]);
-  const hasMoreRead = useMemo(() => data.length >= offset + pageSize, [data.length, offset, pageSize]);
+  const hasMoreRead = useMemo(() => fetchData?.length === pageSize, [fetchData?.length, pageSize]);
 
   useEffect(() => {
-    dispatch(infinteListReadPost.requset({ offset, pageSize }));
-  }, [dispatch, offset, pageSize]);
+    dispatch(infinteListReadPost.requset({ lastId, pageSize }));
+  }, [dispatch, lastId, pageSize]);
 
-  return { status, data, hasMoreRead, setPage, setPageSize };
+  return { status, data, hasMoreRead, setLastId, setPageSize };
 }

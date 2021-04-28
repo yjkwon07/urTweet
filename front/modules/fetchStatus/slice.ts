@@ -33,6 +33,7 @@ const slice = createSlice({
       .addCase(initFetch, (state, { payload: { type } }) => {
         state[type] = {
           status: 'INIT',
+          data: null,
         };
       })
       .addCase(request, (state, { payload: { type } }) => {

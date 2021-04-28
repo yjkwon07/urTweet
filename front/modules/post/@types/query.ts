@@ -4,7 +4,7 @@ export interface IPostURL {
 }
 
 export interface IListReadPostURL {
-  offset?: number;
+  lastId?: number;
   pageSize?: number;
 }
 
