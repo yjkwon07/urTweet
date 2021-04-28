@@ -8,6 +8,8 @@ const morgan = require('morgan');
 
 const db = require('./models');
 const passportConfig = require('./passport');
+const postRouter = require('./routes/post');
+const postsRouter = require('./routes/posts');
 const userRouter = require('./routes/user');
 
 // config & init
@@ -25,7 +27,7 @@ app.use(
   }),
 );
 app.use(express.json()); // json
-app.use(express.urlencoded({ extended: true })); // FormData
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(
   session({
@@ -38,10 +40,12 @@ app.use(passport.initialize()); // passport 설정 초기화
 app.use(passport.session()); // express session이 session을 만들고 난 후, passport가 session을 사용하여 사용자 정보를 저장한다.
 // End-Global
 
-// Router
+// Router`
+app.use('/posts', postsRouter);
+app.use('/post', postRouter);
 app.use('/user', userRouter);
 // End-Router
 
 app.listen(3065, () => {
-  console.log('서버 실행 중!');
+  console.log('server start...');
 });

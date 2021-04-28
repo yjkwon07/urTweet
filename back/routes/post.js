@@ -1,5 +1,3 @@
-import { SUCCESS } from '../../front/modules/fetchStatus';
-
 const express = require('express');
 
 const { Post, Image, Comment, User, Hashtag } = require('../models');
@@ -8,8 +6,8 @@ const { SUCCESS, CLIENT_ERROR } = require('../constant');
 
 const router = express.Router();
 
+// POST /post
 router.post('/', isLoggedIn, async (req, res, next) => {
-  // POST /post
   try {
     const post = await Post.create({
       content: req.body.content,
@@ -77,3 +75,5 @@ router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {
     next(error);
   }
 });
+
+module.exports = router;
