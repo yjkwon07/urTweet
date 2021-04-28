@@ -60,6 +60,12 @@ const slice = createSlice({
       .addCase(infinteListReadPost.success, (state, { payload: data }) => {
         state.infiniteList.push(...data);
       })
+      .addCase(createComment.success, (state, { payload: data }) => {
+        const post = state.list.find((v) => v.id === data.PostId);
+        const infinitePost = state.infiniteList.find((v) => v.id === data.PostId);
+        post?.Comments.unshift(data);
+        infinitePost?.Comments.unshift(data);
+      })
       .addDefaultCase(() => {}),
 });
 

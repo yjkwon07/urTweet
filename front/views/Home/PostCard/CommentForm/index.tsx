@@ -34,17 +34,16 @@ const CommentForm: VFC<IProps> = ({ data }) => {
     return checkSubmit(async (formData) => {
       if (!myData?.id) return;
       try {
+        reset();
         await dispatch(
           createComment.asyncTunk({
             url: { postId: data.id.toString() },
             body: { content: formData.content, userId: myData.id },
           }),
         );
-        message.success('댓글이 등록되었습니다.').then();
+        message.success('댓글이 등록되었습니다.');
       } catch (error) {
-        message.error(JSON.stringify(error.response.data)).then();
-      } finally {
-        reset();
+        message.error(JSON.stringify(error.response.data));
       }
     });
   }, [checkSubmit, dispatch, myData, data?.id, reset]);
@@ -52,7 +51,6 @@ const CommentForm: VFC<IProps> = ({ data }) => {
   return (
     <Form onFinish={handleSubmit}>
       <Form.Item
-        style={{ position: 'relative', margin: 0 }}
         validateStatus={errors.content ? 'error' : 'success'}
         help={errors.content ? errors.content?.message : ''}
         rules={[{ message: errors?.content?.message }]}
@@ -66,14 +64,16 @@ const CommentForm: VFC<IProps> = ({ data }) => {
           defaultValue=""
         />
       </Form.Item>
-      <Button
-        style={{ position: 'absolute', right: 0, top: '-15px', zIndex: 1 }}
-        type="primary"
-        htmlType="submit"
-        loading={status === 'LOADING'}
-      >
-        댓글달기
-      </Button>
+      <div style={{ position: 'relative', margin: 0 }}>
+        <Button
+          style={{ position: 'absolute', right: 0, top: '-15px', zIndex: 1 }}
+          type="primary"
+          htmlType="submit"
+          loading={status === 'LOADING'}
+        >
+          댓글달기
+        </Button>
+      </div>
     </Form>
   );
 };

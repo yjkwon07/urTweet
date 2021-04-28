@@ -57,8 +57,8 @@ export const requestUnlikePost = (url: IPostURL) => {
   return axios.delete<IRemovePostRes>(GET_REMOVE_POST_API(url));
 };
 
-export const requestCreateComment = ({ url, data }: { url: IPostURL; data: ICommentBodyQuery }) => {
-  return axios.post<IComment>(GET_CREATE_COMMENT_API(url), data);
+export const requestCreateComment = ({ url, body }: { url: IPostURL; body: ICommentBodyQuery }) => {
+  return axios.post<IComment>(GET_CREATE_COMMENT_API(url), body);
 };
 
 export const requestModifyLikePost = (url: IPostURL) => {

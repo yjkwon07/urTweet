@@ -1,4 +1,4 @@
-import { all, fork, takeLatest, throttle } from 'redux-saga/effects';
+import { all, fork, takeLatest, throttle, debounce } from 'redux-saga/effects';
 
 import { createRequestSaga } from '@modules/helper';
 
@@ -91,7 +91,7 @@ function* watchRemovePost() {
 }
 
 function* watchCreateComment() {
-  yield takeLatest(createComment.requset, createCommentSaga);
+  yield debounce(300, createComment.requset, createCommentSaga);
 }
 
 function* watchRetweetPost() {
