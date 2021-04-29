@@ -61,10 +61,18 @@ const slice = createSlice({
         state.infiniteList.push(...data);
       })
       .addCase(createComment.success, (state, { payload: data }) => {
+        state.list.find((v) => v.id === data.PostId)?.Comments.unshift(data);
+        state.infiniteList.find((v) => v.id === data.PostId)?.Comments.unshift(data);
+      })
+      .addCase(likePost.success, (state, { payload: data }) => {
+        state.list.find((v) => v.id === data.PostId)?.Likers.push({ id: data.UserId });
+        state.infiniteList.find((v) => v.id === data.PostId)?.Likers.push({ id: data.UserId });
+      })
+      .addCase(unlikePost.success, (state, { payload: data }) => {
         const post = state.list.find((v) => v.id === data.PostId);
-        const infinitePost = state.infiniteList.find((v) => v.id === data.PostId);
-        post?.Comments.unshift(data);
-        infinitePost?.Comments.unshift(data);
+        const infiniteList = state.infiniteList.find((v) => v.id === data.PostId);
+        if (post) post.Likers = post.Likers.filter((v) => v.id !== data.UserId);
+        if (infiniteList) infiniteList.Likers = infiniteList?.Likers.filter((v) => v.id !== data.UserId);
       })
       .addDefaultCase(() => {}),
 });

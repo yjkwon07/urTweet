@@ -1,13 +1,13 @@
-import React, { useCallback, useState, VFC } from 'react';
+import React, { useCallback, useMemo, useState, VFC } from 'react';
 
 import { EllipsisOutlined, HeartOutlined, HeartTwoTone, MessageOutlined, RetweetOutlined } from '@ant-design/icons';
-import { Card, Popover, Button, Avatar, Comment, List, Divider } from 'antd';
+import { Card, Popover, Button, Avatar, Divider, message } from 'antd';
 import moment from 'dayjs';
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { useFetchStatus } from '@modules/fetchStatus';
-import { removePost } from '@modules/post';
+import { likePost, removePost, unlikePost } from '@modules/post';
 import { IPost } from '@modules/post/@types/db';
 import { userSelector } from '@modules/user';
 import { GET_USER_URL, PASS_HREF } from '@utils/urls';
@@ -27,7 +27,6 @@ const PostCard: VFC<IProps> = ({ data }) => {
   const myId = useSelector(userSelector.myData)?.id;
   const { status: removePostStatus } = useFetchStatus(removePost.TYPE);
 
-  const [liked, setLiked] = useState(false);
   const [commentFormOpened, setCommentFormOpened] = useState(false);
   const [editMode, setEditMode] = useState(false);
 
@@ -35,9 +34,17 @@ const PostCard: VFC<IProps> = ({ data }) => {
     // ...
   }, []);
 
-  const handleToggleLike = useCallback(() => {
-    setLiked((prev) => !prev);
-  }, []);
+  const handleToggleLike = useMemo(
+    () => (isLike: boolean) => () => {
+      if (!myId) {
+        message.warn('로그인이 필요합니다.');
+        return;
+      }
+      if (!isLike) dispatch(likePost.requset({ postId: data.id.toString() }));
+      else dispatch(unlikePost.requset({ postId: data.id.toString() }));
+    },
+    [data.id, dispatch, myId],
+  );
 
   const handleToggleComment = useCallback(() => {
     setCommentFormOpened((prev) => !prev);
@@ -59,6 +66,8 @@ const PostCard: VFC<IProps> = ({ data }) => {
     // ...
   }, []);
 
+  const liked = useMemo(() => !!data.Likers.find((v) => v.id === myId)?.id, [data.Likers, myId]);
+
   return (
     <div style={{ marginBottom: 20 }}>
       <Card
@@ -67,9 +76,9 @@ const PostCard: VFC<IProps> = ({ data }) => {
         actions={[
           <RetweetOutlined key="retweet" onClick={handleRetweet} />,
           liked ? (
-            <HeartTwoTone twoToneColor="#eb2f96" key="heart" onClick={handleToggleLike} />
+            <HeartTwoTone twoToneColor="#eb2f96" key="heart" onClick={handleToggleLike(liked)} />
           ) : (
-            <HeartOutlined key="heart" onClick={handleToggleLike} />
+            <HeartOutlined key="heart" onClick={handleToggleLike(liked)} />
           ),
           <MessageOutlined key="comment" onClick={handleToggleComment} />,
           <Popover
