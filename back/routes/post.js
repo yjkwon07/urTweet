@@ -46,7 +46,7 @@ router.post('/', isLoggedIn, async (req, res, next) => {
   }
 });
 
-// POST /post/1/comment
+// POST /post/:postId/comment
 router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {
   try {
     const post = await Post.findOne({
@@ -70,6 +70,36 @@ router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {
       ],
     });
     res.status(SUCCESS).send(fullComment);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+// PATCH /post/:postId/like
+router.patch('/:postId/like', isLoggedIn, async (req, res, next) => {
+  try {
+    const post = await Post.findOne({ where: { id: req.params.postId } });
+    if (!post) {
+      return res.status(CLIENT_ERROR).send('게시글이 존재하지 않습니다.');
+    }
+    await post.addLikers(req.user.id);
+    res.status(SUCCESS).send({ PostId: post.id, UserId: req.user.id });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+// DELETE /post/:postId/like
+router.delete('/:postId/like', isLoggedIn, async (req, res, next) => {
+  try {
+    const post = await Post.findOne({ where: { id: req.params.postId } });
+    if (!post) {
+      return res.status(CLIENT_ERROR).send('게시글이 존재하지 않습니다.');
+    }
+    await post.removeLikers(req.user.id);
+    res.status(SUCCESS).send({ PostId: post.id, UserId: req.user.id });
   } catch (error) {
     console.error(error);
     next(error);
