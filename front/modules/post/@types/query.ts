@@ -1,6 +1,6 @@
 // - URL
 export interface IPostURL {
-  postId: string;
+  postId: number;
 }
 
 export interface IListReadPostURL {

@@ -40,8 +40,8 @@ const PostCard: VFC<IProps> = ({ data }) => {
         message.warn('로그인이 필요합니다.');
         return;
       }
-      if (!isLike) dispatch(likePost.requset({ postId: data.id.toString() }));
-      else dispatch(unlikePost.requset({ postId: data.id.toString() }));
+      if (!isLike) dispatch(likePost.requset({ postId: data.id }));
+      else dispatch(unlikePost.requset({ postId: data.id }));
     },
     [data.id, dispatch, myId],
   );
@@ -59,8 +59,12 @@ const PostCard: VFC<IProps> = ({ data }) => {
   }, []);
 
   const handleRemovePost = useCallback(() => {
-    // ...
-  }, []);
+    if (!myId) {
+      message.warn('로그인이 필요합니다.');
+      return;
+    }
+    dispatch(removePost.requset({ postId: data.id }));
+  }, [data.id, dispatch, myId]);
 
   const handleChangePost = useCallback(() => {
     // ...
@@ -84,18 +88,15 @@ const PostCard: VFC<IProps> = ({ data }) => {
           <Popover
             key="more"
             content={
-              <Button.Group>
-                {myId && data.User.id === myId ? (
-                  <>
-                    {!data.RetweetId && <Button onClick={handleEditMode}>수정</Button>}
-                    <Button type="dashed" loading={removePostStatus === 'LOADING'} onClick={handleRemovePost}>
-                      삭제
-                    </Button>
-                  </>
-                ) : (
-                  <Button>신고</Button>
-                )}
-              </Button.Group>
+              myId &&
+              data.User.id === myId && (
+                <Button.Group>
+                  {!data.RetweetId && <Button onClick={handleEditMode}>수정</Button>}
+                  <Button type="danger" loading={removePostStatus === 'LOADING'} onClick={handleRemovePost}>
+                    삭제
+                  </Button>
+                </Button.Group>
+              )
             }
           >
             <EllipsisOutlined />
