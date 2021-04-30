@@ -11,8 +11,8 @@ import {
   GET_SIGNUP_API,
 } from './api';
 
-export const requestModifyNickname = (data: { body: IModifyNickNameBodyQuery }) => {
-  return axios.patch(GET_MODIFY_NICKNAME_API(), data.body);
+export const requestModifyNickname = (data: IModifyNickNameBodyQuery) => {
+  return axios.patch(GET_MODIFY_NICKNAME_API(), data);
 };
 
 export const requestReadMyUser = () => {

@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { createRequestAction } from '@modules/helper/createRequestAction';
 
 import { IMyUser, ISignupRes } from './@types/db';
-import { ILoginBodyQuery, ISignupBodyQuery } from './@types/query';
+import { ILoginBodyQuery, IModifyNickNameBodyQuery, IModifyNickNameRes, ISignupBodyQuery } from './@types/query';
 
 export const USER = 'USER';
 
@@ -12,6 +12,9 @@ export const login = createRequestAction<ILoginBodyQuery, IMyUser>(`${USER}/logi
 export const logout = createRequestAction(`${USER}/logout`);
 export const signup = createRequestAction<ISignupBodyQuery, ISignupRes>(`${USER}/signup`);
 export const readMyUser = createRequestAction<void, IMyUser>(`${USER}/readMyUser`);
+export const modifyNickname = createRequestAction<IModifyNickNameBodyQuery, IModifyNickNameRes>(
+  `${USER}/modifyNickname`,
+);
 export const follow = createRequestAction<any, any>(`${USER}/follow`);
 export const unFollow = createRequestAction<any, any>(`${USER}/unFollow`);
 
@@ -33,6 +36,9 @@ const slice = createSlice({
     builder
       .addCase(readMyUser.success, (state, { payload: data }) => {
         state.MyInfo = data;
+      })
+      .addCase(modifyNickname.success, (state, { payload: data }) => {
+        if (state.MyInfo) state.MyInfo.nickname = data.nickname;
       })
       .addCase(login.success, (state, { payload: data }) => {
         state.MyInfo = data;

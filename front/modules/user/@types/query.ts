@@ -18,3 +18,9 @@ export interface ISignupBodyQuery {
 export interface IModifyNickNameBodyQuery {
   nickname: string;
 }
+
+// -- Res
+
+export interface IModifyNickNameRes {
+  nickname: string;
+}
