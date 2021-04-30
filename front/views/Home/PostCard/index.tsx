@@ -1,7 +1,15 @@
-import React, { useCallback, useMemo, useState, VFC } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
-import { EllipsisOutlined, HeartOutlined, HeartTwoTone, MessageOutlined, RetweetOutlined } from '@ant-design/icons';
-import { Card, Popover, Button, Avatar, Divider, message } from 'antd';
+import {
+  DeleteOutlined,
+  EditOutlined,
+  EllipsisOutlined,
+  HeartOutlined,
+  HeartTwoTone,
+  MessageOutlined,
+  RetweetOutlined,
+} from '@ant-design/icons';
+import { Card, Popover, Button, Avatar, Divider, message, Popconfirm } from 'antd';
 import moment from 'dayjs';
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,7 +30,7 @@ export interface IProps {
   data: IPost;
 }
 
-const PostCard: VFC<IProps> = ({ data }) => {
+const PostCard = ({ data }: IProps) => {
   const dispatch = useDispatch();
   const myId = useSelector(userSelector.myData)?.id;
   const { status: removePostStatus } = useFetchStatus(removePost.TYPE);
@@ -70,7 +78,7 @@ const PostCard: VFC<IProps> = ({ data }) => {
     // ...
   }, []);
 
-  const liked = useMemo(() => !!data.Likers.find((v) => v.id === myId)?.id, [data.Likers, myId]);
+  const islike = useMemo(() => !!data.Likers.find((v) => v.id === myId)?.id, [data.Likers, myId]);
 
   return (
     <div style={{ marginBottom: 20 }}>
@@ -78,23 +86,34 @@ const PostCard: VFC<IProps> = ({ data }) => {
         cover={data.Images.length && <PostImages images={data.Images} />}
         hoverable
         actions={[
-          <RetweetOutlined key="retweet" onClick={handleRetweet} />,
-          liked ? (
-            <HeartTwoTone twoToneColor="#eb2f96" key="heart" onClick={handleToggleLike(liked)} />
+          <RetweetOutlined key="retweet" title="리트윗" onClick={handleRetweet} />,
+          islike ? (
+            <HeartTwoTone twoToneColor="#eb2f96" title="좋아요" key="heart" onClick={handleToggleLike(islike)} />
           ) : (
-            <HeartOutlined key="heart" onClick={handleToggleLike(liked)} />
+            <HeartOutlined key="heart" title="좋아요" onClick={handleToggleLike(islike)} />
           ),
-          <MessageOutlined key="comment" onClick={handleToggleComment} />,
+          <MessageOutlined key="comment" title="댓글" onClick={handleToggleComment} />,
           <Popover
             key="more"
             content={
               myId &&
               data.User.id === myId && (
                 <Button.Group>
-                  {!data.RetweetId && <Button onClick={handleEditMode}>수정</Button>}
-                  <Button type="danger" loading={removePostStatus === 'LOADING'} onClick={handleRemovePost}>
-                    삭제
-                  </Button>
+                  {!data.RetweetId && (
+                    <Button onClick={handleEditMode}>
+                      <EditOutlined /> 수정
+                    </Button>
+                  )}
+                  <Popconfirm
+                    title="Are you sure delete this Post?"
+                    okText="Yes"
+                    onConfirm={handleRemovePost}
+                    cancelText="No"
+                  >
+                    <Button type="danger" loading={removePostStatus === 'LOADING'}>
+                      <DeleteOutlined /> 삭제
+                    </Button>
+                  </Popconfirm>
                 </Button.Group>
               )
             }
