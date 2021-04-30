@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const passport = require('passport');
 
 const { User, Post } = require('../models');
+const { isLoggedIn } = require('./middlewares');
 const { SUCCESS, CLIENT_ERROR, USER_ERROR, DEFAULT_SUCCESS_MESSAGE } = require('../constant');
 
 const router = express.Router();
@@ -112,6 +113,24 @@ router.post('/logout', (req, res) => {
   req.logout();
   req.session.destroy();
   res.status(SUCCESS).send(DEFAULT_SUCCESS_MESSAGE);
+});
+
+// POST /user/nickname (닉네임 수정)
+router.patch('/nickname', isLoggedIn, async (req, res, next) => {
+  try {
+    await User.update(
+      {
+        nickname: req.body.nickname,
+      },
+      {
+        where: { id: req.user.id },
+      },
+    );
+    res.status(SUCCESS).send({ nickname: req.body.nickname });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
 });
 
 module.exports = router;
