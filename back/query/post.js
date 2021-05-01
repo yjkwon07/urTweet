@@ -4,6 +4,18 @@ function findPost(where) {
   return Post.findOne({ where });
 }
 
+function findRetweetPost(where) {
+  return Post.findOne({
+    where,
+    include: [
+      {
+        model: Post,
+        as: 'Retweet',
+      },
+    ],
+  });
+}
+
 function findPostWithoutUserPassword(where) {
   return Post.findOne({
     where,
@@ -98,4 +110,4 @@ function findPostListWithoutUserPassword(config) {
   });
 }
 
-module.exports = { findPost, findPostWithoutUserPassword, findPostListWithoutUserPassword };
+module.exports = { findPost, findRetweetPost, findPostWithoutUserPassword, findPostListWithoutUserPassword };

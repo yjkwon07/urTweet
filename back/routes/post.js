@@ -3,7 +3,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-const { findPost, findPostWithoutUserPassword } = require('../query/post');
+const { findPost, findRetweetPost, findPostWithoutUserPassword } = require('../query/post');
 const { findCommentWithoutUserPassword } = require('../query/comment');
 const { Post, Comment, Image, Hashtag } = require('../models');
 const { isLoggedIn } = require('./middlewares');
@@ -60,6 +60,34 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
       }
     }
     const postWithoutUserPassword = await findPostWithoutUserPassword({ id: post.id });
+    res.status(SUCCESS).send(postWithoutUserPassword);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+// POST /post/:postId/retweet (리트윗)
+router.post('/:postId/retweet', isLoggedIn, async (req, res, next) => {
+  try {
+    const post = await findRetweetPost({ id: req.params.postId });
+    if (!post) {
+      return res.status(CLIENT_ERROR).send('존재하지 않는 게시글입니다.');
+    }
+    if (req.user.id === post.UserId || (post.Retweet && post.Retweet.UserId === req.user.id)) {
+      return res.status(CLIENT_ERROR).send('자신의 글은 리트윗할 수 없습니다.');
+    }
+    const retweetTargetId = post.RetweetId || post.id;
+    const exPost = await findPost({ UserId: req.user.id, RetweetId: retweetTargetId });
+    if (exPost) {
+      return res.status(CLIENT_ERROR).send('이미 리트윗했습니다.');
+    }
+    const retweetPost = await Post.create({
+      UserId: req.user.id,
+      RetweetId: retweetTargetId,
+      content: 'retweet',
+    });
+    const postWithoutUserPassword = await findPostWithoutUserPassword({ id: retweetPost.id });
     res.status(SUCCESS).send(postWithoutUserPassword);
   } catch (error) {
     console.error(error);
