@@ -5,7 +5,7 @@ const fs = require('fs');
 
 const { findPost, findPostWithoutUserPassword } = require('../query/post');
 const { findCommentWithoutUserPassword } = require('../query/comment');
-const { Post, Comment, Image } = require('../models');
+const { Post, Comment, Image, Hashtag } = require('../models');
 const { isLoggedIn } = require('./middlewares');
 const { SUCCESS, CLIENT_ERROR } = require('../constant');
 
@@ -35,10 +35,21 @@ const upload = multer({
 // POST /post (게시글 업로드)
 router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
   try {
+    let hashtags = req.body.content.match(/#[^\s#]+/g);
     const post = await Post.create({
       content: req.body.content,
       UserId: req.user.id,
     });
+    if (hashtags) {
+      const result = await Promise.all(
+        Array.from(new Set(hashtags.map((tag) => tag.slice(1).toLowerCase()))).map((tag) =>
+          Hashtag.findOrCreate({
+            where: { name: tag },
+          }),
+        ),
+      ).then((_) => _.filter((_) => _[1]));
+      await post.addHashtags(result.map((v) => v[0]));
+    }
     if (req.body.image) {
       if (Array.isArray(req.body.image)) {
         const images = await Promise.all(req.body.image.map((image) => Image.create({ src: image })));
