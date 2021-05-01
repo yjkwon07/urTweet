@@ -7,8 +7,8 @@ import { ActionMetaPayload } from './type';
 interface IPromiseAction<T, R, M> {
   payload: T;
   meta?: M;
-  resolve?: (value: R, meta?: M) => void;
-  reject?: (value: any, meta?: M) => void;
+  resolve?: (value: R) => void;
+  reject?: (value: any) => void;
 }
 
 export const createRequestSaga = <R, S, F, M>(
@@ -24,14 +24,14 @@ export const createRequestSaga = <R, S, F, M>(
     try {
       yield put(request({ type: asyncActionCreator.TYPE }));
       const { data }: AxiosResponse<S> = yield call(requestCall, action.payload);
-      yield put(asyncActionCreator.success(data));
+      yield put(asyncActionCreator.success(data, action.meta));
       yield put(success({ type: asyncActionCreator.TYPE, data }));
-      if (action.resolve) action.resolve(data, action.meta);
+      if (action.resolve) action.resolve(data);
     } catch (error) {
       if (!error.response?.data) error.response = { data: '네트워크 오류' };
-      yield put(asyncActionCreator.failure(error));
+      yield put(asyncActionCreator.failure(error, action.meta));
       yield put(fail({ type: asyncActionCreator.TYPE, data: error }));
-      if (action.reject) action.reject(error, action.meta);
+      if (action.reject) action.reject(error);
     }
   };
 };
