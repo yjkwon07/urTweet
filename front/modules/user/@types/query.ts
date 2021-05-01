@@ -1,6 +1,6 @@
 // - URL
 export interface IUserURL {
-  userId: string;
+  userId: number;
 }
 
 // -- BODY
@@ -20,7 +20,14 @@ export interface IModifyNickNameBodyQuery {
 }
 
 // -- Res
-
 export interface IModifyNickNameRes {
   nickname: string;
+}
+
+export interface IFollowRes {
+  UserId: number;
+}
+
+export interface IUnFollowRes {
+  UserId: number;
 }

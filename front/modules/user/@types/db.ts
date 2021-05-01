@@ -1,8 +1,8 @@
 export type ISignupRes = 'ok';
 
 export interface IMyUser extends IUser {
-  Followers: IUser[];
-  Followings: IUser[];
+  Followers: { id: IUser['id'] }[];
+  Followings: { id: IUser['id'] }[];
   Posts: number[];
 }
 

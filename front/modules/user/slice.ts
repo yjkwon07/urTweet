@@ -3,7 +3,15 @@ import { createSlice } from '@reduxjs/toolkit';
 import { createRequestAction } from '@modules/helper/createRequestAction';
 
 import { IMyUser, ISignupRes } from './@types/db';
-import { ILoginBodyQuery, IModifyNickNameBodyQuery, IModifyNickNameRes, ISignupBodyQuery } from './@types/query';
+import {
+  IFollowRes,
+  ILoginBodyQuery,
+  IModifyNickNameBodyQuery,
+  IModifyNickNameRes,
+  ISignupBodyQuery,
+  IUnFollowRes,
+  IUserURL,
+} from './@types/query';
 
 export const USER = 'USER';
 
@@ -15,8 +23,8 @@ export const readMyUser = createRequestAction<void, IMyUser>(`${USER}/readMyUser
 export const modifyNickname = createRequestAction<IModifyNickNameBodyQuery, IModifyNickNameRes>(
   `${USER}/modifyNickname`,
 );
-export const follow = createRequestAction<any, any>(`${USER}/follow`);
-export const unFollow = createRequestAction<any, any>(`${USER}/unFollow`);
+export const follow = createRequestAction<IUserURL, IFollowRes>(`${USER}/follow`);
+export const unFollow = createRequestAction<IUserURL, IUnFollowRes>(`${USER}/unFollow`);
 
 // Type
 export interface IState {
@@ -39,6 +47,12 @@ const slice = createSlice({
       })
       .addCase(modifyNickname.success, (state, { payload: data }) => {
         if (state.MyInfo) state.MyInfo.nickname = data.nickname;
+      })
+      .addCase(follow.success, (state, { payload: data }) => {
+        if (state.MyInfo) state.MyInfo.Followings.push({ id: data.UserId });
+      })
+      .addCase(unFollow.success, (state, { payload: data }) => {
+        if (state.MyInfo) state.MyInfo.Followings = state.MyInfo.Followings.filter((_) => _.id !== data.UserId);
       })
       .addCase(login.success, (state, { payload: data }) => {
         state.MyInfo = data;

@@ -47,3 +47,19 @@ export function GET_SIGNUP_API() {
 export function GET_MODIFY_NICKNAME_API() {
   return `/user/nickname`;
 }
+
+/**
+ * * 유저 팔로우 PATCH
+ * * /user/:userId/follow
+ */
+export function GET_FOLLOW_API(url: IUserURL) {
+  return `/user/${url.userId}/follow`;
+}
+
+/**
+ * * 유저 팔로우 삭제 DELETE
+ * * /user/:userId/follow
+ */
+export function GET_UNFOLLOW_API(url: IUserURL) {
+  return `/user/${url.userId}/follow`;
+}

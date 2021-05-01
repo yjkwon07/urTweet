@@ -37,6 +37,7 @@ const PostCard = ({ data }: IProps) => {
 
   const [commentFormOpened, setCommentFormOpened] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const islike = useMemo(() => !!data.Likers.find((v) => v.id === myId)?.id, [data.Likers, myId]);
 
   const handleRetweet = useCallback(() => {
     // ...
@@ -77,8 +78,6 @@ const PostCard = ({ data }: IProps) => {
   const handleChangePost = useCallback(() => {
     // ...
   }, []);
-
-  const islike = useMemo(() => !!data.Likers.find((v) => v.id === myId)?.id, [data.Likers, myId]);
 
   return (
     <div style={{ marginBottom: 20 }}>
@@ -122,7 +121,7 @@ const PostCard = ({ data }: IProps) => {
           </Popover>,
         ]}
         title={data.RetweetId && `${data.User.nickname}님이 리트윗하셨습니다.`}
-        extra={myId && <FollowButton data={data} />}
+        extra={myId && data.User.id !== myId && <FollowButton data={data} />}
       >
         {data.Retweet ? (
           <Card cover={data.Retweet.Images[0] && <PostImages images={data.Retweet.Images} />}>
