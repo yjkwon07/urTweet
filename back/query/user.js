@@ -1,4 +1,4 @@
-const { User, Post } = require('../../models');
+const { User, Post } = require('../models');
 
 function findUser(where) {
   return User.findOne({ where });
