@@ -75,10 +75,6 @@ const PostCard = ({ data }: IProps) => {
     dispatch(removePost.requset({ postId: data.id }));
   }, [data.id, dispatch, myId]);
 
-  const handleChangePost = useCallback(() => {
-    // ...
-  }, []);
-
   return (
     <div style={{ marginBottom: 20 }}>
       <Card
@@ -130,18 +126,12 @@ const PostCard = ({ data }: IProps) => {
               avatar={
                 <Link href={GET_USER_URL(data.Retweet.User.id.toString())} prefetch={false} passHref>
                   <a href={PASS_HREF}>
-                    <Avatar>{data.Retweet.User.nickname[0]}</Avatar>
+                    <Avatar>{data.Retweet.User.nickname}</Avatar>
                   </a>
                 </Link>
               }
               title={data.Retweet.User.nickname}
-              description={
-                <PostCardContent
-                  onChangePost={handleChangePost}
-                  onCancelUpdate={handleCancleEditMode}
-                  data={data.Retweet.content}
-                />
-              }
+              description={<PostCardContent onCancleEditMode={handleCancleEditMode} data={data} />}
             />
           </Card>
         ) : (
@@ -151,19 +141,12 @@ const PostCard = ({ data }: IProps) => {
               avatar={
                 <Link href={GET_USER_URL(data.User.id.toString())} prefetch={false} passHref>
                   <a href={PASS_HREF}>
-                    <Avatar>{data?.User.nickname[0]}</Avatar>
+                    <Avatar>{data.User.nickname}</Avatar>
                   </a>
                 </Link>
               }
-              title={data?.User.nickname}
-              description={
-                <PostCardContent
-                  editMode={editMode}
-                  onChangePost={handleChangePost}
-                  onCancelUpdate={handleCancleEditMode}
-                  data={data?.content}
-                />
-              }
+              title={data.User.nickname}
+              description={<PostCardContent editMode={editMode} onCancleEditMode={handleCancleEditMode} data={data} />}
             />
           </>
         )}

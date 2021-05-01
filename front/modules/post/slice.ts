@@ -9,6 +9,7 @@ import {
   IListReadHashtagPostURL,
   IListReadPostURL,
   IListReadUserPostURL,
+  IModifyPostRes,
   IPostBodyQuery,
   IPostURL,
   IRemovePostRes,
@@ -27,7 +28,9 @@ export const listReadHashTagPost = createRequestAction<IListReadHashtagPostURL, 
 export const listReadPost = createRequestAction<IListReadPostURL, IPost[]>(`${POST}listReadPost`);
 export const infinteListReadPost = createRequestAction<IListReadPostURL, IPost[]>(`${POST}infinteListReadPost`);
 export const createPost = createRequestAction<IPostBodyQuery, IPost>(`${POST}/createPost`);
-export const modifyPost = createRequestAction<IPostBodyQuery, IPost>(`${POST}/modifyPost`);
+export const modifyPost = createRequestAction<{ url: IPostURL; body: IPostBodyQuery }, IModifyPostRes>(
+  `${POST}/modifyPost`,
+);
 export const removePost = createRequestAction<IPostURL, IRemovePostRes>(`${POST}/removePost`);
 export const createComment = createRequestAction<{ url: IPostURL; body: ICommentBodyQuery }, IComment>(
   `${POST}/createComment`,
@@ -62,6 +65,12 @@ const slice = createSlice({
       })
       .addCase(createPost.success, (state, { payload: data }) => {
         state.infiniteList.unshift(data);
+      })
+      .addCase(modifyPost.success, (state, { payload: data }) => {
+        const post = state.list.find((v) => v.id === data.PostId);
+        const infiniteList = state.infiniteList.find((v) => v.id === data.PostId);
+        if (post) post.content = data.content;
+        if (infiniteList) infiniteList.content = data.content;
       })
       .addCase(removePost.success, (state, { payload: data }) => {
         state.list = state.list.filter((v) => v.id !== data.PostId);

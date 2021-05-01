@@ -4,8 +4,7 @@ import { createRequestSaga } from '@modules/helper';
 
 import {
   requestUploadPostImages,
-  requestModifyLikePost,
-  requestRemoveLikePost,
+  requestRemovePost,
   requestReadPost,
   requestListReadUserPost,
   requestListReadPost,
@@ -15,6 +14,7 @@ import {
   requestUnlikePost,
   requestCreateComment,
   requestCreatePostRetweet,
+  requestModifyPost,
 } from './api/requestAPI';
 import {
   uploadImages,
@@ -33,15 +33,15 @@ import {
 } from './slice';
 
 const uploadImagesSaga = createRequestSaga(uploadImages, requestUploadPostImages);
-const likePostSaga = createRequestSaga(likePost, requestModifyLikePost);
-const unlikePostSaga = createRequestSaga(unlikePost, requestRemoveLikePost);
+const likePostSaga = createRequestSaga(likePost, requestLikePost);
+const unlikePostSaga = createRequestSaga(unlikePost, requestRemovePost);
 const readPostSaga = createRequestSaga(readPost, requestReadPost);
 const listReadUserPostSaga = createRequestSaga(listReadUserPost, requestListReadUserPost);
 const listReadHashTagPostSaga = createRequestSaga(listReadHashTagPost, requestListReadHashtagPost);
 const listReadPostSaga = createRequestSaga(listReadPost, requestListReadPost);
 const infiniteListReadPostSaga = createRequestSaga(infinteListReadPost, requestListReadPost);
 const createPostSaga = createRequestSaga(createPost, requestCreatePost);
-const modifyPostSaga = createRequestSaga(modifyPost, requestLikePost);
+const modifyPostSaga = createRequestSaga(modifyPost, requestModifyPost);
 const removePostSaga = createRequestSaga(removePost, requestUnlikePost);
 const createCommentSaga = createRequestSaga(createComment, requestCreateComment);
 const retweetPostSaga = createRequestSaga(retweetPost, requestCreatePostRetweet);

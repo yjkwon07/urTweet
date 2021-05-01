@@ -8,6 +8,7 @@ import {
   IListReadHashtagPostURL,
   IListReadPostURL,
   IListReadUserPostURL,
+  IModifyPostRes,
   IPostBodyQuery,
   IPostURL,
   IRemovePostRes,
@@ -49,11 +50,11 @@ export const requestCreatePost = (data: IPostBodyQuery) => {
   return axios.post<IPost>(GET_CREATE_POST_API(), data);
 };
 
-export const requestLikePost = (url: IPostURL) => {
-  return axios.patch<IPost>(GET_MODIFY_POST_API(url));
+export const requestModifyPost = ({ url, body }: { url: IPostURL; body: IPostBodyQuery }) => {
+  return axios.patch<IModifyPostRes>(GET_MODIFY_POST_API(url), body);
 };
 
-export const requestUnlikePost = (url: IPostURL) => {
+export const requestRemovePost = (url: IPostURL) => {
   return axios.delete<IRemovePostRes>(GET_REMOVE_POST_API(url));
 };
 
@@ -61,11 +62,11 @@ export const requestCreateComment = ({ url, body }: { url: IPostURL; body: IComm
   return axios.post<IComment>(GET_CREATE_COMMENT_API(url), body);
 };
 
-export const requestModifyLikePost = (url: IPostURL) => {
+export const requestLikePost = (url: IPostURL) => {
   return axios.patch<ILikePostRes>(GET_MODIFY_LIKE_POST_API(url));
 };
 
-export const requestRemoveLikePost = (url: IPostURL) => {
+export const requestUnlikePost = (url: IPostURL) => {
   return axios.delete<IUnlikePostRes>(GET_REMOVE_LIKE_POST_API(url));
 };
 

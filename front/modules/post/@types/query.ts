@@ -32,6 +32,11 @@ export interface ICommentBodyQuery {
 }
 
 // -- response
+export interface IModifyPostRes {
+  PostId: number;
+  content: string;
+}
+
 export interface IRemovePostRes {
   PostId: number;
 }

@@ -1,49 +1,53 @@
-import React, { useState, useCallback, VFC } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import { Button, Input } from 'antd';
 import Link from 'next/link';
+import { useDispatch } from 'react-redux';
 
+import { modifyPost } from '@modules/post';
 import { IPost } from '@modules/post/@types/db';
 import { GET_HASHTAG_URL, PASS_HREF } from '@utils/urls';
 
 export interface IProps {
-  data: IPost['content'];
+  data: IPost;
   editMode?: boolean;
   isUpdateLoading?: boolean;
-  onChangePost: (text: string) => void;
-  onCancelUpdate: () => void;
+  onCancleEditMode: () => void;
 }
 
-const PostCardContent: VFC<IProps> = ({
-  data,
-  editMode = false,
-  isUpdateLoading = false,
-  onChangePost,
-  onCancelUpdate,
-}) => {
-  const [editText, setEditText] = useState(data);
+const PostCardContent = ({ data, editMode = false, isUpdateLoading = false, onCancleEditMode }: IProps) => {
+  const dispatch = useDispatch();
+
+  const [editText, setEditText] = useState(data.content);
 
   const onChangeText = useCallback((e) => {
     setEditText(e.target.value);
   }, []);
 
+  const handleChangePost = useCallback(
+    (content) => {
+      dispatch(modifyPost.requset({ url: { postId: data.id }, body: { content } }));
+      onCancleEditMode();
+    },
+    [data.id, dispatch, onCancleEditMode],
+  );
+
   return (
-    // 첫 번째 게시글 #해시태그 #해시태그
     <div>
       {editMode ? (
         <>
           <Input.TextArea value={editText} onChange={onChangeText} />
           <Button.Group>
-            <Button loading={isUpdateLoading} onClick={() => onChangePost(editText)}>
+            <Button loading={isUpdateLoading} onClick={() => handleChangePost(editText)}>
               수정
             </Button>
-            <Button type="dashed" onClick={onCancelUpdate}>
+            <Button type="dashed" onClick={onCancleEditMode}>
               취소
             </Button>
           </Button.Group>
         </>
       ) : (
-        data.split(/(#[^\s#]+)/g).map((word, i) => {
+        editText.split(/(#[^\s#]+)/g).map((word, i) => {
           if (word.match(/(#[^\s#]+)/)) {
             return (
               <Link href={GET_HASHTAG_URL(word.slice(1))} prefetch={false} key={i} passHref>
