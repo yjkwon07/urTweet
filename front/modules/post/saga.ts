@@ -95,7 +95,7 @@ function* watchCreateComment() {
 }
 
 function* watchRetweetPost() {
-  yield takeLatest(retweetPost.requset, retweetPostSaga);
+  yield debounce(300, retweetPost.requset, retweetPostSaga);
 }
 
 export default function* postSaga() {

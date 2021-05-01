@@ -66,6 +66,9 @@ const slice = createSlice({
       .addCase(createPost.success, (state, { payload: data }) => {
         state.infiniteList.unshift(data);
       })
+      .addCase(retweetPost.success, (state, { payload: data }) => {
+        state.infiniteList.unshift(data);
+      })
       .addCase(modifyPost.success, (state, { payload: data }) => {
         const post = state.list.find((v) => v.id === data.PostId);
         const infiniteList = state.infiniteList.find((v) => v.id === data.PostId);

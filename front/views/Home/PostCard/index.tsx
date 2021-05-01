@@ -15,7 +15,7 @@ import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { useFetchStatus } from '@modules/fetchStatus';
-import { likePost, removePost, unlikePost } from '@modules/post';
+import { likePost, removePost, retweetPost, unlikePost } from '@modules/post';
 import { IPost } from '@modules/post/@types/db';
 import { userSelector } from '@modules/user';
 import { GET_USER_URL, PASS_HREF } from '@utils/urls';
@@ -40,8 +40,12 @@ const PostCard = ({ data }: IProps) => {
   const islike = useMemo(() => !!data.Likers.find((v) => v.id === myId)?.id, [data.Likers, myId]);
 
   const handleRetweet = useCallback(() => {
-    // ...
-  }, []);
+    if (!myId) {
+      message.warn('로그인이 필요합니다.');
+      return;
+    }
+    dispatch(retweetPost.requset({ postId: data.id }));
+  }, [data.id, dispatch, myId]);
 
   const handleToggleLike = useMemo(
     () => (isLike: boolean) => () => {

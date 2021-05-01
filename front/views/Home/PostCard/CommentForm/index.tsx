@@ -37,7 +37,7 @@ const CommentForm: VFC<IProps> = ({ data }) => {
         reset();
         await dispatch(
           createComment.asyncTunk({
-            url: { postId: data.id.toString() },
+            url: { postId: data.id },
             body: { content: formData.content, userId: myData.id },
           }),
         );
