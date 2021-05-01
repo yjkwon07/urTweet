@@ -2,13 +2,16 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { createRequestAction } from '@modules/helper/createRequestAction';
 
-import { IMyUser, ISignupRes } from './@types/db';
+import { IMyUser, IUser } from './@types/db';
 import {
   IFollowRes,
+  IListReadFollowingURL,
   ILoginBodyQuery,
   IModifyNickNameBodyQuery,
   IModifyNickNameRes,
+  IRemoveFollowerMeRes,
   ISignupBodyQuery,
+  ISignupRes,
   IUnFollowRes,
   IUserURL,
 } from './@types/query';
@@ -23,8 +26,11 @@ export const readMyUser = createRequestAction<void, IMyUser>(`${USER}/readMyUser
 export const modifyNickname = createRequestAction<IModifyNickNameBodyQuery, IModifyNickNameRes>(
   `${USER}/modifyNickname`,
 );
+export const listReadFollow = createRequestAction<IListReadFollowingURL, IUser[]>(`${USER}/listReadFollow`);
+export const listReadFollowing = createRequestAction<IListReadFollowingURL, IUser[]>(`${USER}/listReadFollowing`);
 export const follow = createRequestAction<IUserURL, IFollowRes>(`${USER}/follow`);
 export const unFollow = createRequestAction<IUserURL, IUnFollowRes>(`${USER}/unFollow`);
+export const removeFollowerMe = createRequestAction<IUserURL, IRemoveFollowerMeRes>(`${USER}/removeFollowerMe`);
 
 // Type
 export interface IState {
@@ -48,11 +54,20 @@ const slice = createSlice({
       .addCase(modifyNickname.success, (state, { payload: data }) => {
         if (state.MyInfo) state.MyInfo.nickname = data.nickname;
       })
+      .addCase(listReadFollow.success, (state, { payload: data }) => {
+        if (state.MyInfo) state.MyInfo.Followers = data;
+      })
+      .addCase(listReadFollowing.success, (state, { payload: data }) => {
+        if (state.MyInfo) state.MyInfo.Followings = data;
+      })
       .addCase(follow.success, (state, { payload: data }) => {
         if (state.MyInfo) state.MyInfo.Followings.push({ id: data.UserId });
       })
       .addCase(unFollow.success, (state, { payload: data }) => {
         if (state.MyInfo) state.MyInfo.Followings = state.MyInfo.Followings.filter((_) => _.id !== data.UserId);
+      })
+      .addCase(removeFollowerMe.success, (state, { payload: data }) => {
+        if (state.MyInfo) state.MyInfo.Followers = state.MyInfo.Followers.filter((_) => _.id !== data.UserId);
       })
       .addCase(login.success, (state, { payload: data }) => {
         state.MyInfo = data;

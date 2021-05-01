@@ -1,16 +1,31 @@
-import React, { VFC } from 'react';
+import React, { useCallback } from 'react';
 
 import { StopOutlined } from '@ant-design/icons';
 import { List, Button, Card } from 'antd';
+import { useDispatch } from 'react-redux';
+
+import { removeFollowerMe, unFollow } from '@modules/user';
+import { IUser } from '@modules/user/@types/db';
 
 export interface IProps {
   header: string;
-  data: { nickname: string }[];
+  data?: IUser[];
   onClickMore?: () => void;
   loading?: boolean;
+  active?: boolean;
 }
 
-const FollowList: VFC<IProps> = ({ header, data, onClickMore, loading }) => {
+const FollowList = ({ header, data, onClickMore, loading = false, active = false }: IProps) => {
+  const dispatch = useDispatch();
+
+  const handleCancle = useCallback(
+    (userId) => () => {
+      if (header === '팔로잉') dispatch(unFollow.requset({ userId }));
+      dispatch(removeFollowerMe.requset({ userId }));
+    },
+    [dispatch, header],
+  );
+
   return (
     <List
       style={{ marginBottom: 20 }}
@@ -18,17 +33,19 @@ const FollowList: VFC<IProps> = ({ header, data, onClickMore, loading }) => {
       size="small"
       header={<div>{header}</div>}
       loadMore={
-        <div style={{ textAlign: 'center', margin: '10px 0' }}>
-          <Button onClick={onClickMore} loading={loading}>
-            더 보기
-          </Button>
-        </div>
+        active && (
+          <div style={{ textAlign: 'center', margin: '10px 0' }}>
+            <Button onClick={onClickMore} loading={loading}>
+              더 보기
+            </Button>
+          </div>
+        )
       }
       bordered
       dataSource={data}
       renderItem={(item) => (
         <List.Item style={{ marginTop: 20 }}>
-          <Card actions={[<StopOutlined key="stop" />]}>
+          <Card actions={[<StopOutlined key="stop" onClick={handleCancle(item.id)} />]}>
             <Card.Meta description={item.nickname} />
           </Card>
         </List.Item>
