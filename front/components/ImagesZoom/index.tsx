@@ -1,4 +1,4 @@
-import React, { useState, VFC } from 'react';
+import React, { useState } from 'react';
 
 import { Global } from '@emotion/react';
 import Slick from 'react-slick';
@@ -13,7 +13,7 @@ export interface IProps {
   onClose: () => void;
 }
 
-const ImagesZoom: VFC<IProps> = ({ images, onClose }) => {
+const ImagesZoom = ({ images, onClose }: IProps) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   return (

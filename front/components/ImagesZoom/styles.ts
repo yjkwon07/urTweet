@@ -67,17 +67,11 @@ export const Indicator = styled.div`
 `;
 
 export const globalStyles = css`
-  .ant-row {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+  .slick-slide {
+    display: inline-block;
   }
-  .ant-col:first-child {
-    margin-left: 0 !important;
-  }
-  .ant-col:last-child {
-    margin-right: 0 !important;
-  }
-  .ant-form-item-explain-error {
-    font-size: 11px;
+
+  .ant-card-cover {
+    transform: none !important;
   }
 `;

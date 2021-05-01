@@ -1,3 +1,5 @@
+import { axiosSetting } from '@modules/client';
+
 export const PASS_HREF = 'PASS_HREF';
 
 export const HOME_URL = '/';
@@ -11,7 +13,7 @@ export const GET_HASHTAG_URL = (hashtag: string) => {
 };
 
 export const GET_IMAGE_URL = (name: string) => {
-  return `http://localhost:3065/${name}`;
+  return `${axiosSetting.server()}/${name}`;
 };
 
 export const GET_USER_URL = (id: string) => {
