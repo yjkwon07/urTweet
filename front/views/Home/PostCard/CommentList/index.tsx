@@ -2,14 +2,10 @@ import React, { VFC } from 'react';
 
 import { Avatar, Comment, List, Tooltip } from 'antd';
 import moment from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
 import Link from 'next/link';
 
 import { IPost } from '@modules/post/@types/db';
 import { GET_USER_URL, PASS_HREF } from '@utils/urls';
-
-moment.locale('ko');
-moment.extend(relativeTime);
 
 export interface IProps {
   data: IPost;
@@ -26,7 +22,7 @@ const CommentList: VFC<IProps> = ({ data }) => (
           avatar={
             <Link href={GET_USER_URL(item.User.id.toString())} prefetch={false} passHref>
               <a href={PASS_HREF}>
-                <Avatar>{item.User.nickname[0]}</Avatar>
+                <Avatar>{item.User.nickname}</Avatar>
               </a>
             </Link>
           }

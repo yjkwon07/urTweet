@@ -1,10 +1,15 @@
 import React from 'react';
 
+import moment from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 
 import { wrapper } from '@modules/store/configStore';
 import 'antd/dist/antd.css';
+
+moment.locale('ko');
+moment.extend(relativeTime);
 
 const App = ({ Component }: AppProps) => {
   return (
