@@ -5,7 +5,7 @@ export interface IPostURL {
 
 export interface IListReadPostURL {
   lastId?: number;
-  pageSize?: number;
+  pageSize: number;
 }
 
 export interface IListReadUserPostURL {

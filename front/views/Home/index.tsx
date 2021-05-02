@@ -1,25 +1,38 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { Spin } from 'antd';
+import { useDispatch } from 'react-redux';
 
 import AppLayout from '@layouts/App';
-import useInfiniteListPost from '@modules/post/hooks/useInfiniteListPost';
-import { useMyUser } from '@modules/user';
+import { infinteListReadPost, postSelector } from '@modules/post';
+import { DEAFULT_PAGE_SIZE } from '@modules/post/utils/constants';
+import { useAppSelector } from '@modules/store/slices';
+import { userSelector } from '@modules/user';
 
 import PostCard from './PostCard';
 import PostForm from './PostForm';
 import { StyledCenter } from './styles';
 
 const Home = () => {
-  const { data: myData } = useMyUser();
-  const { data: postListData, status, hasMoreRead, setLastId } = useInfiniteListPost();
+  const dispatch = useDispatch();
+  const myData = useAppSelector(userSelector.myData);
+  const { data: postListData, status, fetchData } = useAppSelector(postSelector.infiniteList);
+  const [pageSize] = useState(DEAFULT_PAGE_SIZE);
+
+  const hasMoreRead = useMemo(() => status === 'SUCCESS' && fetchData?.length === pageSize, [
+    fetchData?.length,
+    pageSize,
+    status,
+  ]);
 
   useEffect(() => {
     function onScroll() {
       if (postListData && hasMoreRead && status !== 'LOADING') {
         if (window.scrollY + document.documentElement.clientHeight > document.documentElement.scrollHeight - 300) {
-          window.scrollTo({ top: window.scrollY - 300 });
-          setLastId(postListData[postListData.length - 1].id);
+          if (hasMoreRead) {
+            const lastId = postListData[postListData.length - 1].id || 0;
+            dispatch(infinteListReadPost.requset({ lastId, pageSize }));
+          }
         }
       }
     }
@@ -27,7 +40,7 @@ const Home = () => {
     return () => {
       window.removeEventListener('scroll', onScroll);
     };
-  }, [status, postListData, hasMoreRead, setLastId]);
+  }, [status, postListData, hasMoreRead, dispatch, pageSize]);
 
   return (
     <AppLayout>
