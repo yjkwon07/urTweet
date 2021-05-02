@@ -7,7 +7,7 @@ export const globalStyles = css`
     margin-left: 0 !important;
     margin-right: 0 !important;
   }
-  .ant-col:first-child {
+  .ant-col:nth-of-type(1) {
     margin-left: 0 !important;
   }
   .ant-col:last-child {
