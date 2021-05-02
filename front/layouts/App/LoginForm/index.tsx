@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, VFC } from 'react';
+import React, { useMemo, VFC } from 'react';
 
 import { LockOutlined, LoginOutlined, MailOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -22,22 +22,20 @@ const LOGIN_SCHEMA = yup.object({
 type FormData = yup.InferType<typeof LOGIN_SCHEMA>;
 
 const LoginForm: VFC = () => {
-  const { status, data } = useFetchStatus(login.TYPE);
+  const { status } = useFetchStatus(login.TYPE);
   const dispatch = useDispatch();
   const { control, handleSubmit: checkSubmit, errors } = useForm<FormData>({
     mode: 'onBlur',
     resolver: yupResolver(LOGIN_SCHEMA),
   });
 
-  useEffect(() => {
-    if (status === 'FAIL') {
-      message.error(JSON.stringify(data.response.data));
-    }
-  }, [data, status]);
-
   const handleSubmit = useMemo(() => {
-    return checkSubmit((formData) => {
-      dispatch(login.requset(formData));
+    return checkSubmit(async (formData) => {
+      try {
+        await dispatch(login.asyncTunk(formData));
+      } catch (error) {
+        message.error(JSON.stringify(error.response.data));
+      }
     });
   }, [checkSubmit, dispatch]);
 
@@ -57,6 +55,7 @@ const LoginForm: VFC = () => {
           id="user_email"
           type="email"
           placeholder="User Email"
+          autoComplete="email"
           defaultValue=""
         />
       </Form.Item>
@@ -78,7 +77,7 @@ const LoginForm: VFC = () => {
           defaultValue=""
         />
       </Form.Item>
-      <Form.Item name="submit">
+      <Form.Item>
         <Button block type="primary" htmlType="submit" loading={status === 'LOADING'}>
           <LoginOutlined /> Log in
         </Button>
