@@ -7,7 +7,7 @@ const { findPost, findRetweetPost, findPostWithoutUserPassword } = require('../q
 const { findCommentWithoutUserPassword } = require('../query/comment');
 const { Post, Comment, Image, Hashtag } = require('../models');
 const { isLoggedIn } = require('./middlewares');
-const { SUCCESS, CLIENT_ERROR } = require('../constant');
+const { SUCCESS, CLIENT_ERROR, PAGE_ERROR } = require('../constant');
 
 try {
   fs.accessSync('uploads');
@@ -30,6 +30,21 @@ const upload = multer({
     },
   }),
   limits: { fileSize: 20 * 1024 * 1024 }, // 20MB
+});
+
+// GET /post/:postId (게시글 조회)
+router.get('/:postId', async (req, res, next) => {
+  try {
+    const post = await findPost({ id: req.params.postId });
+    if (!post) {
+      return res.status(PAGE_ERROR).send('존재하지 않는 게시글입니다.');
+    }
+    const postWithoutUserPassword = await findPostWithoutUserPassword({ id: post.id });
+    res.status(SUCCESS).send(postWithoutUserPassword);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
 });
 
 // POST /post (게시글 업로드)
