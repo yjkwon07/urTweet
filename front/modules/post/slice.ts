@@ -57,6 +57,9 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (builder) =>
     builder
+      .addCase(readPost.success, (state, { payload: data }) => {
+        state.data = data;
+      })
       .addCase(listReadPost.success, (state, { payload: data }) => {
         state.list = data;
       })
