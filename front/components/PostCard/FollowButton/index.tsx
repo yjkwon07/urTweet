@@ -14,9 +14,9 @@ export interface IProps {
 
 const FollowButton = ({ data }: IProps) => {
   const dispatch = useDispatch();
+  const myData = useSelector(userSelector.myData);
   const { status: followStatus } = useFetchStatus(follow.TYPE);
   const { status: unfollowStatus } = useFetchStatus(unFollow.TYPE);
-  const myData = useSelector(userSelector.myData);
 
   const isFollowing = useMemo(() => !!myData?.Followings.find((_) => _.id === data.User.id), [
     data.User.id,

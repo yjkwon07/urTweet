@@ -135,7 +135,9 @@ const PostCard = ({ data }: IProps) => {
                 </Link>
               }
               title={data.Retweet.User.nickname}
-              description={<PostCardContent onCancleEditMode={handleCancleEditMode} data={data} />}
+              description={
+                <PostCardContent onCancleEditMode={handleCancleEditMode} postId={data.id} postContent={data.content} />
+              }
             />
           </Card>
         ) : (

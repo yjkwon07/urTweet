@@ -3,10 +3,10 @@ import React from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 
+import PostCard from '@components/PostCard';
 import AppLayout from '@layouts/App';
 import { postSelector } from '@modules/post';
 import { useAppSelector } from '@modules/store/slices';
-import PostCard from '@views/Home/PostCard';
 
 const Read = () => {
   const singlePost = useAppSelector(postSelector.data);

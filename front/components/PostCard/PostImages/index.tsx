@@ -1,4 +1,4 @@
-import React, { useCallback, useState, VFC } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { PlusOutlined } from '@ant-design/icons';
 
@@ -10,7 +10,7 @@ export interface IProps {
   images: IIMage[];
 }
 
-const PostImages: VFC<IProps> = ({ images }) => {
+const PostImages = ({ images }: IProps) => {
   const [showImagesZoom, setShowImagesZoom] = useState(false);
 
   const handleZoom = useCallback(() => {

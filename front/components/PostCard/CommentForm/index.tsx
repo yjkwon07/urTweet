@@ -1,4 +1,4 @@
-import React, { useMemo, VFC } from 'react';
+import React, { useMemo } from 'react';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Form, Input, Button, message } from 'antd';
@@ -11,17 +11,17 @@ import { createComment } from '@modules/post';
 import { IPost } from '@modules/post/@types/db';
 import { userSelector } from '@modules/user';
 
-export interface IProps {
-  data: IPost;
-}
-
 const COMMENT_SCHEMA = yup.object({
   content: yup.string().min(3, '댓글은 3자 이상 입력하여 주십시오.').required('댓글은 필수 입력 항목 입니다.'),
 });
 
 type FormData = yup.InferType<typeof COMMENT_SCHEMA>;
 
-const CommentForm: VFC<IProps> = ({ data }) => {
+export interface IProps {
+  data: IPost;
+}
+
+const CommentForm = ({ data }: IProps) => {
   const dispatch = useDispatch();
   const { status } = useFetchStatus(createComment.TYPE);
   const myData = useSelector(userSelector.myData);
@@ -32,9 +32,9 @@ const CommentForm: VFC<IProps> = ({ data }) => {
 
   const handleSubmit = useMemo(() => {
     return checkSubmit(async (formData) => {
+      reset();
       if (!myData?.id) return;
       try {
-        reset();
         await dispatch(
           createComment.asyncTunk({
             url: { postId: data.id },
@@ -60,7 +60,7 @@ const CommentForm: VFC<IProps> = ({ data }) => {
           as={<Input.TextArea maxLength={50} autoSize={{ minRows: 2, maxRows: 4 }} />}
           name="content"
           id="content"
-          placeholder="어떤 신기한 일이 있었나요?"
+          placeholder="댓글을 입력해 주세요."
           defaultValue=""
         />
       </Form.Item>

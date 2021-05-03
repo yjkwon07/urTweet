@@ -1,4 +1,4 @@
-import React, { VFC } from 'react';
+import React from 'react';
 
 import { Avatar, Comment, List, Tooltip } from 'antd';
 import moment from 'dayjs';
@@ -11,7 +11,7 @@ export interface IProps {
   data: IPost;
 }
 
-const CommentList: VFC<IProps> = ({ data }) => (
+const CommentList = ({ data }: IProps) => (
   <List
     itemLayout="horizontal"
     dataSource={data.Comments}
@@ -20,7 +20,7 @@ const CommentList: VFC<IProps> = ({ data }) => (
         <Comment
           author={item.User.nickname}
           avatar={
-            <Link href={GET_USER_URL(item.User.id.toString())} prefetch={false} passHref>
+            <Link href={GET_USER_URL(item.User.id.toString())} passHref>
               <a href={PASS_HREF}>
                 <Avatar>{item.User.nickname}</Avatar>
               </a>

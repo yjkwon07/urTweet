@@ -3,13 +3,13 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Spin } from 'antd';
 import { useDispatch } from 'react-redux';
 
+import PostCard from '@components/PostCard';
 import AppLayout from '@layouts/App';
 import { infinteListReadPost, postSelector } from '@modules/post';
 import { DEAFULT_PAGE_SIZE } from '@modules/post/utils/constants';
 import { useAppSelector } from '@modules/store/slices';
 import { userSelector } from '@modules/user';
 
-import PostCard from './PostCard';
 import PostForm from './PostForm';
 import { StyledCenter } from './styles';
 
