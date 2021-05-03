@@ -9,7 +9,7 @@ import {
   MessageOutlined,
   RetweetOutlined,
 } from '@ant-design/icons';
-import { Card, Popover, Button, Avatar, Divider, message, Popconfirm } from 'antd';
+import { Card, Popover, Button, Avatar, Divider, message, Popconfirm, Tooltip } from 'antd';
 import moment from 'dayjs';
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
@@ -99,17 +99,17 @@ const PostCard = ({ data }: IProps) => {
               data.User.id === myId && (
                 <Button.Group>
                   {!data.RetweetId && (
-                    <Button onClick={handleEditMode}>
+                    <Button type="primary" onClick={handleEditMode}>
                       <EditOutlined /> 수정
                     </Button>
                   )}
                   <Popconfirm
-                    title="Are you sure delete this Post?"
-                    okText="Yes"
+                    title="정말로 삭제하시겠습니까?"
+                    okText="삭제"
                     onConfirm={handleRemovePost}
-                    cancelText="No"
+                    cancelText="취소"
                   >
-                    <Button type="danger" loading={removePostStatus === 'LOADING'}>
+                    <Button loading={removePostStatus === 'LOADING'}>
                       <DeleteOutlined /> 삭제
                     </Button>
                   </Popconfirm>
@@ -123,38 +123,59 @@ const PostCard = ({ data }: IProps) => {
         title={data.RetweetId && `${data.User.nickname}님이 리트윗하셨습니다.`}
         extra={myId && data.User.id !== myId && <FollowButton data={data} />}
       >
-        {data.Retweet ? (
+        {data.RetweetId && data.Retweet ? (
           <Card cover={data.Retweet.Images[0] && <PostImages images={data.Retweet.Images} />}>
-            <div style={{ float: 'right' }}>{moment(data.createdAt).format('YYYY.MM.DD')}</div>
             <Card.Meta
               avatar={
-                <Link href={GET_USER_URL(data.Retweet.User.id.toString())} prefetch={false} passHref>
+                <Link href={GET_USER_URL(data.Retweet.User.id.toString())} passHref>
                   <a href={PASS_HREF}>
                     <Avatar>{data.Retweet.User.nickname}</Avatar>
                   </a>
                 </Link>
               }
-              title={data.Retweet.User.nickname}
+              title={
+                <div>
+                  {data.Retweet.User.nickname}
+                  <Tooltip title={moment(data.Retweet.createdAt).format('YYYY-MM-DD HH:mm:ss')}>
+                    <span style={{ color: '#ccc', marginLeft: '10px', fontSize: '14px' }}>
+                      {moment(data.Retweet.createdAt).fromNow()}
+                    </span>
+                  </Tooltip>
+                </div>
+              }
               description={
-                <PostCardContent onCancleEditMode={handleCancleEditMode} postId={data.id} postContent={data.content} />
+                <PostCardContent postId={data.id} postContent={data.content} onCancleEditMode={handleCancleEditMode} />
               }
             />
           </Card>
         ) : (
-          <>
-            <div style={{ float: 'right' }}>{moment(data?.createdAt).format('YYYY.MM.DD')}</div>
-            <Card.Meta
-              avatar={
-                <Link href={GET_USER_URL(data.User.id.toString())} prefetch={false} passHref>
-                  <a href={PASS_HREF}>
-                    <Avatar>{data.User.nickname}</Avatar>
-                  </a>
-                </Link>
-              }
-              title={data.User.nickname}
-              description={<PostCardContent editMode={editMode} onCancleEditMode={handleCancleEditMode} data={data} />}
-            />
-          </>
+          <Card.Meta
+            avatar={
+              <Link href={GET_USER_URL(data.User.id.toString())} passHref>
+                <a href={PASS_HREF}>
+                  <Avatar>{data.User.nickname}</Avatar>
+                </a>
+              </Link>
+            }
+            title={
+              <div>
+                {data.User.nickname}
+                <Tooltip title={moment(data.createdAt).format('YYYY-MM-DD HH:mm:ss')}>
+                  <span style={{ color: '#ccc', marginLeft: '10px', fontSize: '14px' }}>
+                    {moment(data.createdAt).fromNow()}
+                  </span>
+                </Tooltip>
+              </div>
+            }
+            description={
+              <PostCardContent
+                editMode={editMode}
+                postId={data.id}
+                postContent={data.content}
+                onCancleEditMode={handleCancleEditMode}
+              />
+            }
+          />
         )}
         {commentFormOpened && (
           <div>

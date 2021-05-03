@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 
+import { EditOutlined, UndoOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button, Input, Form, message } from 'antd';
 import Link from 'next/link';
@@ -58,7 +59,6 @@ const PostCardContent = ({
       {editMode ? (
         <Form style={{ marginBottom: '20px' }} onFinish={handleChangePost}>
           <Form.Item
-            name="content"
             validateStatus={errors.content ? 'error' : 'success'}
             help={errors.content ? errors.content?.message : ''}
             rules={[{ message: errors?.content?.message }]}
@@ -67,16 +67,16 @@ const PostCardContent = ({
               control={control}
               as={<Input.TextArea maxLength={140} autoSize={{ minRows: 3, maxRows: 5 }} />}
               name="content"
-              id="content"
+              id="edit_content"
               placeholder="게시글을 작성해 주세요."
             />
           </Form.Item>
           <Button.Group>
-            <Button htmlType="submit" loading={isUpdateLoading}>
-              수정
+            <Button type="primary" htmlType="submit" loading={isUpdateLoading}>
+              <EditOutlined /> 수정
             </Button>
-            <Button type="dashed" onClick={onCancleEditMode}>
-              취소
+            <Button onClick={onCancleEditMode}>
+              <UndoOutlined /> 취소
             </Button>
           </Button.Group>
         </Form>
