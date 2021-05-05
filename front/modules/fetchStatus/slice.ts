@@ -8,7 +8,7 @@ interface ItypePayload {
 
 export interface IFetchReducer {
   [key: string]: {
-    status: 'INIT' | 'LOADING' | 'SUCCESS' | 'FAIL';
+    status?: 'LOADING' | 'SUCCESS' | 'FAIL';
     data?: any;
   };
 }
@@ -32,7 +32,7 @@ const slice = createSlice({
     builder
       .addCase(initFetch, (state, { payload: { type } }) => {
         state[type] = {
-          status: 'INIT',
+          status: undefined,
           data: null,
         };
       })
