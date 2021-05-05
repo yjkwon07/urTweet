@@ -12,7 +12,7 @@ export const axiosSetting = {
   api: '',
   port: '3065',
   server() {
-    return `${this.scheme ? `${this.scheme}:` : ''}//${this.host}${this.api}${this.port ? `:${this.port}` : ''}`;
+    return `${this.scheme}://${this.host}${this.api}${this.port ? `:${this.port}` : ''}`;
   },
 };
 
