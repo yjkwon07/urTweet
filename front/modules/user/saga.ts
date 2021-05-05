@@ -13,6 +13,7 @@ import {
   requestListReadFollow,
   requestListReadFollowing,
   requestRemoveFollowerMe,
+  requestReadUser,
 } from './api/requestAPI';
 import {
   login,
@@ -25,12 +26,14 @@ import {
   listReadFollow,
   listReadFollowing,
   removeFollowerMe,
+  readUser,
 } from './slice';
 
 const loginSaga = createRequestSaga(login, requestLogin);
 const logoutSaga = createRequestSaga(logout, requestLogout);
 const signupSaga = createRequestSaga(signup, requestSignup);
 const readMyUserSaga = createRequestSaga(readMyUser, requestReadMyUser);
+const readUserSaga = createRequestSaga(readUser, requestReadUser);
 const modifyNicknameSaga = createRequestSaga(modifyNickname, requestModifyNickname);
 const listReadfollowSaga = createRequestSaga(listReadFollow, requestListReadFollow);
 const listReadfollowingSaga = createRequestSaga(listReadFollowing, requestListReadFollowing);
@@ -52,6 +55,10 @@ function* watchSinup() {
 
 function* watchReadMyUser() {
   yield takeLatest(readMyUser.requset, readMyUserSaga);
+}
+
+function* watchReadUser() {
+  yield takeLatest(readUser.requset, readUserSaga);
 }
 
 function* watchModifyNickname() {
@@ -84,6 +91,7 @@ export default function* userSaga() {
     fork(watchLogout),
     fork(watchSinup),
     fork(watchReadMyUser),
+    fork(watchReadUser),
     fork(watchModifyNickname),
     fork(watchListReadFollow),
     fork(watchListReadFollowing),

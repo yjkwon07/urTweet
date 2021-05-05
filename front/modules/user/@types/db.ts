@@ -8,6 +8,6 @@ export interface IUser {
   createdAt?: number;
   email?: string;
   id: number;
-  nickname?: string;
+  nickname: string;
   updatedAt?: number;
 }

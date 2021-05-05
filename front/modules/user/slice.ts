@@ -20,9 +20,10 @@ export const USER = 'USER';
 
 // Action
 export const login = createRequestAction<ILoginBodyQuery, IMyUser>(`${USER}/login`);
-export const logout = createRequestAction(`${USER}/logout`);
+export const logout = createRequestAction<void, void>(`${USER}/logout`);
 export const signup = createRequestAction<ISignupBodyQuery, ISignupRes>(`${USER}/signup`);
 export const readMyUser = createRequestAction<void, IMyUser>(`${USER}/readMyUser`);
+export const readUser = createRequestAction<IUserURL, IUser>(`${USER}/readUser`);
 export const modifyNickname = createRequestAction<IModifyNickNameBodyQuery, IModifyNickNameRes>(
   `${USER}/modifyNickname`,
 );
@@ -35,11 +36,13 @@ export const removeFollowerMe = createRequestAction<IUserURL, IRemoveFollowerMeR
 // Type
 export interface IState {
   MyInfo: IMyUser | null;
+  user: IUser | null;
 }
 
 // Reducer
 const initialState: IState = {
   MyInfo: null,
+  user: null,
 };
 
 const slice = createSlice({
@@ -50,6 +53,9 @@ const slice = createSlice({
     builder
       .addCase(readMyUser.success, (state, { payload: data }) => {
         state.MyInfo = data;
+      })
+      .addCase(readUser.success, (state, { payload: data }) => {
+        state.user = data;
       })
       .addCase(modifyNickname.success, (state, { payload: data }) => {
         if (state.MyInfo) state.MyInfo.nickname = data.nickname;

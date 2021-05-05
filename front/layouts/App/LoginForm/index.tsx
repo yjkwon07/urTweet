@@ -1,4 +1,4 @@
-import React, { useMemo, VFC } from 'react';
+import React, { useMemo } from 'react';
 
 import { LockOutlined, LoginOutlined, MailOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -21,9 +21,9 @@ const LOGIN_SCHEMA = yup.object({
 
 type FormData = yup.InferType<typeof LOGIN_SCHEMA>;
 
-const LoginForm: VFC = () => {
-  const { status } = useFetchStatus(login.TYPE);
+const LoginForm = () => {
   const dispatch = useDispatch();
+  const { status } = useFetchStatus(login.TYPE);
   const { control, handleSubmit: checkSubmit, errors } = useForm<FormData>({
     mode: 'onBlur',
     resolver: yupResolver(LOGIN_SCHEMA),
