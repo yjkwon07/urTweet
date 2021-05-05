@@ -79,7 +79,7 @@ function* watchInfiniteListRead() {
 }
 
 function* watchCreatePost() {
-  yield takeLatest(createPost.requset, createPostSaga);
+  yield debounce(300, createPost.requset, createPostSaga);
 }
 
 function* watchModifyPost() {

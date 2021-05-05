@@ -1,14 +1,15 @@
-import React, { useCallback, useMemo, useRef, useState, VFC } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 
 import { UploadOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button, Space, Form, Input, message } from 'antd';
+import { debounce } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import * as yup from 'yup';
 
 import { createPost, uploadImages } from '@modules/post';
-import { IImagePath } from '@modules/post/@types/query';
+import { IUploadImagePathRes } from '@modules/post/@types/query';
 import { GET_IMAGE_URL } from '@utils/urls';
 
 const POST_SCHEMA = yup.object({
@@ -17,7 +18,7 @@ const POST_SCHEMA = yup.object({
 
 type FormData = yup.InferType<typeof POST_SCHEMA>;
 
-const PostForm: VFC = () => {
+const PostForm = () => {
   const dispatch = useDispatch();
   const { control, handleSubmit: checkSubmit, errors, reset } = useForm<FormData>({
     mode: 'onBlur',
@@ -25,21 +26,24 @@ const PostForm: VFC = () => {
     defaultValues: { content: '' },
   });
 
-  const [imageListPath, setImageListPath] = useState<IImagePath>([]);
+  const [imageListPath, setImageListPath] = useState<IUploadImagePathRes>([]);
   const imageInput = useRef<HTMLInputElement>(null);
 
   const handleSubmit = useMemo(() => {
-    return checkSubmit(async (formData) => {
-      try {
-        await dispatch(createPost.asyncTunk({ content: formData.content, image: imageListPath }));
-        message.success('게시글이 등록되었습니다.').then();
-      } catch (error) {
-        message.error(JSON.stringify(error.response.data)).then();
-      } finally {
-        reset();
-        setImageListPath([]);
-      }
-    });
+    return debounce(
+      checkSubmit(async (formData) => {
+        try {
+          await dispatch(createPost.asyncTunk({ content: formData.content, image: imageListPath }));
+          message.success('게시글이 등록되었습니다.');
+        } catch (error) {
+          message.error(JSON.stringify(error.response.data));
+        } finally {
+          reset();
+          setImageListPath([]);
+        }
+      }),
+      3000,
+    );
   }, [checkSubmit, dispatch, imageListPath, reset]);
 
   const handleClickImageUpload = useCallback(() => {
@@ -82,7 +86,7 @@ const PostForm: VFC = () => {
           as={<Input.TextArea maxLength={140} autoSize={{ minRows: 3, maxRows: 5 }} defaultValue="" />}
           name="content"
           id="content"
-          placeholder="어떤 신기한 일이 있었나요?"
+          placeholder="게시글을 작성해 주세요."
         />
       </Form.Item>
       <div style={{ position: 'relative', margin: 0 }}>
