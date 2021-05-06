@@ -37,7 +37,7 @@ const PostCard = ({ data }: IProps) => {
 
   const [commentFormOpened, setCommentFormOpened] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const islike = useMemo(() => !!data.Likers.find((v) => v.id === myId)?.id, [data.Likers, myId]);
+  const isLike = useMemo(() => !!data.Likers.find((v) => v.id === myId)?.id, [data.Likers, myId]);
 
   const handleRetweet = useCallback(() => {
     if (!myId) {
@@ -47,17 +47,14 @@ const PostCard = ({ data }: IProps) => {
     dispatch(retweetPost.requset({ postId: data.id }));
   }, [data.id, dispatch, myId]);
 
-  const handleToggleLike = useMemo(
-    () => (isLike: boolean) => () => {
-      if (!myId) {
-        message.warn('로그인이 필요합니다.');
-        return;
-      }
-      if (!isLike) dispatch(likePost.requset({ postId: data.id }));
-      else dispatch(unlikePost.requset({ postId: data.id }));
-    },
-    [data.id, dispatch, myId],
-  );
+  const handleToggleLike = useCallback(() => {
+    if (!myId) {
+      message.warn('로그인이 필요합니다.');
+      return;
+    }
+    if (!isLike) dispatch(likePost.requset({ postId: data.id }));
+    else dispatch(unlikePost.requset({ postId: data.id }));
+  }, [data.id, dispatch, isLike, myId]);
 
   const handleToggleComment = useCallback(() => {
     setCommentFormOpened((prev) => !prev);
@@ -86,10 +83,10 @@ const PostCard = ({ data }: IProps) => {
         hoverable
         actions={[
           <RetweetOutlined key="retweet" title="리트윗" onClick={handleRetweet} />,
-          islike ? (
-            <HeartTwoTone twoToneColor="#eb2f96" title="좋아요" key="heart" onClick={handleToggleLike(islike)} />
+          isLike ? (
+            <HeartTwoTone twoToneColor="#eb2f96" title="좋아요" key="heart" onClick={handleToggleLike} />
           ) : (
-            <HeartOutlined key="heart" title="좋아요" onClick={handleToggleLike(islike)} />
+            <HeartOutlined key="heart" title="좋아요" onClick={handleToggleLike} />
           ),
           <MessageOutlined key="comment" title="댓글" onClick={handleToggleComment} />,
           <Popover
@@ -124,12 +121,12 @@ const PostCard = ({ data }: IProps) => {
         extra={myId && data.User.id !== myId && <FollowButton data={data} />}
       >
         {data.RetweetId && data.Retweet ? (
-          <Card cover={data.Retweet.Images[0] && <PostImages images={data.Retweet.Images} />}>
+          <Card cover={data.Retweet.Images.length && <PostImages images={data.Retweet.Images} />}>
             <Card.Meta
               avatar={
                 <Link href={GET_USER_URL(data.Retweet.User.id.toString())} passHref>
                   <a href={PASS_HREF}>
-                    <Avatar>{data.Retweet.User.nickname}</Avatar>
+                    <Avatar>{data.Retweet.User.nickname[0]}</Avatar>
                   </a>
                 </Link>
               }
@@ -153,7 +150,7 @@ const PostCard = ({ data }: IProps) => {
             avatar={
               <Link href={GET_USER_URL(data.User.id.toString())} passHref>
                 <a href={PASS_HREF}>
-                  <Avatar>{data.User.nickname}</Avatar>
+                  <Avatar>{data.User.nickname[0]}</Avatar>
                 </a>
               </Link>
             }

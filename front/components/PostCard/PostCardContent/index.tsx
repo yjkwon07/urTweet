@@ -6,6 +6,7 @@ import { Button, Input, Form, message } from 'antd';
 import Link from 'next/link';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
+import regexifyString from 'regexify-string';
 import * as yup from 'yup';
 
 import { modifyPost } from '@modules/post';
@@ -39,6 +40,26 @@ const PostCardContent = ({
     resolver: yupResolver(POST_SCHEMA),
     defaultValues: { content: postContent },
   });
+
+  const HashTagPostContent = useMemo(
+    () =>
+      regexifyString({
+        input: postContent,
+        pattern: /(#[^\s#]+)/g,
+        decorator(word, index) {
+          if (word.match(/(#[^\s#]+)/)) {
+            // word => #hasgh
+            return (
+              <Link href={GET_HASHTAG_URL(word.slice(1))} key={index} passHref>
+                <a href={PASS_HREF}>{word}</a>
+              </Link>
+            );
+          }
+          return word;
+        },
+      }),
+    [postContent],
+  );
 
   const handleChangePost = useMemo(() => {
     return checkSubmit(async (formData) => {
@@ -81,16 +102,7 @@ const PostCardContent = ({
           </Button.Group>
         </Form>
       ) : (
-        postContent.split(/(#[^\s#]+)/g).map((word, i) => {
-          if (word.match(/(#[^\s#]+)/)) {
-            return (
-              <Link href={GET_HASHTAG_URL(word.slice(1))} key={i} passHref>
-                <a href={PASS_HREF}>{word}</a>
-              </Link>
-            );
-          }
-          return word;
-        })
+        [HashTagPostContent]
       )}
     </div>
   );

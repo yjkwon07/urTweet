@@ -22,7 +22,7 @@ const CommentList = ({ data }: IProps) => (
           avatar={
             <Link href={GET_USER_URL(item.User.id.toString())} passHref>
               <a href={PASS_HREF}>
-                <Avatar>{item.User.nickname}</Avatar>
+                <Avatar>{item.User.nickname[0]}</Avatar>
               </a>
             </Link>
           }
