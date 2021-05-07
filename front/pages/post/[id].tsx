@@ -11,9 +11,11 @@ const PostPage = () => {
 };
 
 export const getServerSideProps = wrapper.getServerSideProps(async (context) => {
-  if (context.params?.id) context.store.dispatch(readPost.requset({ postId: Number(context.params.id) }));
-  context.store.dispatch(END);
-  await context.store.sagaTask.toPromise();
+  if (context.params?.id) {
+    context.store.dispatch(readPost.requset({ postId: Number(context.params.id) }));
+    context.store.dispatch(END);
+    await context.store.sagaTask.toPromise();
+  }
 });
 
 export default PostPage;

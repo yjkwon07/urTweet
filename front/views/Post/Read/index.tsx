@@ -9,22 +9,22 @@ import { postSelector } from '@modules/post';
 import { useAppSelector } from '@modules/store/slices';
 
 const Read = () => {
-  const singlePost = useAppSelector(postSelector.data);
+  const postData = useAppSelector(postSelector.data);
   const router = useRouter();
   const { id } = router.query;
 
-  if (!singlePost) return null;
+  if (!postData) return null;
   return (
     <AppLayout>
       <Head>
-        <title>{singlePost.User.nickname}님의 글</title>
-        <meta name="description" content={singlePost.content} />
-        <meta property="og:title" content={`${singlePost.User.nickname}님의 게시글`} />
-        <meta property="og:description" content={singlePost.content} />
-        <meta property="og:image" content={singlePost.Images[0] ? singlePost.Images[0].src : '/favicon.ico'} />
+        <title>{postData.User.nickname}님의 글</title>
+        <meta name="description" content={postData.content} />
+        <meta property="og:title" content={`${postData.User.nickname}님의 게시글`} />
+        <meta property="og:description" content={postData.content} />
+        <meta property="og:image" content={postData.Images[0] ? postData.Images[0].src : '/favicon.ico'} />
         <meta property="og:url" content={`/post/${id}`} />
       </Head>
-      <PostCard data={singlePost} />
+      <PostCard data={postData} />
     </AppLayout>
   );
 };
