@@ -12,6 +12,7 @@ import * as yup from 'yup';
 import AppLayout from '@layouts/App';
 import { useFetchStatus } from '@modules/fetchStatus';
 import { signup, userSelector } from '@modules/user';
+import { HOME_URL } from '@utils/urls';
 
 import { FormWrapper } from './styles';
 
@@ -45,7 +46,7 @@ const Signup: VFC = () => {
     return checkSubmit(async (formData) => {
       try {
         await dispatch(signup.asyncTunk(formData));
-        message.success('회원가입에 성공하셨습니다.').then(() => Router.push('/').then());
+        message.success('회원가입에 성공하셨습니다.').then(() => Router.push(HOME_URL));
       } catch (error) {
         message.error(JSON.stringify(error.response.data)).then();
       }
@@ -54,7 +55,7 @@ const Signup: VFC = () => {
 
   useEffect(() => {
     if (myData && myData.id) {
-      message.error('로그인한 상태에서는 회원가입이 불가능합니다.').then(() => Router.push('/').then());
+      message.error('로그인한 상태에서는 회원가입이 불가능합니다.').then(() => Router.push(HOME_URL));
     }
   }, [myData]);
 
@@ -63,6 +64,7 @@ const Signup: VFC = () => {
       <Head>
         <title>회원가입 | urTweet</title>
       </Head>
+
       <FormWrapper onFinish={() => handleSubmit()}>
         <Typography.Title>Signup</Typography.Title>
         <Form.Item
