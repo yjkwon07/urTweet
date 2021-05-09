@@ -63,7 +63,7 @@ function* watchReadPost() {
 }
 
 function* watchListReadUserPost() {
-  yield takeLatest(listReadUserPost.requset, listReadUserPostSaga);
+  yield throttle(300, listReadUserPost.requset, listReadUserPostSaga);
 }
 
 function* watchListReadHashTag() {
