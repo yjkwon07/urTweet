@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react';
 
 import { useDispatch } from 'react-redux';
 
-import { FETCH_STATUS } from '@modules/fetchStatus';
+import { useFetchStatus } from '@modules/fetchStatus';
 import { useAppSelector } from '@modules/store/slices';
 
 import { IListReadPostURL } from '../@types/query';
@@ -11,7 +11,7 @@ import { infinteListReadPost } from '../slice';
 
 export default function useInfiniteListPost({ pageSize }: IListReadPostURL) {
   const dispatch = useDispatch();
-  const { status, data: fetchData } = useAppSelector((state) => state[FETCH_STATUS][infinteListReadPost.TYPE]) || {};
+  const { status, data: fetchData } = useFetchStatus(infinteListReadPost.TYPE);
   const data = useAppSelector(postSelector.infiniteList) || [];
 
   const hasMoreRead = useMemo(() => status === 'SUCCESS' && fetchData?.length === pageSize, [

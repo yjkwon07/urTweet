@@ -15,7 +15,7 @@ export interface IListReadUserPostURL {
 }
 
 export interface IListReadHashtagPostURL {
-  hashtag: number;
+  hashtag: string;
   lastId?: number;
   pageSize: number;
 }

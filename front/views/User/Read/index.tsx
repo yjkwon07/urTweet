@@ -12,6 +12,7 @@ import { listReadUserPost } from '@modules/post';
 import useInfiniteListUserPost from '@modules/post/hooks/useInfiniteListUserPost';
 import { DEAFULT_PAGE_SIZE } from '@modules/post/utils/constants';
 import useUser from '@modules/user/hooks/useUser';
+import { GET_USER_URL } from '@utils/urls';
 
 const Read = () => {
   const dispatch = useDispatch();
@@ -42,12 +43,12 @@ const Read = () => {
   return (
     <AppLayout>
       <Head>
-        <title>{userData.nickname}님의 글</title>
+        <title>{userData.nickname}님의 글 | urTweet</title>
         <meta name="description" content={`${userData.nickname}님의 게시글`} />
         <meta property="og:title" content={`${userData.nickname}님의 게시글`} />
         <meta property="og:description" content={`${userData.nickname}님의 게시글`} />
         <meta property="og:image" content="/favicon.ico" />
-        <meta property="og:url" content={`/user/${id}`} />
+        <meta property="og:url" content={GET_USER_URL(id as string)} />
       </Head>
       {userData && (
         <div style={{ padding: 5, background: '#ececec', marginBottom: 20 }}>

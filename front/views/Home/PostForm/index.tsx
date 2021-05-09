@@ -42,7 +42,7 @@ const PostForm = () => {
           setImageListPath([]);
         }
       }),
-      3000,
+      300,
     );
   }, [checkSubmit, dispatch, imageListPath, reset]);
 

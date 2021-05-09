@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { Spin } from 'antd';
+import Head from 'next/head';
 import { useDispatch } from 'react-redux';
 
 import PostCard from '@components/PostCard';
@@ -10,6 +11,7 @@ import useInfiniteListPost from '@modules/post/hooks/useInfiniteListPost';
 import { DEAFULT_PAGE_SIZE } from '@modules/post/utils/constants';
 import { useAppSelector } from '@modules/store/slices';
 import { userSelector } from '@modules/user';
+import { HOME_URL } from '@utils/urls';
 
 import PostForm from './PostForm';
 import { StyledCenter } from './styles';
@@ -39,6 +41,11 @@ const Home = () => {
 
   return (
     <AppLayout>
+      <Head>
+        <title>HOME | urTweet</title>
+        <meta property="og:image" content="/favicon.ico" />
+        <meta property="og:url" content={HOME_URL} />
+      </Head>
       {myData && <PostForm />}
       {postListData.map((data) => (
         <PostCard key={data.id} data={data} />

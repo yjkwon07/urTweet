@@ -18,7 +18,7 @@ export function GET_LIST_READ_POST_API(url: IListReadPostURL) {
  * * 해쉬태그로 게시글 검색 GET
  */
 export function GET_LIST_READ_HASHTAG_POST_API(url: IListReadHashtagPostURL) {
-  return `/hashtag/${url.hashtag}/?lastId=${url.lastId || 0}`;
+  return `/hashtag/${encodeURIComponent(url.hashtag)}/?lastId=${url.lastId || 0}}&pageSize=${url.pageSize}`;
 }
 
 /**
