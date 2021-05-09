@@ -1,4 +1,4 @@
-import { IUser } from '@modules/user/@types/db';
+import { IUserInfo } from '@modules/user/@types/db';
 
 export interface IPost {
   Comments: IComment[];
@@ -6,7 +6,7 @@ export interface IPost {
   Likers: ILiker[];
   Retweet: IPost | null;
   RetweetId: number | null;
-  User: IUser;
+  User: Pick<IUserInfo, 'id' | 'nickname'>;
   UserId: number;
   content: string;
   createdAt: string;
@@ -32,7 +32,7 @@ export interface IComment {
   updatedAt: string;
   UserId: number;
   PostId: number;
-  User: IUser;
+  User: Pick<IUserInfo, 'id' | 'nickname'>;
 }
 
 export interface IIMage {

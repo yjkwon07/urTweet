@@ -9,13 +9,15 @@ export interface IListReadPostURL {
 }
 
 export interface IListReadUserPostURL {
-  userId: string;
-  lastId?: string;
+  userId: number;
+  lastId?: number;
+  pageSize: number;
 }
 
 export interface IListReadHashtagPostURL {
-  hashtag: string;
-  lastId?: string;
+  hashtag: number;
+  lastId?: number;
+  pageSize: number;
 }
 
 // -- BODY
@@ -31,7 +33,20 @@ export interface ICommentBodyQuery {
   userId: number;
 }
 
+// -- Requset
+export interface IModifyPostReq {
+  url: IPostURL;
+  body: IPostBodyQuery;
+}
+
+export interface ICreateCommentReq {
+  url: IPostURL;
+  body: ICommentBodyQuery;
+}
+
 // -- response
+export type IUploadImagePathRes = string[];
+
 export interface IModifyPostRes {
   PostId: number;
   content: string;
@@ -50,5 +65,3 @@ export interface IUnlikePostRes {
   PostId: number;
   UserId: number;
 }
-
-export type IImagePath = string[];
