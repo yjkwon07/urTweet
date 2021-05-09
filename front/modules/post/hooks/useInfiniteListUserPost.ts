@@ -5,13 +5,13 @@ import { useDispatch } from 'react-redux';
 import { FETCH_STATUS } from '@modules/fetchStatus';
 import { useAppSelector } from '@modules/store/slices';
 
-import { IListReadPostURL } from '../@types/query';
+import { IListReadUserPostURL } from '../@types/query';
 import postSelector from '../selector';
-import { infinteListReadPost } from '../slice';
+import { listReadUserPost } from '../slice';
 
-export default function useInfiniteListPost({ pageSize }: IListReadPostURL) {
+export default function useInfiniteListUserPost({ userId, pageSize }: IListReadUserPostURL) {
   const dispatch = useDispatch();
-  const { status, data: fetchData } = useAppSelector((state) => state[FETCH_STATUS][infinteListReadPost.TYPE]) || {};
+  const { status, data: fetchData } = useAppSelector((state) => state[FETCH_STATUS][listReadUserPost.TYPE]) || {};
   const data = useAppSelector(postSelector.infiniteList) || [];
 
   const hasMoreRead = useMemo(() => status === 'SUCCESS' && fetchData?.length === pageSize, [
@@ -21,8 +21,8 @@ export default function useInfiniteListPost({ pageSize }: IListReadPostURL) {
   ]);
 
   useEffect(() => {
-    if (status === undefined) dispatch(infinteListReadPost.requset({ pageSize }));
-  }, [dispatch, pageSize, status]);
+    if (status === undefined && userId) dispatch(listReadUserPost.requset({ userId, pageSize }));
+  }, [dispatch, pageSize, status, userId]);
 
   return { status, data, hasMoreRead };
 }

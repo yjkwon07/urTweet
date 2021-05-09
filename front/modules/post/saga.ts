@@ -1,4 +1,4 @@
-import { all, fork, takeLatest, debounce } from 'redux-saga/effects';
+import { all, fork, takeLatest, debounce, throttle } from 'redux-saga/effects';
 
 import { createRequestSaga } from '@modules/helper';
 
@@ -75,7 +75,7 @@ function* watchListRead() {
 }
 
 function* watchInfiniteListRead() {
-  yield takeLatest(infinteListReadPost.requset, infiniteListReadPostSaga);
+  yield throttle(300, infinteListReadPost.requset, infiniteListReadPostSaga);
 }
 
 function* watchCreatePost() {

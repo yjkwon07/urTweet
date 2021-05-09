@@ -1,11 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Spin } from 'antd';
 import { useDispatch } from 'react-redux';
 
 import PostCard from '@components/PostCard';
 import AppLayout from '@layouts/App';
-import { infinteListReadPost, postSelector } from '@modules/post';
+import { infinteListReadPost } from '@modules/post';
+import useInfiniteListPost from '@modules/post/hooks/useInfiniteListPost';
 import { DEAFULT_PAGE_SIZE } from '@modules/post/utils/constants';
 import { useAppSelector } from '@modules/store/slices';
 import { userSelector } from '@modules/user';
@@ -16,14 +17,8 @@ import { StyledCenter } from './styles';
 const Home = () => {
   const dispatch = useDispatch();
   const myData = useAppSelector(userSelector.myData);
-  const { data: postListData, status, fetchData } = useAppSelector(postSelector.infiniteList);
   const [pageSize] = useState(DEAFULT_PAGE_SIZE);
-
-  const hasMoreRead = useMemo(() => status === 'SUCCESS' && fetchData?.length === pageSize, [
-    fetchData?.length,
-    pageSize,
-    status,
-  ]);
+  const { status, data: postListData, hasMoreRead } = useInfiniteListPost({ pageSize });
 
   useEffect(() => {
     function onScroll() {
