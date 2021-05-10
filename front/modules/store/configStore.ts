@@ -7,18 +7,20 @@ import rootSaga from './sagas';
 import rootReducer, { RootState } from './slices';
 
 const devMode = process.env.NODE_ENV === 'development';
-const sagaMiddleware = createSagaMiddleware();
-const store = configureStore({
-  reducer: rootReducer,
-  middleware: [thunkMiddleware, sagaMiddleware] as const,
-  devTools: devMode,
-});
-// Next Redux Toolkit 에서 saga를 사용해야할 때
-store.sagaTask = sagaMiddleware.run(rootSaga);
 
 // Next.js를 사용하게 되면 유저가 요청할 때 마다 redux store를 새로 생성하게 되므로 redux store가 여러 개가 될 수 있다.
 // etInitialProps, getServerSideProps 등에서 redux store에 접근할 수 있어야 하는데 그것을 next-redux-wrapper가 도와준다.
-const makeStore: MakeStore<RootState> = () => store;
+const makeStore: MakeStore<RootState> = () => {
+  const sagaMiddleware = createSagaMiddleware();
+  const store = configureStore({
+    reducer: rootReducer,
+    middleware: [thunkMiddleware, sagaMiddleware],
+    devTools: devMode,
+  });
+  // Next Redux Toolkit 에서 saga를 사용해야할 때
+  store.sagaTask = sagaMiddleware.run(rootSaga);
+  return store;
+};
 
 export const wrapper = createWrapper(makeStore, {
   debug: devMode,

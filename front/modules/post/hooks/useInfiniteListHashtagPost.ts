@@ -9,7 +9,11 @@ import { IListReadHashtagPostURL } from '../@types/query';
 import postSelector from '../selector';
 import { listReadHashTagPost } from '../slice';
 
-export default function useInfiniteListUserPost({ hashtag, lastId, pageSize }: IListReadHashtagPostURL) {
+export interface IProps extends IListReadHashtagPostURL {
+  isInitFetch?: boolean;
+}
+
+export default function useInfiniteListUserPost({ hashtag, lastId, pageSize, isInitFetch = true }: IProps) {
   const dispatch = useDispatch();
   const { status, data: fetchData } = useFetchStatus(listReadHashTagPost.TYPE);
   const data = useAppSelector(postSelector.infiniteList) || [];
@@ -21,8 +25,9 @@ export default function useInfiniteListUserPost({ hashtag, lastId, pageSize }: I
   ]);
 
   useEffect(() => {
-    if (status === undefined && hashtag) dispatch(listReadHashTagPost.requset({ hashtag, lastId, pageSize }));
-  }, [dispatch, pageSize, status, hashtag, lastId]);
+    if (isInitFetch && status === undefined && hashtag)
+      dispatch(listReadHashTagPost.requset({ hashtag, lastId, pageSize }));
+  }, [dispatch, pageSize, status, hashtag, lastId, isInitFetch]);
 
   return { status, data, hasMoreRead };
 }

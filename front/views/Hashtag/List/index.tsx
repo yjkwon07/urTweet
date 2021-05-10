@@ -16,7 +16,11 @@ const List = () => {
   const router = useRouter();
   const { tag } = router.query;
   const [pageSize] = useState(DEAFULT_PAGE_SIZE);
-  const { data: postListData, status, hasMoreRead } = useInfiniteListHashtagPost({ hashtag: tag as string, pageSize });
+  const { data: postListData, status, hasMoreRead } = useInfiniteListHashtagPost({
+    isInitFetch: false,
+    hashtag: tag as string,
+    pageSize,
+  });
 
   useEffect(() => {
     function onScroll() {

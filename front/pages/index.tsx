@@ -13,10 +13,9 @@ const HomePage = () => {
 
 // SSR
 // https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
-export const getServerSideProps = wrapper.getServerSideProps(async (context) => {
-  context.store.dispatch(infinteListReadPost.requset({ pageSize: DEAFULT_PAGE_SIZE }));
-  context.store.dispatch(END);
-  await context.store.sagaTask.toPromise();
+export const getServerSideProps = wrapper.getServerSideProps(async ({ store }) => {
+  await store.dispatch(infinteListReadPost.asyncTunk({ pageSize: DEAFULT_PAGE_SIZE }));
+  store.dispatch(END);
 });
 
 export default HomePage;

@@ -9,7 +9,11 @@ import { IListReadUserPostURL } from '../@types/query';
 import postSelector from '../selector';
 import { listReadUserPost } from '../slice';
 
-export default function useInfiniteListUserPost({ userId, pageSize }: IListReadUserPostURL) {
+export interface IProps extends IListReadUserPostURL {
+  isInitFetch?: boolean;
+}
+
+export default function useInfiniteListUserPost({ userId, pageSize, isInitFetch = true }: IProps) {
   const dispatch = useDispatch();
   const { status, data: fetchData } = useFetchStatus(listReadUserPost.TYPE);
   const data = useAppSelector(postSelector.infiniteList) || [];
@@ -21,8 +25,8 @@ export default function useInfiniteListUserPost({ userId, pageSize }: IListReadU
   ]);
 
   useEffect(() => {
-    if (status === undefined && userId) dispatch(listReadUserPost.requset({ userId, pageSize }));
-  }, [dispatch, pageSize, status, userId]);
+    if (isInitFetch && status === undefined && userId) dispatch(listReadUserPost.requset({ userId, pageSize }));
+  }, [dispatch, isInitFetch, pageSize, status, userId]);
 
   return { status, data, hasMoreRead };
 }

@@ -9,14 +9,18 @@ import { IPostURL } from '../@types/query';
 import postSelector from '../selector';
 import { readPost } from '../slice';
 
-export default function usePost({ postId }: IPostURL) {
+export interface IProps extends IPostURL {
+  isInitFetch?: boolean;
+}
+
+export default function usePost({ postId, isInitFetch = true }: IProps) {
   const dispatch = useDispatch();
   const { status } = useFetchStatus(readPost.TYPE);
   const data = useAppSelector(postSelector.data) || null;
 
   useEffect(() => {
-    if (status === undefined) dispatch(readPost.requset({ postId }));
-  }, [dispatch, postId, status]);
+    if (isInitFetch && status === undefined) dispatch(readPost.requset({ postId }));
+  }, [dispatch, isInitFetch, postId, status]);
 
   return { status, data };
 }

@@ -11,14 +11,14 @@ const HashtagListReadPage = () => {
   return <HashtagListRead />;
 };
 
-export const getServerSideProps = wrapper.getServerSideProps(async (context) => {
-  if (context.params?.tag) {
-    context.store.dispatch(
-      listReadHashTagPost.requset({ hashtag: context.params.tag as string, pageSize: DEAFULT_PAGE_SIZE }),
+// SSR
+export const getServerSideProps = wrapper.getServerSideProps(async ({ params, store }) => {
+  if (params?.tag) {
+    await store.dispatch(
+      listReadHashTagPost.asyncTunk({ hashtag: params.tag.toString(), pageSize: DEAFULT_PAGE_SIZE }),
     );
+    store.dispatch(END);
   }
-  context.store.dispatch(END);
-  await context.store.sagaTask.toPromise();
 });
 
 export default HashtagListReadPage;

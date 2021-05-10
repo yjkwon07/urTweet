@@ -20,7 +20,11 @@ const Read = () => {
   const { id } = router.query;
   const { data: userData } = useUser({ userId: Number(id) });
   const [pageSize] = useState(DEAFULT_PAGE_SIZE);
-  const { data: postListData, status, hasMoreRead } = useInfiniteListUserPost({ userId: Number(id), pageSize });
+  const { data: postListData, status, hasMoreRead } = useInfiniteListUserPost({
+    isInitFetch: false,
+    userId: Number(id),
+    pageSize,
+  });
 
   useEffect(() => {
     function onScroll() {

@@ -11,7 +11,7 @@ import { GET_POST_URL } from '@utils/urls';
 const Read = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { data: postData } = usePost({ postId: Number(id) });
+  const { data: postData } = usePost({ isInitFetch: false, postId: Number(id) });
 
   if (!postData) return null;
   return (

@@ -20,7 +20,7 @@ const Home = () => {
   const dispatch = useDispatch();
   const myData = useAppSelector(userSelector.myData);
   const [pageSize] = useState(DEAFULT_PAGE_SIZE);
-  const { status, data: postListData, hasMoreRead } = useInfiniteListPost({ pageSize });
+  const { status, data: postListData, hasMoreRead } = useInfiniteListPost({ isInitFetch: false, pageSize });
 
   useEffect(() => {
     function onScroll() {
