@@ -3,19 +3,6 @@ import { all, debounce, fork, takeLatest } from 'redux-saga/effects';
 import { createRequestSaga } from '@modules/helper';
 
 import {
-  requestLogin,
-  requestSignup,
-  requestLogout,
-  requestReadMyUser,
-  requestModifyNickname,
-  requestFollow,
-  requestUnfollow,
-  requestListReadFollow,
-  requestListReadFollowing,
-  requestRemoveFollowerMe,
-  requestReadUser,
-} from './api/requestAPI';
-import {
   login,
   signup,
   logout,
@@ -29,17 +16,17 @@ import {
   readUser,
 } from './slice';
 
-const loginSaga = createRequestSaga(login, requestLogin);
-const logoutSaga = createRequestSaga(logout, requestLogout);
-const signupSaga = createRequestSaga(signup, requestSignup);
-const readMyUserSaga = createRequestSaga(readMyUser, requestReadMyUser);
-const readUserSaga = createRequestSaga(readUser, requestReadUser);
-const modifyNicknameSaga = createRequestSaga(modifyNickname, requestModifyNickname);
-const listReadfollowSaga = createRequestSaga(listReadFollow, requestListReadFollow);
-const listReadfollowingSaga = createRequestSaga(listReadFollowing, requestListReadFollowing);
-const followSaga = createRequestSaga(follow, requestFollow);
-const unFollowSaga = createRequestSaga(unFollow, requestUnfollow);
-const removeFollowerMeSaga = createRequestSaga(removeFollowerMe, requestRemoveFollowerMe);
+const loginSaga = createRequestSaga(login, login.requestAPI);
+const logoutSaga = createRequestSaga(logout, logout.requestAPI);
+const signupSaga = createRequestSaga(signup, signup.requestAPI);
+const readMyUserSaga = createRequestSaga(readMyUser, readMyUser.requestAPI);
+const readUserSaga = createRequestSaga(readUser, readUser.requestAPI);
+const modifyNicknameSaga = createRequestSaga(modifyNickname, modifyNickname.requestAPI);
+const listReadfollowSaga = createRequestSaga(listReadFollow, listReadFollow.requestAPI);
+const listReadfollowingSaga = createRequestSaga(listReadFollowing, listReadFollowing.requestAPI);
+const followSaga = createRequestSaga(follow, follow.requestAPI);
+const unFollowSaga = createRequestSaga(unFollow, unFollow.requestAPI);
+const removeFollowerMeSaga = createRequestSaga(removeFollowerMe, removeFollowerMe.requestAPI);
 
 function* watchLogIn() {
   yield takeLatest(login.requset, loginSaga);
