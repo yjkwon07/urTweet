@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 
 import PostCard from '@components/PostCard';
 import { infinteListReadPost } from '@modules/post';
-import useInfiniteListPost from '@modules/post/hooks/useInfiniteListPost';
+import useInfinitePost from '@modules/post/hooks/useInfinitePost';
 import { DEAFULT_PAGE_SIZE } from '@modules/post/utils/constants';
 import { useAppSelector } from '@modules/store/slices';
 import { userSelector } from '@modules/user';
@@ -21,7 +21,7 @@ const Home = ({ isSSR }: IProps) => {
   const dispatch = useDispatch();
   const myData = useAppSelector(userSelector.myData);
   const [pageSize] = useState(DEAFULT_PAGE_SIZE);
-  const { status, data: postListData, hasMoreRead } = useInfiniteListPost({ isInitFetch: !isSSR, pageSize });
+  const { status, data: postListData, hasMoreRead } = useInfinitePost({ isInitFetch: !isSSR, pageSize });
 
   useEffect(() => {
     function onScroll() {

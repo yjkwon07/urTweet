@@ -2,7 +2,9 @@ import { RootState } from '@modules/store/slices';
 
 const postSelector = {
   list: (state: RootState) => state.POST.list,
-  infiniteList: (state: RootState) => state.POST.infiniteList,
+  infinitePost: (state: RootState) => state.POST.infinitePost,
+  infiniteUserPost: (state: RootState) => state.POST.infiniteUserPost,
+  infiniteHashTagPost: (state: RootState) => state.POST.infiniteHashTagPost,
   data: (state: RootState) => state.POST.data,
 };
 

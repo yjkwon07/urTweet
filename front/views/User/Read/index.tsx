@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 
 import PostCard from '@components/PostCard';
 import { listReadUserPost } from '@modules/post';
-import useInfiniteListUserPost from '@modules/post/hooks/useInfiniteListUserPost';
+import useInfiniteUserPost from '@modules/post/hooks/useInfiniteUserPost';
 import useUser from '@modules/user/hooks/useUser';
 
 import UserInfo from './Organism/UserInfo';
@@ -22,7 +22,7 @@ const Read = ({ isSSR }: IProps) => {
   const userId = Number(router.query.id as string);
   const { data: userData } = useUser({ isInitFetch: !isSSR, userId });
   const [pageSize] = useState(DEAFULT_PAGE_SIZE);
-  const { data: postListData, status, hasMoreRead } = useInfiniteListUserPost({
+  const { data: postListData, status, hasMoreRead } = useInfiniteUserPost({
     isInitFetch: !isSSR,
     userId,
     pageSize,

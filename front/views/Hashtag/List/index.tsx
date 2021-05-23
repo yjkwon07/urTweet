@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 
 import PostCard from '@components/PostCard';
 import { listReadHashTagPost } from '@modules/post';
-import useInfiniteListHashtagPost from '@modules/post/hooks/useInfiniteListHashtagPost';
+import useInfiniteHashTagPost from '@modules/post/hooks/useInfiniteHashTagPost';
 import { DEAFULT_PAGE_SIZE } from '@modules/post/utils/constants';
 
 export interface IProps {
@@ -17,7 +17,7 @@ const List = ({ isSSR }: IProps) => {
   const router = useRouter();
   const hashtag = router.query.tag as string;
   const [pageSize] = useState(DEAFULT_PAGE_SIZE);
-  const { data: postListData, status, hasMoreRead } = useInfiniteListHashtagPost({
+  const { data: postListData, status, hasMoreRead } = useInfiniteHashTagPost({
     isInitFetch: !isSSR,
     hashtag,
     pageSize,

@@ -13,10 +13,10 @@ export interface IProps extends IListReadPostURL {
   isInitFetch?: boolean;
 }
 
-export default function useInfiniteListPost({ pageSize, isInitFetch = true }: IProps) {
+export default function useInfinitePost({ pageSize, isInitFetch = true }: IProps) {
   const dispatch = useDispatch();
   const { status } = useFetchStatus(infinteListReadPost.TYPE);
-  const data = useAppSelector(postSelector.infiniteList) || [];
+  const data = useAppSelector(postSelector.infinitePost) || [];
 
   const hasMoreRead = useMemo(() => data?.length % pageSize === 0, [data?.length, pageSize]);
 

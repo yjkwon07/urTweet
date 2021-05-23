@@ -13,10 +13,10 @@ export interface IProps extends IListReadHashtagPostURL {
   isInitFetch?: boolean;
 }
 
-export default function useInfiniteListUserPost({ hashtag, lastId, pageSize, isInitFetch = true }: IProps) {
+export default function useInfiniteHashTagPost({ hashtag, lastId, pageSize, isInitFetch = true }: IProps) {
   const dispatch = useDispatch();
   const { status } = useFetchStatus(listReadHashTagPost.TYPE);
-  const data = useAppSelector(postSelector.infiniteList) || [];
+  const data = useAppSelector(postSelector.infiniteHashTagPost);
 
   const hasMoreRead = useMemo(() => data?.length % pageSize === 0, [data?.length, pageSize]);
 
