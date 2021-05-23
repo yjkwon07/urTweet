@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 import { useDispatch } from 'react-redux';
 
-import { FETCH_STATUS } from '@modules/fetchStatus';
+import { useFetchStatus } from '@modules/fetchStatus';
 import { useAppSelector } from '@modules/store/slices';
 
 import { IUserURL } from '../api/requestAPI';
@@ -15,7 +15,7 @@ export interface IProps extends IUserURL {
 
 export default function useUser({ userId, isInitFetch = true }: IProps) {
   const dispatch = useDispatch();
-  const status = useAppSelector((state) => state[FETCH_STATUS][readUser.TYPE]?.status);
+  const { status } = useFetchStatus(readUser.TYPE);
   const data = useAppSelector(userSelector.userData);
 
   useEffect(() => {

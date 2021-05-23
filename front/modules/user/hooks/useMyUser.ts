@@ -2,20 +2,24 @@ import { useEffect } from 'react';
 
 import { useDispatch } from 'react-redux';
 
-import { FETCH_STATUS } from '@modules/fetchStatus';
+import { useFetchStatus } from '@modules/fetchStatus';
 import { useAppSelector } from '@modules/store/slices';
 
 import userSelector from '../selector';
 import { readMyUser } from '../slice';
 
-export default function useMyUser() {
+export interface IProps {
+  isInitFetch?: boolean;
+}
+
+export default function useMyUser({ isInitFetch = true }: IProps) {
   const dispatch = useDispatch();
-  const status = useAppSelector((state) => state[FETCH_STATUS][readMyUser.TYPE]?.status);
+  const { status } = useFetchStatus(readMyUser.TYPE);
   const data = useAppSelector(userSelector.myData);
 
   useEffect(() => {
-    if (status === undefined) dispatch(readMyUser.requset());
-  }, [dispatch, status]);
+    if (isInitFetch && status === undefined) dispatch(readMyUser.requset({}));
+  }, [dispatch, isInitFetch, status]);
 
   return { status, data };
 }

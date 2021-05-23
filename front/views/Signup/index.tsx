@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, VFC } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -28,12 +28,12 @@ const SIGNUP_SCHEMA = yup.object({
     .string()
     .oneOf([yup.ref('password')], '비밀번호가 일치하지 않습니다.')
     .required('비밀번호 확인은 필수 입력입니다.'),
-  'user-term': yup.boolean().oneOf([true], '이용약관 동의가 필요 합니다.'),
+  'user-term': yup.boolean().oneOf([true], '약관에 동의가 필요 합니다.'),
 });
 
 type FormData = yup.InferType<typeof SIGNUP_SCHEMA>;
 
-const Signup: VFC = () => {
+const Signup = () => {
   const dispatch = useDispatch();
   const { status } = useFetchStatus(signup.TYPE);
   const myData = useSelector(userSelector.myData);
@@ -46,16 +46,16 @@ const Signup: VFC = () => {
     return checkSubmit(async (formData) => {
       try {
         await dispatch(signup.asyncTunk(formData));
-        message.success('회원가입에 성공하셨습니다.').then(() => Router.push(HOME_URL));
+        message.success('회원가입에 성공하셨습니다.').then(() => Router.replace(HOME_URL));
       } catch (error) {
-        message.error(JSON.stringify(error.response.data)).then();
+        message.error(JSON.stringify(error.response.data));
       }
     });
   }, [checkSubmit, dispatch]);
 
   useEffect(() => {
     if (myData && myData.id) {
-      message.error('로그인한 상태에서는 회원가입이 불가능합니다.').then(() => Router.push(HOME_URL));
+      message.error('로그인한 상태에서는 회원가입이 불가능합니다.').then(() => Router.replace(HOME_URL));
     }
   }, [myData]);
 

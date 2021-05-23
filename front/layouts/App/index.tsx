@@ -8,15 +8,15 @@ import Router, { useRouter } from 'next/router';
 import { useMyUser } from '@modules/user';
 import { PASS_HREF, HOME_URL, PROFILE_URL, GET_HASHTAG_URL } from '@utils/urls';
 
-import LoginForm from './LoginForm';
+import LoginForm from './organism/LoginForm';
+import UserProfile from './organism/UserProfile';
 import { globalStyles, SearchInput } from './styles';
-import UserProfile from './UserProfile';
 
 const { Header, Content } = Layout;
 
 const AppLayout: FC = ({ children }) => {
   const router = useRouter();
-  const { data: myData } = useMyUser();
+  const { data: myData } = useMyUser({});
 
   const [searchInput, setSearchInput] = useState('');
 
@@ -35,7 +35,7 @@ const AppLayout: FC = ({ children }) => {
         <Menu mode="horizontal" defaultSelectedKeys={[router.pathname]}>
           <Menu.Item key={HOME_URL}>
             <Link href={HOME_URL} passHref>
-              <a href={PASS_HREF}>노드버드</a>
+              <a href={PASS_HREF}>urTweet</a>
             </Link>
           </Menu.Item>
           <Menu.Item key={PROFILE_URL}>

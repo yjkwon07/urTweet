@@ -15,7 +15,7 @@ const UserProfile = () => {
   const myData = useSelector(userSelector.myData);
 
   const handleLogout = useCallback(() => {
-    dispatch(logout.requset());
+    dispatch(logout.requset({}));
   }, [dispatch]);
 
   if (!myData) return null;
@@ -27,7 +27,7 @@ const UserProfile = () => {
             <a href={PASS_HREF}>
               게시글
               <br />
-              {myData.Posts?.length}
+              {myData.Posts.length}
             </a>
           </Link>
         </div>,
@@ -45,7 +45,7 @@ const UserProfile = () => {
             <a href={PASS_HREF}>
               팔로워
               <br />
-              {myData.Followers?.length}
+              {myData.Followers.length}
             </a>
           </Link>
         </div>,
@@ -53,8 +53,10 @@ const UserProfile = () => {
     >
       <Card.Meta
         avatar={
-          <Link href={GET_USER_URL(myData.id.toString())}>
-            <Avatar>{myData.nickname[0]}</Avatar>
+          <Link href={GET_USER_URL(myData.id.toString())} passHref>
+            <a href={PASS_HREF}>
+              <Avatar>{myData.nickname?.[0]}</Avatar>
+            </a>
           </Link>
         }
         title={myData.nickname}

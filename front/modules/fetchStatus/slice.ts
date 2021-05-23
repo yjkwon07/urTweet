@@ -54,7 +54,7 @@ const slice = createSlice({
           data,
         };
       })
-      .addDefaultCase(() => {}),
+      .addDefaultCase((state) => state),
 });
 
 export const fetchStatusReducer = slice.reducer;
