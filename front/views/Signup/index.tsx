@@ -44,7 +44,8 @@ const Signup = () => {
     return checkSubmit(async (formData) => {
       try {
         await dispatch(signup.asyncTunk(formData));
-        message.success('회원가입에 성공하셨습니다.').then(() => Router.replace(HOME_URL));
+        message.success('회원가입에 성공하셨습니다.');
+        Router.push(HOME_URL);
       } catch (error) {
         message.error(JSON.stringify(error.response.data));
       }
@@ -52,7 +53,7 @@ const Signup = () => {
   }, [checkSubmit, dispatch]);
 
   useEffect(() => {
-    if (myData && myData.id) {
+    if (myData) {
       message.error('로그인한 상태에서는 회원가입이 불가능합니다.').then(() => Router.replace(HOME_URL));
     }
   }, [myData]);
