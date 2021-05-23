@@ -3,13 +3,12 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { UploadOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button, Space, Form, Input, message } from 'antd';
-import { debounce } from 'lodash';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import * as yup from 'yup';
 
 import { createPost, uploadImages } from '@modules/post';
-import { IUploadImagePathRes } from '@modules/post/@types/query';
+import { IUploadImagePathRes } from '@modules/post/api/requestAPI';
 import { GET_IMAGE_URL } from '@utils/urls';
 
 const POST_SCHEMA = yup.object({
@@ -30,20 +29,17 @@ const PostForm = () => {
   const imageInput = useRef<HTMLInputElement>(null);
 
   const handleSubmit = useMemo(() => {
-    return debounce(
-      checkSubmit(async (formData) => {
-        try {
-          await dispatch(createPost.asyncTunk({ content: formData.content, image: imageListPath }));
-          message.success('게시글이 등록되었습니다.');
-        } catch (error) {
-          message.error(JSON.stringify(error.response.data));
-        } finally {
-          reset();
-          setImageListPath([]);
-        }
-      }),
-      300,
-    );
+    return checkSubmit(async (formData) => {
+      reset();
+      try {
+        await dispatch(createPost.asyncTunk({ content: formData.content, image: imageListPath }));
+        message.success('게시글이 등록되었습니다.');
+      } catch (error) {
+        message.error(JSON.stringify(error.response.data));
+      } finally {
+        setImageListPath([]);
+      }
+    });
   }, [checkSubmit, dispatch, imageListPath, reset]);
 
   const handleClickImageUpload = useCallback(() => {
@@ -60,15 +56,15 @@ const PostForm = () => {
         const listPath = await dispatch(uploadImages.asyncTunk(imageFormData));
         setImageListPath(listPath);
       } catch (error) {
-        message.error(JSON.stringify(error.response.data)).then();
+        message.error(JSON.stringify(error.response.data));
       }
     },
     [dispatch],
   );
 
   const handleRemoveImage = useCallback(
-    (fileName) => () => {
-      setImageListPath((data) => data.filter((name) => name !== fileName));
+    (filePath) => () => {
+      setImageListPath((data) => data.filter((name) => name !== filePath));
     },
     [],
   );
@@ -99,11 +95,11 @@ const PostForm = () => {
         </Button>
       </div>
       <Space size={8}>
-        {imageListPath.map((fileName) => (
-          <div key={fileName} style={{ margin: '5px 0 5px 0' }}>
-            <img src={GET_IMAGE_URL(fileName)} alt={fileName} />
+        {imageListPath.map((filePath) => (
+          <div key={filePath} style={{ margin: '5px 0 5px 0' }}>
+            <img src={GET_IMAGE_URL(filePath)} alt={filePath} />
             <div style={{ marginTop: '5px' }}>
-              <Button type="dashed" onClick={handleRemoveImage(fileName)}>
+              <Button type="dashed" onClick={handleRemoveImage(filePath)}>
                 제거
               </Button>
             </div>

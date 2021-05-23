@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { useFetchStatus } from '@modules/fetchStatus';
 import { useAppSelector } from '@modules/store/slices';
 
-import { IPostURL } from '../@types/query';
+import { IPostURL } from '../api/requestAPI';
 import postSelector from '../selector';
 import { readPost } from '../slice';
 

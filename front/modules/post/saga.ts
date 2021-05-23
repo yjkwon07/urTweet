@@ -1,21 +1,9 @@
-import { all, fork, takeLatest, debounce, throttle } from 'redux-saga/effects';
+import { all, fork, takeLatest, debounce, throttle, call, select, put } from 'redux-saga/effects';
 
 import { createRequestSaga } from '@modules/helper';
+import { RootState } from '@modules/store/slices';
+import { addPostToMe, removePostToMe } from '@modules/user';
 
-import {
-  requestUploadPostImages,
-  requestRemovePost,
-  requestReadPost,
-  requestListReadUserPost,
-  requestListReadPost,
-  requestListReadHashtagPost,
-  requestCreatePost,
-  requestLikePost,
-  requestUnlikePost,
-  requestCreateComment,
-  requestCreatePostRetweet,
-  requestModifyPost,
-} from './api/requestAPI';
 import {
   uploadImages,
   likePost,
@@ -32,19 +20,19 @@ import {
   infinteListReadPost,
 } from './slice';
 
-const uploadImagesSaga = createRequestSaga(uploadImages, requestUploadPostImages);
-const likePostSaga = createRequestSaga(likePost, requestLikePost);
-const unlikePostSaga = createRequestSaga(unlikePost, requestRemovePost);
-const readPostSaga = createRequestSaga(readPost, requestReadPost);
-const listReadUserPostSaga = createRequestSaga(listReadUserPost, requestListReadUserPost);
-const listReadHashTagPostSaga = createRequestSaga(listReadHashTagPost, requestListReadHashtagPost);
-const listReadPostSaga = createRequestSaga(listReadPost, requestListReadPost);
-const infiniteListReadPostSaga = createRequestSaga(infinteListReadPost, requestListReadPost);
-const createPostSaga = createRequestSaga(createPost, requestCreatePost);
-const modifyPostSaga = createRequestSaga(modifyPost, requestModifyPost);
-const removePostSaga = createRequestSaga(removePost, requestUnlikePost);
-const createCommentSaga = createRequestSaga(createComment, requestCreateComment);
-const retweetPostSaga = createRequestSaga(retweetPost, requestCreatePostRetweet);
+const uploadImagesSaga = createRequestSaga(uploadImages, uploadImages.requestAPI);
+const likePostSaga = createRequestSaga(likePost, likePost.requestAPI);
+const unlikePostSaga = createRequestSaga(unlikePost, unlikePost.requestAPI);
+const readPostSaga = createRequestSaga(readPost, readPost.requestAPI);
+const listReadUserPostSaga = createRequestSaga(listReadUserPost, listReadUserPost.requestAPI);
+const listReadHashTagPostSaga = createRequestSaga(listReadHashTagPost, listReadHashTagPost.requestAPI);
+const listReadPostSaga = createRequestSaga(listReadPost, listReadPost.requestAPI);
+const infiniteListReadPostSaga = createRequestSaga(infinteListReadPost, infinteListReadPost.requestAPI);
+const createPostSaga = createRequestSaga(createPost, createPost.requestAPI);
+const modifyPostSaga = createRequestSaga(modifyPost, modifyPost.requestAPI);
+const removePostSaga = createRequestSaga(removePost, removePost.requestAPI);
+const createCommentSaga = createRequestSaga(createComment, createComment.requestAPI);
+const retweetPostSaga = createRequestSaga(retweetPost, retweetPost.requestAPI);
 
 function* watchUploadImages() {
   yield takeLatest(uploadImages.requset, uploadImagesSaga);
@@ -79,7 +67,14 @@ function* watchInfiniteListRead() {
 }
 
 function* watchCreatePost() {
-  yield debounce(300, createPost.requset, createPostSaga);
+  yield debounce(300, createPost.requset, function* (action) {
+    yield call(createPostSaga, action);
+    const rootState: RootState = yield select();
+    const { status, data } = rootState.FETCH_STATUS[createPost.TYPE];
+    if (status === 'SUCCESS') {
+      yield put(addPostToMe(data.id));
+    }
+  });
 }
 
 function* watchModifyPost() {
@@ -87,7 +82,14 @@ function* watchModifyPost() {
 }
 
 function* watchRemovePost() {
-  yield takeLatest(removePost.requset, removePostSaga);
+  yield takeLatest(removePost.requset, function* (action) {
+    yield call(removePostSaga, action);
+    const rootState: RootState = yield select();
+    const { status, data } = rootState.FETCH_STATUS[removePost.TYPE];
+    if (status === 'SUCCESS') {
+      yield put(removePostToMe(data.PostId));
+    }
+  });
 }
 
 function* watchCreateComment() {

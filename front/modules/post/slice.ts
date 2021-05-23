@@ -2,37 +2,38 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import { createRequestAction } from '@modules/helper/createRequestAction';
 
-import { IComment, ILike, IPost } from './@types/db';
+import { IPost } from './@types/db';
 import {
-  IUploadImagePathRes,
-  IListReadHashtagPostURL,
-  IListReadPostURL,
-  IListReadUserPostURL,
-  IModifyPostRes,
-  IPostBodyQuery,
-  IPostURL,
-  IRemovePostRes,
-  IUploadImageBodyQuery,
-  IModifyPostReq,
-  ICreateCommentReq,
-} from './@types/query';
+  requestCreateComment,
+  requestCreatePost,
+  requestCreatePostRetweet,
+  requestLikePost,
+  requestListReadHashtagPost,
+  requestListReadPost,
+  requestListReadUserPost,
+  requestModifyPost,
+  requestReadPost,
+  requestRemovePost,
+  requestUnlikePost,
+  requestUploadPostImages,
+} from './api/requestAPI';
 
 export const POST = 'POST';
 
-// Action
-export const uploadImages = createRequestAction<IUploadImageBodyQuery, IUploadImagePathRes>(`${POST}/uploadImages`);
-export const listReadUserPost = createRequestAction<IListReadUserPostURL, IPost[]>(`${POST}/listReadUserPost`);
-export const infinteListReadPost = createRequestAction<IListReadPostURL, IPost[]>(`${POST}infinteListReadPost`);
-export const listReadHashTagPost = createRequestAction<IListReadHashtagPostURL, IPost[]>(`${POST}/listReadHashTagPost`);
-export const listReadPost = createRequestAction<IListReadPostURL, IPost[]>(`${POST}listReadPost`);
-export const readPost = createRequestAction<IPostURL, IPost>(`${POST}/readPost`);
-export const retweetPost = createRequestAction<IPostURL, IPost>(`${POST}/retweetPost`);
-export const createPost = createRequestAction<IPostBodyQuery, IPost>(`${POST}/createPost`);
-export const modifyPost = createRequestAction<IModifyPostReq, IModifyPostRes>(`${POST}/modifyPost`);
-export const removePost = createRequestAction<IPostURL, IRemovePostRes>(`${POST}/removePost`);
-export const likePost = createRequestAction<IPostURL, ILike>(`${POST}/likePost`);
-export const unlikePost = createRequestAction<IPostURL, ILike>(`${POST}/unlikePost`);
-export const createComment = createRequestAction<ICreateCommentReq, IComment>(`${POST}/createComment`);
+// Action - API
+export const uploadImages = createRequestAction(`${POST}/uploadImages`, requestUploadPostImages);
+export const listReadUserPost = createRequestAction(`${POST}/listReadUserPost`, requestListReadUserPost);
+export const infinteListReadPost = createRequestAction(`${POST}infinteListReadPost`, requestListReadPost);
+export const listReadHashTagPost = createRequestAction(`${POST}/listReadHashTagPost`, requestListReadHashtagPost);
+export const listReadPost = createRequestAction(`${POST}listReadPost`, requestListReadPost);
+export const readPost = createRequestAction(`${POST}/readPost`, requestReadPost);
+export const retweetPost = createRequestAction(`${POST}/retweetPost`, requestCreatePostRetweet);
+export const createPost = createRequestAction(`${POST}/createPost`, requestCreatePost);
+export const modifyPost = createRequestAction(`${POST}/modifyPost`, requestModifyPost);
+export const removePost = createRequestAction(`${POST}/removePost`, requestRemovePost);
+export const likePost = createRequestAction(`${POST}/likePost`, requestLikePost);
+export const unlikePost = createRequestAction(`${POST}/unlikePost`, requestUnlikePost);
+export const createComment = createRequestAction(`${POST}/createComment`, requestCreateComment);
 
 // Type
 export interface IState {
