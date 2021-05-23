@@ -1,24 +1,28 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import { useDispatch } from 'react-redux';
 
-import { FETCH_STATUS } from '@modules/fetchStatus';
+import { useFetchStatus } from '@modules/fetchStatus';
 import { useAppSelector } from '@modules/store/slices';
 
+import { IListReadFollowURL } from '../api/requestAPI';
 import userSelector from '../selector';
 import { listReadFollow } from '../slice';
 
-export default function useListFollow() {
+export interface IProps extends IListReadFollowURL {
+  isInitFetch?: boolean;
+}
+
+export default function useListFollow({ pageSize, isInitFetch = true }: IProps) {
   const dispatch = useDispatch();
-  const status = useAppSelector((state) => state[FETCH_STATUS][listReadFollow.TYPE]?.status);
+  const { status } = useFetchStatus(listReadFollow.TYPE);
   const data = useAppSelector(userSelector.followListData);
 
-  const [pageSize, setPageSize] = useState(3);
-  const isReachingData = useMemo(() => data && data?.length < pageSize, [data, pageSize]);
+  const hasMoreRead = useMemo(() => data?.length === pageSize, [data?.length, pageSize]);
 
   useEffect(() => {
-    dispatch(listReadFollow.requset({ pageSize }));
-  }, [dispatch, pageSize]);
+    if (isInitFetch && status === undefined) dispatch(listReadFollow.requset({ pageSize }));
+  }, [dispatch, isInitFetch, pageSize, status]);
 
-  return { status, data, setPageSize, isReachingData };
+  return { status, data, hasMoreRead };
 }

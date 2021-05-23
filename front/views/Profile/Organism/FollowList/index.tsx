@@ -5,11 +5,11 @@ import { List, Button, Card } from 'antd';
 import { useDispatch } from 'react-redux';
 
 import { removeFollowerMe, unFollow } from '@modules/user';
-import { IUser } from '@modules/user/@types/db';
+import { IUserInfo } from '@modules/user/@types/db';
 
 export interface IProps {
-  header: string;
-  data?: IUser[];
+  header: '팔로잉' | '팔로워';
+  data?: IUserInfo[];
   onClickMore?: () => void;
   loading?: boolean;
   active?: boolean;

@@ -69,7 +69,7 @@ function* watchUnFollow() {
 }
 
 function* watchRemoveFollowerMe() {
-  yield debounce(300, removeFollowerMe.requset, removeFollowerMeSaga);
+  yield takeLatest(removeFollowerMe.requset, removeFollowerMeSaga);
 }
 
 export default function* userSaga() {

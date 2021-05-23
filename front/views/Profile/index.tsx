@@ -1,72 +1,77 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { message } from 'antd';
-import Head from 'next/head';
 import Router from 'next/router';
-import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
-import AppLayout from '@layouts/App';
-import { userSelector } from '@modules/user';
+import { listReadFollow, listReadFollowing, useMyUser } from '@modules/user';
 import useListFollow from '@modules/user/hooks/useListFollow';
 import useListFollowing from '@modules/user/hooks/useListFollowing';
 
-import FollowList from './FollowList';
-import NicknameEditForm from './NicknameEditForm';
+import FollowList from './Organism/FollowList';
+import NicknameEditForm from './Organism/NicknameEditForm';
+
+const DEAFULT_PAGE_SIZE = 3;
 
 const Profile = () => {
-  const myData = useSelector(userSelector.myData);
+  const dispatch = useDispatch();
+  const { data: myData, status: myDataStatus } = useMyUser({});
+
+  const [followingPageSize, setFollowingPageSize] = useState(DEAFULT_PAGE_SIZE);
   const {
     data: followingListData,
-    setPageSize: setPageSizefollowing,
     status: followingStatus,
-    isReachingData: isReachingFollowingData,
-  } = useListFollowing();
-  const {
-    data: followListData,
-    setPageSize: setPageSizefollow,
-    status: followStatus,
-    isReachingData: isReachingFollowData,
-  } = useListFollow();
+    hasMoreRead: hasMoreReadFollowingListData,
+  } = useListFollowing({ pageSize: followingPageSize });
+
+  const [followPageSize, setFollowPageSize] = useState(DEAFULT_PAGE_SIZE);
+  const { data: followListData, status: followStatus, hasMoreRead: hasMoreReadFollowListData } = useListFollow({
+    pageSize: followPageSize,
+  });
 
   const handleLoadMoreFollowing = useCallback(() => {
-    setPageSizefollowing((prev) => prev + 3);
-  }, [setPageSizefollowing]);
+    if (hasMoreReadFollowingListData) {
+      const updatePagSize = followingPageSize + DEAFULT_PAGE_SIZE;
+      setFollowingPageSize(updatePagSize);
+      dispatch(listReadFollowing.requset({ pageSize: updatePagSize }));
+    }
+  }, [dispatch, followingPageSize, hasMoreReadFollowingListData]);
 
   const handleloadMoreFollower = useCallback(() => {
-    setPageSizefollow((prev) => prev + 3);
-  }, [setPageSizefollow]);
+    if (hasMoreReadFollowListData) {
+      const updatePagSize = followPageSize + DEAFULT_PAGE_SIZE;
+      setFollowPageSize(updatePagSize);
+      dispatch(listReadFollow.requset({ pageSize: updatePagSize }));
+    }
+  }, [dispatch, followPageSize, hasMoreReadFollowListData]);
 
   useEffect(() => {
-    if (!(myData && myData.id)) {
+    if ((!myData && myDataStatus === 'SUCCESS') || myDataStatus === 'FAIL') {
       message.warn('로그인 후 이용해 주시길 바랍니다.');
       Router.push('/');
     }
-  }, [myData]);
+  }, [myData, myDataStatus]);
 
   if (!myData) return null;
 
   return (
-    <AppLayout>
-      <Head>
-        <title>내 프로필 | urTweet</title>
-      </Head>
-
+    <>
       <NicknameEditForm />
       <FollowList
         header="팔로잉"
         data={followingListData}
         loading={followingStatus === 'LOADING'}
         onClickMore={handleLoadMoreFollowing}
-        active={!isReachingFollowingData}
+        active={hasMoreReadFollowingListData}
       />
       <FollowList
         header="팔로워"
         data={followListData}
         loading={followStatus === 'LOADING'}
         onClickMore={handleloadMoreFollower}
-        active={!isReachingFollowData}
+        active={hasMoreReadFollowListData}
       />
-    </AppLayout>
+    </>
   );
 };
 

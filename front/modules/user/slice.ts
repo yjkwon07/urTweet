@@ -41,16 +41,16 @@ export const removePostToMe = createAction<number>(`${USER}/removePostToMe`);
 export interface IState {
   MyInfo: IMyUser | null;
   user: IUser | null;
-  Followers: IUser[] | [];
-  Followings: IUser[] | [];
+  followerListData: IUser[];
+  followingListData: IUser[];
 }
 
 // Reducer
 const initialState: IState = {
   MyInfo: null,
   user: null,
-  Followers: [],
-  Followings: [],
+  followerListData: [],
+  followingListData: [],
 };
 
 const slice = createSlice({
@@ -69,10 +69,10 @@ const slice = createSlice({
         if (state.MyInfo) state.MyInfo.nickname = data.nickname;
       })
       .addCase(listReadFollow.success, (state, { payload: data }) => {
-        if (state.MyInfo) state.Followers = data;
+        state.followerListData = data;
       })
       .addCase(listReadFollowing.success, (state, { payload: data }) => {
-        if (state.MyInfo) state.MyInfo.Followings = data;
+        state.followingListData = data;
       })
       .addCase(follow.success, (state, { payload: data }) => {
         if (state.MyInfo) state.MyInfo.Followings.push({ id: data.UserId });
