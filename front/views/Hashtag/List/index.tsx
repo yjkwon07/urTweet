@@ -28,7 +28,7 @@ const List = ({ isSSR }: IProps) => {
       if (postListData && hasMoreRead && status !== 'LOADING') {
         if (window.scrollY + document.documentElement.clientHeight > document.documentElement.scrollHeight - 300) {
           if (hasMoreRead) {
-            const lastId = postListData[postListData.length - 1].id || 0;
+            const lastId = postListData[postListData.length - 1].id;
             dispatch(listReadHashTagPost.requset({ hashtag, lastId, pageSize }));
           }
         }

@@ -65,7 +65,7 @@ const PostCardContent = ({
     return checkSubmit(async (formData) => {
       reset();
       try {
-        dispatch(modifyPost.requset({ url: { postId }, body: { content: formData.content } }));
+        await dispatch(modifyPost.asyncTunk({ url: { postId }, body: { content: formData.content } }));
         message.success('게시글이 수정 되었습니다.');
       } catch (error) {
         message.error(JSON.stringify(error.response.data));

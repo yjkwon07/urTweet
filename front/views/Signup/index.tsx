@@ -54,7 +54,8 @@ const Signup = () => {
 
   useEffect(() => {
     if (myData) {
-      message.error('로그인한 상태에서는 회원가입이 불가능합니다.').then(() => Router.replace(HOME_URL));
+      message.error('로그인한 상태에서는 회원가입이 불가능합니다.');
+      Router.replace(HOME_URL);
     }
   }, [myData]);
 
