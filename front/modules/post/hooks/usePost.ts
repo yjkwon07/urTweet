@@ -16,7 +16,7 @@ export interface IProps extends IPostURL {
 export default function usePost({ postId, isInitFetch = true }: IProps) {
   const dispatch = useDispatch();
   const { status } = useFetchStatus(readPost.TYPE);
-  const data = useAppSelector(postSelector.data) || null;
+  const data = useAppSelector(postSelector.data);
 
   useEffect(() => {
     if (isInitFetch && status === undefined) dispatch(readPost.requset({ postId }));
