@@ -3,13 +3,11 @@ import React, { useEffect, useMemo } from 'react';
 import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Form, Input, Checkbox, Button, Typography, message } from 'antd';
-import Head from 'next/head';
 import Router from 'next/router';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import * as yup from 'yup';
 
-import AppLayout from '@layouts/App';
 import { useFetchStatus } from '@modules/fetchStatus';
 import { signup, userSelector } from '@modules/user';
 import { HOME_URL } from '@utils/urls';
@@ -60,106 +58,100 @@ const Signup = () => {
   }, [myData]);
 
   return (
-    <AppLayout>
-      <Head>
-        <title>회원가입 | urTweet</title>
-      </Head>
-
-      <FormWrapper onFinish={() => handleSubmit()}>
-        <Typography.Title>Signup</Typography.Title>
-        <Form.Item
-          label="이메일"
-          htmlFor="email"
-          validateStatus={errors.email ? 'error' : 'success'}
-          help={errors.email ? errors.email?.message : ''}
-          rules={[{ message: errors?.email?.message }]}
-        >
-          <Controller
-            control={control}
-            as={<Input prefix={<MailOutlined />} />}
-            name="email"
-            id="email"
-            type="email"
-            placeholder="User Email"
-            defaultValue=""
-          />
-        </Form.Item>
-        <Form.Item
-          label="닉네임"
-          htmlFor="nickname"
-          validateStatus={errors.nickname ? 'error' : 'success'}
-          help={errors.nickname ? errors.nickname?.message : ''}
-          rules={[{ message: errors?.nickname?.message }]}
-        >
-          <Controller
-            control={control}
-            as={<Input prefix={<UserOutlined />} />}
-            name="nickname"
-            id="nickname"
-            placeholder="Nickname"
-            defaultValue=""
-          />
-        </Form.Item>
-        <Form.Item
-          label="비밀번호"
-          htmlFor="password"
-          validateStatus={errors.password ? 'error' : 'success'}
-          help={errors.password ? errors.password?.message : ''}
-          rules={[{ message: errors?.password?.message }]}
-        >
-          <Controller
-            control={control}
-            as={<Input prefix={<LockOutlined />} />}
-            name="password"
-            type="password"
-            id="password"
-            placeholder="Password Check"
-            defaultValue=""
-          />
-        </Form.Item>
-        <Form.Item
-          label="비밀번호체크"
-          htmlFor="password-check"
-          validateStatus={errors['password-check'] ? 'error' : 'success'}
-          help={errors['password-check'] ? errors['password-check']?.message : ''}
-          rules={[{ message: errors['password-check']?.message }]}
-        >
-          <Controller
-            control={control}
-            as={<Input prefix={<LockOutlined />} />}
-            name="password-check"
-            type="password"
-            id="password-check"
-            placeholder="Password Check"
-            defaultValue=""
-          />
-        </Form.Item>
-        <Form.Item
-          label="약관 동의"
-          htmlFor="user-term"
-          validateStatus={errors['user-term'] ? 'error' : 'success'}
-          help={errors['user-term'] ? errors['user-term']?.message : ''}
-          rules={[{ message: errors['user-term']?.message }]}
-        >
-          <Controller
-            control={control}
-            render={({ value, onChange }) => (
-              <Checkbox onChange={() => onChange(!value)} checked={value} value={value}>
-                약관에 동의 합니다.
-              </Checkbox>
-            )}
-            name="user-term"
-            id="user-term"
-            defaultValue={false}
-          />
-        </Form.Item>
-        <Form.Item name="submit">
-          <Button type="primary" htmlType="submit" loading={status === 'LOADING'}>
-            가입하기
-          </Button>
-        </Form.Item>
-      </FormWrapper>
-    </AppLayout>
+    <FormWrapper onFinish={() => handleSubmit()}>
+      <Typography.Title>Signup</Typography.Title>
+      <Form.Item
+        label="이메일"
+        htmlFor="email"
+        validateStatus={errors.email ? 'error' : 'success'}
+        help={errors.email ? errors.email?.message : ''}
+        rules={[{ message: errors?.email?.message }]}
+      >
+        <Controller
+          control={control}
+          as={<Input prefix={<MailOutlined />} />}
+          name="email"
+          id="email"
+          type="email"
+          placeholder="User Email"
+          defaultValue=""
+        />
+      </Form.Item>
+      <Form.Item
+        label="닉네임"
+        htmlFor="nickname"
+        validateStatus={errors.nickname ? 'error' : 'success'}
+        help={errors.nickname ? errors.nickname?.message : ''}
+        rules={[{ message: errors?.nickname?.message }]}
+      >
+        <Controller
+          control={control}
+          as={<Input prefix={<UserOutlined />} />}
+          name="nickname"
+          id="nickname"
+          placeholder="Nickname"
+          defaultValue=""
+        />
+      </Form.Item>
+      <Form.Item
+        label="비밀번호"
+        htmlFor="password"
+        validateStatus={errors.password ? 'error' : 'success'}
+        help={errors.password ? errors.password?.message : ''}
+        rules={[{ message: errors?.password?.message }]}
+      >
+        <Controller
+          control={control}
+          as={<Input prefix={<LockOutlined />} />}
+          name="password"
+          type="password"
+          id="password"
+          placeholder="Password Check"
+          defaultValue=""
+        />
+      </Form.Item>
+      <Form.Item
+        label="비밀번호체크"
+        htmlFor="password-check"
+        validateStatus={errors['password-check'] ? 'error' : 'success'}
+        help={errors['password-check'] ? errors['password-check']?.message : ''}
+        rules={[{ message: errors['password-check']?.message }]}
+      >
+        <Controller
+          control={control}
+          as={<Input prefix={<LockOutlined />} />}
+          name="password-check"
+          type="password"
+          id="password-check"
+          placeholder="Password Check"
+          defaultValue=""
+        />
+      </Form.Item>
+      <Form.Item
+        label="약관 동의"
+        htmlFor="user-term"
+        validateStatus={errors['user-term'] ? 'error' : 'success'}
+        help={errors['user-term'] ? errors['user-term']?.message : ''}
+        rules={[{ message: errors['user-term']?.message }]}
+      >
+        <Controller
+          control={control}
+          render={({ value, onChange }) => (
+            <Checkbox onChange={() => onChange(!value)} checked={value} value={value}>
+              약관에 동의 합니다.
+            </Checkbox>
+          )}
+          name="user-term"
+          id="user-term"
+          defaultValue={false}
+        />
+      </Form.Item>
+      <Form.Item name="submit">
+        <Button type="primary" htmlType="submit" loading={status === 'LOADING'}>
+          가입하기
+        </Button>
+      </Form.Item>
+    </FormWrapper>
   );
 };
 
