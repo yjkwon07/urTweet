@@ -15,14 +15,10 @@ export interface IProps extends IListReadUserPostURL {
 
 export default function useInfiniteListUserPost({ userId, pageSize, isInitFetch = true }: IProps) {
   const dispatch = useDispatch();
-  const { status, data: fetchData } = useFetchStatus(listReadUserPost.TYPE);
+  const { status } = useFetchStatus(listReadUserPost.TYPE);
   const data = useAppSelector(postSelector.infiniteList) || [];
 
-  const hasMoreRead = useMemo(() => status === 'SUCCESS' && fetchData?.length === pageSize, [
-    fetchData?.length,
-    pageSize,
-    status,
-  ]);
+  const hasMoreRead = useMemo(() => data?.length % pageSize === 0, [data?.length, pageSize]);
 
   useEffect(() => {
     if (isInitFetch && status === undefined && userId) dispatch(listReadUserPost.requset({ userId, pageSize }));

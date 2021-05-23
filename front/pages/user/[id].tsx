@@ -24,7 +24,7 @@ const UserReadPages = ({ title, seo }: IProps) => {
         <title>{title}</title>
         <SEO title={seo.title} url={seo.url} description={seo.description} name={seo.name} keywords={seo.keywords} />
       </Head>
-      <UserRead />
+      <UserRead isSSR />
     </AppLayout>
   );
 };

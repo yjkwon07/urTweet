@@ -12,14 +12,18 @@ import UserInfo from './Organism/UserInfo';
 
 const DEAFULT_PAGE_SIZE = 10;
 
-const Read = () => {
+export interface IProps {
+  isSSR: boolean;
+}
+
+const Read = ({ isSSR }: IProps) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const userId = Number(router.query.id as string);
-  const { data: userData } = useUser({ isInitFetch: false, userId });
+  const { data: userData } = useUser({ isInitFetch: !isSSR, userId });
   const [pageSize] = useState(DEAFULT_PAGE_SIZE);
   const { data: postListData, status, hasMoreRead } = useInfiniteListUserPost({
-    isInitFetch: false,
+    isInitFetch: !isSSR,
     userId,
     pageSize,
   });
