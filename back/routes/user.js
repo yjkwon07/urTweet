@@ -1,10 +1,12 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
+const { Op } = require('sequelize');
 
 const { findUserWithoutPassword, findUser } = require('../query/user');
+const { findPostListWithoutUserPassword } = require('../query/post');
 const { User } = require('../models');
-const { isLoggedIn } = require('./middlewares');
+const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
 const { SUCCESS, CLIENT_ERROR, USER_ERROR, DEFAULT_SUCCESS_MESSAGE } = require('../constant');
 
 const router = express.Router();
@@ -12,8 +14,11 @@ const router = express.Router();
 // GET /user (나의 정보 가져오기)
 router.get('/', async (req, res, next) => {
   try {
-    if (req.user) {
-      const fullUserWithoutPassword = await findUserWithoutPassword({ id: req.user.id });
+    const user = req.user;
+    const myId = parseInt(user?.id, 10);
+
+    if (user) {
+      const fullUserWithoutPassword = await findUserWithoutPassword({ id: myId });
       res.status(SUCCESS).send(fullUserWithoutPassword);
     } else {
       res.status(SUCCESS).send(null);
@@ -24,15 +29,18 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-// GET /user/followers (팔로우 유저 목록 가져오기)
+// GET /user/followers (내가 팔로우 하는 유저 목록 가져오기)
 router.get('/followers', isLoggedIn, async (req, res, next) => {
   try {
-    const user = await findUser({ id: req.user.id });
-    if (!user) {
-      res.status(CLIENT_ERROR).send('존재하지 않는 유저입니다.');
-    }
+    const user = req.user;
+    const limit = parseInt(req.query.pageSize, 10) || 10;
+
     const followers = await user.getFollowers({
-      limit: parseInt(req.query.pageSize, 10) || 10,
+      limit,
+      attributes: {
+        exclude: ['password'],
+      },
+      joinTableAttributes: [],
     });
     res.status(SUCCESS).send(followers);
   } catch (error) {
@@ -44,14 +52,57 @@ router.get('/followers', isLoggedIn, async (req, res, next) => {
 // GET /user/followings (나를 팔로워 하는 유저 목록 가져오기)
 router.get('/followings', isLoggedIn, async (req, res, next) => {
   try {
-    const user = await findUser({ id: req.user.id });
-    if (!user) {
-      res.status(CLIENT_ERROR).send('존재하지 않는 유저입니다.');
-    }
+    const user = req.user;
+    const limit = parseInt(req.query.pageSize, 10) || 10;
+
     const followings = await user.getFollowings({
-      limit: parseInt(req.query.pageSize, 10) || 10,
+      limit,
+      attributes: {
+        exclude: ['password'],
+      },
+      joinTableAttributes: [],
     });
     res.status(SUCCESS).send(followings);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+// GET /user/:userId (유저정보 조회)
+router.get('/:userId', async (req, res, next) => {
+  try {
+    const UserId = parseInt(req.params.userId, 10);
+
+    const fullUserWithoutPassword = await findUserWithoutPassword({ id: UserId });
+    if (fullUserWithoutPassword) {
+      const data = fullUserWithoutPassword.toJSON();
+      data.Posts = data.Posts.length;
+      data.Followers = data.Followers.length;
+      data.Followings = data.Followings.length;
+      res.status(SUCCESS).send(data);
+    } else {
+      res.status(CLIENT_ERROR).send('존재하지 않는 사용자입니다.');
+    }
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+// GET /user/:userId/posts (사용자 정보로 post 조회)
+router.get('/:userId/posts', async (req, res, next) => {
+  try {
+    const UserId = parseInt(req.params.userId, 10);
+    const lastId = parseInt(req.query.lastId, 10);
+    const limit = parseInt(req.params.pageSize, 10) || 10;
+
+    const where = { UserId };
+    if (lastId) {
+      where.id = { [Op.lt]: lastId };
+    }
+    const posts = await findPostListWithoutUserPassword({ where, limit });
+    res.status(SUCCESS).send(posts);
   } catch (error) {
     console.error(error);
     next(error);
@@ -61,14 +112,18 @@ router.get('/followings', isLoggedIn, async (req, res, next) => {
 // POST /user (회원가입)
 router.post('/', async (req, res, next) => {
   try {
-    const exUser = await findUser({ email: req.body.email });
+    const email = req.body.email;
+    const nickname = req.body.nickname;
+    const password = req.body.password;
+
+    const exUser = await findUser({ email });
     if (exUser) {
       return res.status(CLIENT_ERROR).send('이미 사용 중인 아이디입니다.');
     }
-    const hashedPassword = await bcrypt.hash(req.body.password, 12);
+    const hashedPassword = await bcrypt.hash(password, 12);
     await User.create({
-      email: req.body.email,
-      nickname: req.body.nickname,
+      email,
+      nickname,
       password: hashedPassword,
     });
     res.status(SUCCESS).send(DEFAULT_SUCCESS_MESSAGE);
@@ -79,7 +134,7 @@ router.post('/', async (req, res, next) => {
 });
 
 // POST /user/login (로그인)
-router.post('/login', (req, res, next) => {
+router.post('/login', isNotLoggedIn, (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) {
       console.error(err);
@@ -95,7 +150,7 @@ router.post('/login', (req, res, next) => {
         return next(loginErr);
       }
       const fullUserWithoutPassword = await findUserWithoutPassword({ id: user.id });
-      return res.status(SUCCESS).send(fullUserWithoutPassword);
+      res.status(SUCCESS).send(fullUserWithoutPassword);
     });
   })(req, res, next); // 미들웨어 확장
 });
@@ -110,15 +165,16 @@ router.post('/logout', (req, res) => {
 // POST /user/nickname (닉네임 수정)
 router.patch('/nickname', isLoggedIn, async (req, res, next) => {
   try {
+    const nickname = req.body.nickname;
+    const myId = req.user.id;
+
     await User.update(
+      { nickname },
       {
-        nickname: req.body.nickname,
-      },
-      {
-        where: { id: req.user.id },
+        where: { id: myId },
       },
     );
-    res.status(SUCCESS).send({ nickname: req.body.nickname });
+    res.status(SUCCESS).send({ nickname });
   } catch (error) {
     console.error(error);
     next(error);
@@ -128,12 +184,15 @@ router.patch('/nickname', isLoggedIn, async (req, res, next) => {
 // PATCH /user/:userId/follow (팔로우)
 router.patch('/:userId/follow', isLoggedIn, async (req, res, next) => {
   try {
-    const user = await User.findOne({ where: { id: req.params.userId } });
+    const UserId = parseInt(req.params.userId, 10);
+    const myId = parseInt(req.user.id, 10);
+
+    const user = await User.findOne({ where: { id: UserId } });
     if (!user) {
       res.status(CLIENT_ERROR).send('존재하지 않는 유저입니다.');
     }
-    await user.addFollowers(req.user.id);
-    res.status(SUCCESS).send({ UserId: parseInt(req.params.userId, 10) });
+    await user.addFollowers(myId);
+    res.status(SUCCESS).send({ UserId });
   } catch (error) {
     console.error(error);
     next(error);
@@ -143,12 +202,15 @@ router.patch('/:userId/follow', isLoggedIn, async (req, res, next) => {
 // DELETE /user/:userId/follow (팔로우 삭제)
 router.delete('/:userId/follow', isLoggedIn, async (req, res, next) => {
   try {
-    const user = await User.findOne({ where: { id: req.params.userId } });
+    const UserId = parseInt(req.params.userId, 10);
+    const myId = parseInt(req.user.id, 10);
+
+    const user = await User.findOne({ where: { id: UserId } });
     if (!user) {
       res.status(CLIENT_ERROR).send('존재하지 않는 유저입니다.');
     }
-    await user.removeFollowers(req.user.id);
-    res.status(200).json({ UserId: parseInt(req.params.userId, 10) });
+    await user.removeFollowers(myId);
+    res.status(SUCCESS).send({ UserId });
   } catch (error) {
     console.error(error);
     next(error);
@@ -158,12 +220,15 @@ router.delete('/:userId/follow', isLoggedIn, async (req, res, next) => {
 // DELETE /user/follower/:userId (팔로워 삭제)
 router.delete('/follower/:userId', isLoggedIn, async (req, res, next) => {
   try {
-    const user = await User.findOne({ where: { id: req.params.userId } });
+    const UserId = parseInt(req.params.userId, 10);
+    const myId = parseInt(req.user.id, 10);
+
+    const user = await User.findOne({ where: { id: UserId } });
     if (!user) {
       res.status(CLIENT_ERROR).send('존재하지 않는 유저입니다.');
     }
-    await user.removeFollowings(req.user.id);
-    res.status(SUCCESS).send({ UserId: parseInt(req.params.userId, 10) });
+    await user.removeFollowings(myId);
+    res.status(SUCCESS).send({ UserId });
   } catch (error) {
     console.error(error);
     next(error);

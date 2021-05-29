@@ -29,6 +29,7 @@ function findPostWithoutUserPassword(where) {
           {
             model: User,
             attributes: ['id', 'nickname'],
+            order: [['createdAt', 'DESC']],
           },
         ],
       },
@@ -61,13 +62,11 @@ function findPostWithoutUserPassword(where) {
   });
 }
 
-function findPostListWithoutUserPassword(config) {
+function findPostListWithoutUserPassword({ where = {}, limit }) {
   return Post.findAll({
-    order: [
-      ['createdAt', 'DESC'],
-      [Comment, 'createdAt', 'DESC'],
-    ],
-    ...config,
+    where,
+    limit,
+    order: [['createdAt', 'DESC']],
     include: [
       {
         model: Image,
@@ -78,6 +77,7 @@ function findPostListWithoutUserPassword(config) {
           {
             model: User,
             attributes: ['id', 'nickname'],
+            order: [['createdAt', 'DESC']],
           },
         ],
       },
@@ -110,4 +110,61 @@ function findPostListWithoutUserPassword(config) {
   });
 }
 
-module.exports = { findPost, findRetweetPost, findPostWithoutUserPassword, findPostListWithoutUserPassword };
+function findHashtagPostListWithoutUserPassword(config, hashtag) {
+  return Post.findAll({
+    order: [['createdAt', 'DESC']],
+    ...config,
+    include: [
+      {
+        model: Hashtag,
+        where: { name: hashtag },
+      },
+      {
+        model: Image,
+      },
+      {
+        model: Comment,
+        include: [
+          {
+            model: User,
+            attributes: ['id', 'nickname'],
+            order: [['createdAt', 'DESC']],
+          },
+        ],
+      },
+      {
+        model: User,
+        attributes: ['id', 'nickname'],
+      },
+      {
+        model: User,
+        as: 'Likers',
+        attributes: ['id'],
+        through: {
+          attributes: [],
+        },
+      },
+      {
+        model: Post,
+        as: 'Retweet',
+        include: [
+          {
+            model: User,
+            attributes: ['id', 'nickname'],
+          },
+          {
+            model: Image,
+          },
+        ],
+      },
+    ],
+  });
+}
+
+module.exports = {
+  findPost,
+  findRetweetPost,
+  findPostWithoutUserPassword,
+  findPostListWithoutUserPassword,
+  findHashtagPostListWithoutUserPassword,
+};
