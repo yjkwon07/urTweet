@@ -12,6 +12,7 @@ const passportConfig = require('./passport');
 const postRouter = require('./routes/post');
 const postsRouter = require('./routes/posts');
 const userRouter = require('./routes/user');
+const hashtagRouter = require('./routes/hashtag');
 
 // config & init
 dotenv.config();
@@ -46,6 +47,7 @@ app.use(passport.session()); // express session이 session을 만들고 난 후,
 app.use('/posts', postsRouter);
 app.use('/post', postRouter);
 app.use('/user', userRouter);
+app.use('/hashtag', hashtagRouter);
 // End-Router
 
 app.listen(3065, () => {
