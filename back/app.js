@@ -16,19 +16,35 @@ const hashtagRouter = require('./routes/hashtag');
 
 // config & init
 dotenv.config();
+const env = process.env.NODE_ENV || 'development';
+const config = require('./config/config')['global'][env];
+
 db.sequelize.sync().catch(console.error);
 const app = express();
 passportConfig();
+// End-config & init
 
 // Global
+if (env === 'production') {
+  app.use(morgan('combined'));
+  app.use(hpp());
+  app.use(helmet({ contentSecurityPolicy: false }));
+  app.use(
+    cors({
+      origin: true, // *, true, "front-server"
+      credentials: true, // Access-Allow-Credential = true => 쿠키 전달
+    }),
+  );
+} else {
+  app.use(morgan('dev'));
+  app.use(
+    cors({
+      origin: true,
+      credentials: true,
+    }),
+  );
+}
 app.use('/', express.static(path.join(__dirname, 'uploads')));
-app.use(morgan('dev'));
-app.use(
-  cors({
-    origin: true, // *, true, "front-server"
-    credentials: true, // Access-Allow-Credential = true => 쿠키 전달
-  }),
-);
 app.use(express.json()); // json
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
@@ -50,6 +66,6 @@ app.use('/user', userRouter);
 app.use('/hashtag', hashtagRouter);
 // End-Router
 
-app.listen(3065, () => {
+app.listen(config.port, () => {
   console.log('server start...');
 });
