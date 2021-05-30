@@ -4,8 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3090",
-    "build": "cross-env ANALYZE=true NODE_ENV=production next build",
-    "start": "cross-env NODE_ENV=production next start -p 3060"
+    "build": "cross-env NODE_ENV=production next build",
+    "build:analyze": "cross-env ANALYZE=true NODE_ENV=production next build",
+    "start": "cross-env NODE_ENV=production next start -p 3060",
+    "start:pm2": "npx pm2 start npm -- start",
+    "export": "next export"
   },
   "dependencies": {
     "@ant-design/icons": "^4.6.2",
@@ -20,6 +23,7 @@
     "lodash": "^4.17.21",
     "next": "10.0.9",
     "next-redux-wrapper": "^6.0.2",
+    "pm2": "^4.5.6",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-hook-form": "^6.15.5",
