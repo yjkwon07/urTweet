@@ -33,7 +33,7 @@ if (env === 'production') {
   app.use(helmet({ contentSecurityPolicy: false }));
   app.use(
     cors({
-      origin: true, // *, true, "front-server", 요청 http 허용 [], "", true(all)
+      origin: config.origin, // *, true, "front-server", 요청 http 허용 [], "", true(all)
       credentials: true, // Access-Allow-Credential = true => 쿠키 전달, flalse일 경우 응답 헤더가 리소스와 함께 반환되지 않습니다. 이 헤더가 없으면 브라우저에서 응답을 무시하고 웹 컨텐츠로 반환되지 않는다는 점을 주의하세요.
     }),
   );
@@ -55,6 +55,11 @@ app.use(
     saveUninitialized: false, // 요청이 왔을 때 세션에 수정사항이 생기지 않더라도 세션을 다시 저장할지에 대한 설정
     resave: false, // 세션에 저장할 내역이 없더라도 세션을 저장할지 대한 설정 (보통 방문자를 추적할 때 사용된다.)
     secret: process.env.COOKIE_SECRET,
+    cookie: {
+      httpOnly: true,
+      secure: env === 'production',
+      domain: env === 'production' && config.domain,
+    },
   }),
 );
 app.use(passport.initialize()); // passport 설정 초기화

@@ -12,6 +12,8 @@ module.exports = {
     },
     production: {
       port: 80,
+      origin: 'http://urtweet.shop',
+      domain: '.urtweet.shop',
     },
   },
   sequelize: {
