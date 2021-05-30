@@ -1,36 +1,13 @@
 const express = require('express');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 
 const { findPost, findRetweetPost, findPostWithoutUserPassword } = require('../query/post');
 const { findCommentWithoutUserPassword } = require('../query/comment');
 const { Post, Comment, Image, Hashtag } = require('../models');
 const { isLoggedIn } = require('./middlewares');
+const { awsUpload: upload } = require('./upload');
 const { SUCCESS, CLIENT_ERROR, PAGE_ERROR } = require('../constant');
 
 const router = express.Router();
-
-try {
-  fs.accessSync('uploads');
-} catch (error) {
-  console.log('uploads folder create');
-  fs.mkdirSync('uploads');
-}
-
-const upload = multer({
-  storage: multer.diskStorage({
-    destination(req, file, done) {
-      done(null, 'uploads');
-    },
-    filename(req, file, done) {
-      const ext = path.extname(file.originalname); // 확장자 추출(.png)
-      const basename = path.basename(file.originalname, ext); // ss
-      done(null, basename + '_' + new Date().getTime() + ext); // ss15184712891.png
-    },
-  }),
-  limits: { fileSize: 20 * 1024 * 1024 }, // 20MB
-});
 
 // POST /post (게시글 업로드)
 router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
@@ -73,7 +50,8 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
 
 // POST /post/images (이미지 업로드)
 router.post('/images', isLoggedIn, upload.array('image'), (req, res, next) => {
-  res.send(req.files.map((v) => v.filename));
+  res.send(req.files.map((v) => v.location.replace(/\/original\//, '/thumb/')));
+  // res.send(req.files.map((v) => v.filename));
 });
 
 // GET /post/:postId (게시글 조회)
