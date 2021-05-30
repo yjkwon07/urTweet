@@ -21,7 +21,7 @@ const FollowList = ({ header, data, onClickMore, loading = false, active = false
   const handleCancle = useCallback(
     (userId) => () => {
       if (header === '팔로잉') dispatch(unFollow.requset({ userId }));
-      dispatch(removeFollowerMe.requset({ userId }));
+      else dispatch(removeFollowerMe.requset({ userId }));
     },
     [dispatch, header],
   );
