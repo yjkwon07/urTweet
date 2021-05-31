@@ -19,7 +19,7 @@ const hashtagRouter = require('./routes/hashtag');
 // config & init
 dotenv.config();
 const env = process.env.NODE_ENV || 'development';
-const config = require('./config/config')['global'][env];
+const config = require('./config/global')[env];
 
 db.sequelize.sync().catch(console.error);
 const app = express();
