@@ -1,0 +1,1 @@
+{"ast":null,"code":"export function isSSR() {\n  return false;\n}","map":{"version":3,"sources":["C:/Users/권영준/Desktop/urTweetFront/urTweet/front/utils/isSSR.ts"],"names":["isSSR"],"mappings":"AAAA,OAAO,SAASA,KAAT,GAA0B;AAC/B;AACD","sourcesContent":["export function isSSR(): boolean {\n  return typeof window === 'undefined';\n}\n"]},"metadata":{},"sourceType":"module"}

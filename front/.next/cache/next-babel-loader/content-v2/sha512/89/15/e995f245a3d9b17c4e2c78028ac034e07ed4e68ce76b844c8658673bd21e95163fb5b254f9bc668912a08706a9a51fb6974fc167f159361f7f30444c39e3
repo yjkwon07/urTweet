@@ -1,0 +1,1 @@
+{"ast":null,"code":"","map":{"version":3,"sources":[],"names":[],"mappings":"","sourcesContent":["export interface IFollowRes {\n  UserId: number;\n}\n\nexport interface IUnFollowRes {\n  UserId: number;\n}\n\nexport interface IRemoveFollowerMeRes {\n  UserId: number;\n}\n"]},"metadata":{},"sourceType":"script"}
