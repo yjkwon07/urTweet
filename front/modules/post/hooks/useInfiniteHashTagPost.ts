@@ -18,7 +18,7 @@ export default function useInfiniteHashTagPost({ hashtag, lastId, pageSize, isIn
   const { status } = useFetchStatus(listReadHashTagPost.TYPE);
   const data = useAppSelector(postSelector.infiniteHashTagPost);
 
-  const hasMoreRead = useMemo(() => data?.length % pageSize === 0, [data?.length, pageSize]);
+  const hasMoreRead = useMemo(() => data?.length && data.length % pageSize === 0, [data?.length, pageSize]);
 
   useEffect(() => {
     if (isInitFetch && status === undefined && hashtag)
