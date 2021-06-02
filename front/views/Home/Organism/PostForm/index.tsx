@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 
 import { UploadOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Button, Space, Form, Input, message } from 'antd';
+import { Button, Space, Form, Input, message, Image } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import * as yup from 'yup';
@@ -97,7 +97,7 @@ const PostForm = () => {
       <Space size={8}>
         {imageListPath.map((filePath) => (
           <div key={filePath} style={{ margin: '5px 0 5px 0' }}>
-            <img src={GET_IMAGE_URL(filePath)} alt={filePath} />
+            <Image width={200} height={200} src={GET_IMAGE_URL(filePath, true)} alt={filePath} />
             <div style={{ marginTop: '5px' }}>
               <Button type="dashed" onClick={handleRemoveImage(filePath)}>
                 제거

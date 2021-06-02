@@ -1,5 +1,3 @@
-import { axiosSetting } from '@modules/client';
-
 export const PASS_HREF = 'PASS_HREF';
 
 export const HOME_URL = '/';
@@ -13,8 +11,11 @@ export const GET_HASHTAG_URL = (hashtag: string) => {
   return HASNTAG_URL.replace(':hashtag', hashtag);
 };
 
-export const GET_IMAGE_URL = (name: string) => {
-  return `${axiosSetting.server()}/${name}`;
+export const GET_IMAGE_URL = (src: string, isOriginal = false) => {
+  if (isOriginal) {
+    return src.replace(/\/thumb\//, '/original/');
+  }
+  return src;
 };
 
 export const GET_USER_URL = (id: string) => {
