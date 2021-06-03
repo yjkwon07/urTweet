@@ -10,7 +10,7 @@ module.exports = {
     port: 3065,
   },
   production: {
-    port: 80,
+    port: 3065,
     origin: 'http://urtweet.shop',
     domain: '.urtweet.shop',
   },
