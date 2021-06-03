@@ -1312,7 +1312,7 @@ function useInfiniteHashTagPost({
     status
   } = Object(fetchStatus["f" /* useFetchStatus */])(slice["f" /* listReadHashTagPost */].TYPE);
   const data = Object(slices["b" /* useAppSelector */])(selector["a" /* default */].infiniteHashTagPost);
-  const hasMoreRead = Object(external_react_["useMemo"])(() => (data === null || data === void 0 ? void 0 : data.length) % pageSize === 0, [data === null || data === void 0 ? void 0 : data.length, pageSize]);
+  const hasMoreRead = Object(external_react_["useMemo"])(() => (data === null || data === void 0 ? void 0 : data.length) && data.length % pageSize === 0, [data === null || data === void 0 ? void 0 : data.length, pageSize]);
   Object(external_react_["useEffect"])(() => {
     if (isInitFetch && status === undefined && hashtag) dispatch(slice["f" /* listReadHashTagPost */].requset({
       hashtag,
@@ -1493,7 +1493,7 @@ function createRequestAsyncThunk(action) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return axiosSetting; });
+/* unused harmony export axiosSetting */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return axios; });
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("zr5I");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
@@ -1505,10 +1505,10 @@ function createRequestAsyncThunk(action) {
  */
 
 const axiosSetting = {
-  scheme: 'http',
-  host: 'localhost',
+  scheme: 'https',
+  host: 'api.urtweet.shop',
   api: '',
-  port: '3065',
+  port: '',
 
   server() {
     return `${this.scheme}://${this.host}${this.api}${this.port ? `:${this.port}` : ''}`;
@@ -4940,7 +4940,7 @@ const ImagesZoom = ({
           slidesToScroll: 1,
           children: images.map(image => /*#__PURE__*/Object(jsx_runtime_["jsx"])(ImgWrapper, {
             children: /*#__PURE__*/Object(jsx_runtime_["jsx"])("img", {
-              src: Object(urls["b" /* GET_IMAGE_URL */])(image.src),
+              src: Object(urls["b" /* GET_IMAGE_URL */])(image.src, true),
               alt: image.src
             })
           }, image.src))
@@ -5566,8 +5566,6 @@ module.exports = require("lodash/remove");
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return GET_IMAGE_URL; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return GET_USER_URL; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return GET_POST_URL; });
-/* harmony import */ var _modules_client__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("IMU7");
-
 const PASS_HREF = 'PASS_HREF';
 const HOME_URL = '/';
 const POST_URL = '/post/[id]';
@@ -5578,8 +5576,12 @@ const USER_URL = '/user/[id]';
 const GET_HASHTAG_URL = hashtag => {
   return HASNTAG_URL.replace(':hashtag', hashtag);
 };
-const GET_IMAGE_URL = name => {
-  return `${_modules_client__WEBPACK_IMPORTED_MODULE_0__[/* axiosSetting */ "b"].server()}/${name}`;
+const GET_IMAGE_URL = (src, isOriginal = false) => {
+  if (isOriginal) {
+    return src.replace(/\/thumb\//, '/original/');
+  }
+
+  return src;
 };
 const GET_USER_URL = id => {
   return USER_URL.replace('[id]', id);

@@ -481,7 +481,7 @@ function createRequestAsyncThunk(action) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return axiosSetting; });
+/* unused harmony export axiosSetting */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return axios; });
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("zr5I");
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
@@ -493,10 +493,10 @@ function createRequestAsyncThunk(action) {
  */
 
 const axiosSetting = {
-  scheme: 'http',
-  host: 'localhost',
+  scheme: 'https',
+  host: 'api.urtweet.shop',
   api: '',
-  port: '3065',
+  port: '',
 
   server() {
     return `${this.scheme}://${this.host}${this.api}${this.port ? `:${this.port}` : ''}`;

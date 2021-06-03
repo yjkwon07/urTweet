@@ -7,10 +7,10 @@ import Axios from 'axios';
  */
 
 export const axiosSetting = {
-  scheme: 'http',
-  host: 'localhost',
+  scheme: 'https',
+  host: 'api.urtweet.shop',
   api: '',
-  port: '3065',
+  port: '',
   server() {
     return `${this.scheme}://${this.host}${this.api}${this.port ? `:${this.port}` : ''}`;
   },
