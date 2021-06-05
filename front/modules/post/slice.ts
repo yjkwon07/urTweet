@@ -1,4 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
+import _find from 'lodash/find';
+import _remove from 'lodash/remove';
 
 import { createRequestAction } from '@modules/helper/createRequestAction';
 
@@ -38,19 +40,15 @@ export const createComment = createRequestAction(`${POST}/createComment`, reques
 // Type
 export interface IState {
   infinitePost: IPost[];
-  infiniteUserPost: IPost[];
-  infiniteHashTagPost: IPost[];
   list: IPost[];
   data: IPost | null;
 }
 
 // Reducer
 const initialState: IState = {
-  infinitePost: [],
-  infiniteUserPost: [],
-  infiniteHashTagPost: [],
-  list: [],
-  data: null,
+  infinitePost: [], // 무한 스크롤 페이징
+  list: [], // 리스트 조회
+  data: null, // 단일 조회
 };
 
 const slice = createSlice({
@@ -69,10 +67,10 @@ const slice = createSlice({
         state.infinitePost.push(...data);
       })
       .addCase(listReadUserPost.success, (state, { payload: data }) => {
-        state.infiniteUserPost.push(...data);
+        state.infinitePost.push(...data);
       })
       .addCase(listReadHashTagPost.success, (state, { payload: data }) => {
-        state.infiniteHashTagPost.push(...data);
+        state.infinitePost.push(...data);
       })
       .addCase(retweetPost.success, (state, { payload: data }) => {
         state.infinitePost.unshift(data);
@@ -80,45 +78,29 @@ const slice = createSlice({
       .addCase(createPost.success, (state, { payload: data }) => {
         state.infinitePost.unshift(data);
       })
-      .addCase(modifyPost.success, (state, { payload: data }) => {
-        const post = state.list.find((v) => v.id === data.PostId);
-        const infinitePost = state.infinitePost.find((v) => v.id === data.PostId);
-        const infiniteUserPost = state.infiniteUserPost.find((v) => v.id === data.PostId);
-        const infiniteHashTagPost = state.infiniteHashTagPost.find((v) => v.id === data.PostId);
-        if (post) post.content = data.content;
-        if (infinitePost) infinitePost.content = data.content;
-        if (infiniteUserPost) infiniteUserPost.content = data.content;
-        if (infiniteHashTagPost) infiniteHashTagPost.content = data.content;
+      .addCase(modifyPost.success, (state, { payload: { PostId, content } }) => {
+        const listPost = _find(state.list, { id: PostId });
+        const infinitePost = _find(state.infinitePost, { id: PostId });
+        if (listPost) listPost.content = content;
+        if (infinitePost) infinitePost.content = content;
       })
-      .addCase(removePost.success, (state, { payload: data }) => {
-        state.list = state.list.filter((v) => v.id !== data.PostId);
-        state.infinitePost = state.infinitePost.filter((v) => v.id !== data.PostId);
-        state.infiniteUserPost = state.infiniteUserPost.filter((v) => v.id !== data.PostId);
-        state.infiniteHashTagPost = state.infiniteHashTagPost.filter((v) => v.id !== data.PostId);
+      .addCase(removePost.success, (state, { payload: { PostId } }) => {
+        _remove(state.list, { id: PostId });
+        _remove(state.infinitePost, { id: PostId });
       })
-      .addCase(likePost.success, (state, { payload: data }) => {
-        state.list.find((v) => v.id === data.PostId)?.Likers.push({ id: data.UserId });
-        state.infinitePost.find((v) => v.id === data.PostId)?.Likers.push({ id: data.UserId });
-        state.infiniteUserPost.find((v) => v.id === data.PostId)?.Likers.push({ id: data.UserId });
-        state.infiniteHashTagPost.find((v) => v.id === data.PostId)?.Likers.push({ id: data.UserId });
+      .addCase(likePost.success, (state, { payload: { PostId, UserId } }) => {
+        _find(state.list, { id: PostId })?.Likers.push({ id: UserId });
+        _find(state.infinitePost, { id: PostId })?.Likers.push({ id: UserId });
       })
-      .addCase(unlikePost.success, (state, { payload: data }) => {
-        const post = state.list.find((v) => v.id === data.PostId);
-        const infinitePost = state.infinitePost.find((v) => v.id === data.PostId);
-        const infiniteUserPost = state.infiniteUserPost.find((v) => v.id === data.PostId);
-        const infiniteHashTagPost = state.infiniteHashTagPost.find((v) => v.id === data.PostId);
-        if (post) post.Likers = post.Likers.filter((v) => v.id !== data.UserId);
-        if (infinitePost) infinitePost.Likers = infinitePost?.Likers.filter((v) => v.id !== data.UserId);
-        if (infiniteUserPost) infiniteUserPost.Likers = infiniteUserPost?.Likers.filter((v) => v.id !== data.UserId);
-        if (infiniteHashTagPost) {
-          infiniteHashTagPost.Likers = infiniteHashTagPost?.Likers.filter((v) => v.id !== data.UserId);
-        }
+      .addCase(unlikePost.success, (state, { payload: { PostId, UserId } }) => {
+        const listPost = _find(state.list, { id: PostId });
+        const infinitePost = _find(state.infinitePost, { id: PostId });
+        if (listPost) _remove(listPost.Likers, { id: UserId });
+        if (infinitePost) _remove(infinitePost.Likers, { id: UserId });
       })
       .addCase(createComment.success, (state, { payload: data }) => {
-        state.list.find((v) => v.id === data.PostId)?.Comments.unshift(data);
-        state.infinitePost.find((v) => v.id === data.PostId)?.Comments.unshift(data);
-        state.infiniteUserPost.find((v) => v.id === data.PostId)?.Comments.unshift(data);
-        state.infiniteHashTagPost.find((v) => v.id === data.PostId)?.Comments.unshift(data);
+        _find(state.list, { id: data.PostId })?.Comments.unshift(data);
+        _find(state.infinitePost, { id: data.PostId })?.Comments.unshift(data);
       })
       .addDefaultCase((state) => state),
 });
