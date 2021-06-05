@@ -65,8 +65,8 @@ const slice = createSlice({
       .addCase(readUser.success, (state, { payload: data }) => {
         state.user = data;
       })
-      .addCase(modifyNickname.success, (state, { payload: data }) => {
-        if (state.MyInfo) state.MyInfo.nickname = data.nickname;
+      .addCase(modifyNickname.success, (state, { payload: { nickname } }) => {
+        if (state.MyInfo) state.MyInfo.nickname = nickname;
       })
       .addCase(listReadFollow.success, (state, { payload: data }) => {
         state.followerListData = data;
@@ -74,20 +74,20 @@ const slice = createSlice({
       .addCase(listReadFollowing.success, (state, { payload: data }) => {
         state.followingListData = data;
       })
-      .addCase(follow.success, (state, { payload: data }) => {
-        if (state.MyInfo) state.MyInfo.Followings.push({ id: data.UserId });
+      .addCase(follow.success, (state, { payload: { UserId } }) => {
+        if (state.MyInfo) state.MyInfo.Followings.push({ id: UserId });
       })
-      .addCase(unFollow.success, (state, { payload: data }) => {
-        if (state.MyInfo) state.MyInfo.Followings = state.MyInfo.Followings.filter((_) => _.id !== data.UserId);
+      .addCase(unFollow.success, (state, { payload: { UserId } }) => {
+        if (state.MyInfo) _remove(state.MyInfo.Followings, { id: UserId });
       })
-      .addCase(removeFollowerMe.success, (state, { payload: data }) => {
-        if (state.MyInfo) state.MyInfo.Followers = state.MyInfo.Followers.filter((_) => _.id !== data.UserId);
+      .addCase(removeFollowerMe.success, (state, { payload: { UserId } }) => {
+        if (state.MyInfo) _remove(state.MyInfo.Followers, { id: UserId });
       })
       .addCase(addPostToMe, (state, { payload: id }) => {
         if (state.MyInfo) state.MyInfo.Posts.unshift({ id });
       })
       .addCase(removePostToMe, (state, { payload: id }) => {
-        if (state.MyInfo) _remove(state.MyInfo.Posts, (v) => v.id === id);
+        if (state.MyInfo) _remove(state.MyInfo.Posts, { id });
       })
       .addCase(login.success, (state, { payload: data }) => {
         state.MyInfo = data;
