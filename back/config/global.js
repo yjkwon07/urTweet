@@ -11,7 +11,7 @@ module.exports = {
   },
   production: {
     port: 3065,
-    origin: 'http://urtweet.shop',
+    origin: 'https://urtweet.shop',
     domain: '.urtweet.shop',
   },
 };

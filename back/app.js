@@ -28,6 +28,7 @@ passportConfig();
 
 // Global
 if (env === 'production') {
+  app.enable('trust proxy');
   app.use(morgan('combined')); // 요청 http logger
   app.use(hpp());
   app.use(helmet({ contentSecurityPolicy: false }));
@@ -52,6 +53,7 @@ app.use(express.urlencoded({ extended: true })); // 일반 data Form 데이터 p
 app.use(cookieParser(process.env.COOKIE_SECRET)); // 쿠키 parsing secret 코드 넣게 되면 signed cookie 검사
 app.use(
   session({
+    proxy: process.env.NODE_ENV === 'production', // 프록시 허용
     saveUninitialized: false, // 요청이 왔을 때 세션에 수정사항이 생기지 않더라도 세션을 다시 저장할지에 대한 설정
     resave: false, // 세션에 저장할 내역이 없더라도 세션을 저장할지 대한 설정 (보통 방문자를 추적할 때 사용된다.)
     secret: process.env.COOKIE_SECRET,
