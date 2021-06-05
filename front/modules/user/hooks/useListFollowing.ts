@@ -6,8 +6,7 @@ import { useFetchStatus } from '@modules/fetchStatus';
 import { useAppSelector } from '@modules/store/slices';
 
 import { IListReadFollowingURL } from '../api/requestAPI';
-import userSelector from '../selector';
-import { listReadFollowing } from '../slice';
+import { listReadFollowing, userSelector } from '../slice';
 
 export interface IProps extends IListReadFollowingURL {
   isInitFetch?: boolean;

@@ -1,7 +1,6 @@
 import { all, fork, takeLatest, debounce, throttle, call, select, put } from 'redux-saga/effects';
 
 import { createRequestSaga } from '@modules/helper';
-import { RootState } from '@modules/store/slices';
 import { addPostToMe, removePostToMe } from '@modules/user';
 
 import {

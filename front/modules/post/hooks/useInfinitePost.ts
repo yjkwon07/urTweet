@@ -6,8 +6,7 @@ import { useFetchStatus } from '@modules/fetchStatus';
 import { useAppSelector } from '@modules/store/slices';
 
 import { IListReadPostURL } from '../api/requestAPI';
-import postSelector from '../selector';
-import { infinteListReadPost } from '../slice';
+import { infinteListReadPost, postSelector } from '../slice';
 
 export interface IProps extends IListReadPostURL {
   isInitFetch?: boolean;

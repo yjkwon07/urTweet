@@ -5,8 +5,7 @@ import { useDispatch } from 'react-redux';
 import { useFetchStatus } from '@modules/fetchStatus';
 import { useAppSelector } from '@modules/store/slices';
 
-import userSelector from '../selector';
-import { readMyUser } from '../slice';
+import { readMyUser, userSelector } from '../slice';
 
 export interface IProps {
   isInitFetch?: boolean;

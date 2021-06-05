@@ -6,8 +6,7 @@ import { useFetchStatus } from '@modules/fetchStatus';
 import { useAppSelector } from '@modules/store/slices';
 
 import { IUserURL } from '../api/requestAPI';
-import userSelector from '../selector';
-import { readUser } from '../slice';
+import { readUser, userSelector } from '../slice';
 
 export interface IProps extends IUserURL {
   isInitFetch?: boolean;

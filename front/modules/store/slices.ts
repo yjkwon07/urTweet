@@ -6,10 +6,12 @@ import { IFetchReducer, FETCH_STATUS, fetchStatusReducer } from '../fetchStatus'
 import { IState as IPost, POST, postReducer } from '../post';
 import { IState as IUser, USER, userReducer } from '../user';
 
-export interface RootState {
-  [FETCH_STATUS]: IFetchReducer;
-  [USER]: IUser;
-  [POST]: IPost;
+declare global {
+  type RootState = {
+    [FETCH_STATUS]: IFetchReducer;
+    [USER]: IUser;
+    [POST]: IPost;
+  };
 }
 
 const rootReducer = (state: RootState | undefined, action: AnyAction) => {

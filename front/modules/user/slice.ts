@@ -98,5 +98,13 @@ const slice = createSlice({
       .addDefaultCase((state) => state),
 });
 
+// Select
+export const userSelector = {
+  myData: (state: RootState) => state.USER.MyInfo,
+  userData: (state: RootState) => state.USER.user,
+  followListData: (state: RootState) => state.USER.followerListData,
+  followingListData: (state: RootState) => state.USER.followingListData,
+};
+
 export const userReducer = slice.reducer;
 export const userAction = slice.actions;

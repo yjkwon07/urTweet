@@ -4,7 +4,7 @@ import createSagaMiddleware from 'redux-saga';
 import thunkMiddleware from 'redux-thunk';
 
 import rootSaga from './sagas';
-import rootReducer, { RootState } from './slices';
+import rootReducer from './slices';
 
 const devMode = process.env.NODE_ENV === 'development';
 
