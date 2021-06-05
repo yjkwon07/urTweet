@@ -6,7 +6,7 @@ import { END } from 'redux-saga';
 import SEO, { IProps as ISEOProps } from '@components/SEO';
 import AppLayout from '@layouts/App';
 import { readPost } from '@modules/post';
-import { wrapper } from '@modules/store/configStore';
+import wrapper from '@modules/store/configStore';
 import { GET_POST_URL } from '@utils/urls';
 import PostRead from '@views/Post/Read';
 

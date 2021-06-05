@@ -7,7 +7,7 @@ import SEO, { IProps as ISEOProps } from '@components/SEO';
 import AppLayout from '@layouts/App';
 import { infinteListReadPost } from '@modules/post';
 import { DEAFULT_PAGE_SIZE } from '@modules/post/utils/constants';
-import { wrapper } from '@modules/store/configStore';
+import wrapper from '@modules/store/configStore';
 import { HOME_URL } from '@utils/urls';
 import Home from '@views/Home';
 

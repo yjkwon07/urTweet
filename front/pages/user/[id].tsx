@@ -7,7 +7,7 @@ import SEO, { IProps as ISEOProps } from '@components/SEO';
 import AppLayout from '@layouts/App';
 import { listReadUserPost } from '@modules/post';
 import { DEAFULT_PAGE_SIZE } from '@modules/post/utils/constants';
-import { wrapper } from '@modules/store/configStore';
+import wrapper from '@modules/store/configStore';
 import { readUser } from '@modules/user';
 import { GET_USER_URL } from '@utils/urls';
 import UserRead from '@views/User/Read';

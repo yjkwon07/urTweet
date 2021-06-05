@@ -7,7 +7,7 @@ import SEO, { IProps as ISEOProps } from '@components/SEO';
 import AppLayout from '@layouts/App';
 import { listReadHashTagPost } from '@modules/post';
 import { DEAFULT_PAGE_SIZE } from '@modules/post/utils/constants';
-import { wrapper } from '@modules/store/configStore';
+import wrapper from '@modules/store/configStore';
 import { GET_HASHTAG_URL } from '@utils/urls';
 import HashtagListRead from '@views/Hashtag/List';
 

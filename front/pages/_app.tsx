@@ -5,7 +5,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 
-import { wrapper } from '@modules/store/configStore';
+import wrapper from '@modules/store/configStore';
 import 'antd/dist/antd.css';
 
 moment.locale('ko');
