@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';
 import PostCard from '@components/PostCard';
 import { listReadUserPost } from '@modules/post';
 import useInfiniteUserPost from '@modules/post/hooks/useInfiniteUserPost';
+import { useMyUser } from '@modules/user';
 import useUser from '@modules/user/hooks/useUser';
 
 import UserInfo from './Organism/UserInfo';
@@ -20,6 +21,7 @@ const Read = ({ isSSR }: IProps) => {
   const dispatch = useDispatch();
   const router = useRouter();
   const userId = Number(router.query.id as string);
+  const { data: myData } = useMyUser({});
   const { data: userData } = useUser({ isInitFetch: !isSSR, userId });
   const [pageSize] = useState(DEAFULT_PAGE_SIZE);
   const { data: postListData, status, hasMoreRead } = useInfiniteUserPost({
@@ -49,7 +51,7 @@ const Read = ({ isSSR }: IProps) => {
     <>
       {userData && (
         <>
-          <UserInfo data={userData} />
+          {myData?.id !== userId && <UserInfo data={userData} />}
           {postListData.map((post) => (
             <PostCard key={post.id} data={post} />
           ))}
