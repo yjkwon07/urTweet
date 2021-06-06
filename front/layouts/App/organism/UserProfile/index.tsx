@@ -40,7 +40,7 @@ const UserProfile = () => {
             </a>
           </Link>
         </div>,
-        <div key="followings">
+        <div key="followers">
           <Link href={PROFILE_URL} passHref>
             <a href={PASS_HREF}>
               팔로워

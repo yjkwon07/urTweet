@@ -48,8 +48,8 @@ const PostImages = ({ images }: IProps) => {
         <img
           src={GET_IMAGE_URL(images[1].src)}
           alt={images[1].src}
-          role="presentation"
           style={{ width: '50%', display: 'inline-block' }}
+          role="presentation"
           onClick={handleZoom}
         />
         {showImagesZoom && <ImagesZoom images={images} onClose={handleClose} />}

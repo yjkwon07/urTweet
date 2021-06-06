@@ -18,7 +18,7 @@ export interface IProps {
 const FollowList = ({ header, data, onClickMore, loading = false, active = false }: IProps) => {
   const dispatch = useDispatch();
 
-  const handleCancle = useCallback(
+  const handleCancel = useCallback(
     (userId) => () => {
       if (header === '팔로잉') dispatch(unFollow.requset({ userId }));
       else dispatch(removeFollowerMe.requset({ userId }));
@@ -45,7 +45,7 @@ const FollowList = ({ header, data, onClickMore, loading = false, active = false
       dataSource={data}
       renderItem={(item) => (
         <List.Item style={{ marginTop: 20 }}>
-          <Card actions={[<StopOutlined key="stop" onClick={handleCancle(item.id)} />]}>
+          <Card actions={[<StopOutlined key="stop" onClick={handleCancel(item.id)} />]}>
             <Card.Meta description={item.nickname} />
           </Card>
         </List.Item>

@@ -51,10 +51,10 @@ const AppLayout: FC = ({ children }) => {
       <Content style={{ padding: '0 50px', marginTop: 64, backgroundColor: '#FFF' }}>
         <div style={{ minHeight: 400, padding: 24 }}>
           <Row gutter={12}>
-            <Col xs={24} sm={24} md={8} lg={4} style={{ paddingTop: 12 }}>
+            <Col xs={24} sm={24} md={8} lg={5} style={{ paddingTop: 12 }}>
               {myData ? <UserProfile /> : <LoginForm />}
             </Col>
-            <Col xs={24} sm={24} md={16} lg={20} style={{ paddingTop: 12 }}>
+            <Col xs={24} sm={24} md={16} lg={19} style={{ paddingTop: 12 }}>
               {children}
             </Col>
           </Row>

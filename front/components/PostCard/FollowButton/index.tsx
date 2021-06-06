@@ -23,7 +23,7 @@ const FollowButton = ({ data }: IProps) => {
     myData?.Followings,
   ]);
 
-  const handleToogleFollow = useCallback(() => {
+  const handleToggleFollow = useCallback(() => {
     if (isFollowing) dispatch(unFollow.requset({ userId: data.User.id }));
     else dispatch(follow.requset({ userId: data.User.id }));
   }, [data.User.id, dispatch, isFollowing]);
@@ -38,7 +38,7 @@ const FollowButton = ({ data }: IProps) => {
       type={isFollowing ? undefined : 'primary'}
       icon={isFollowing ? <UserDeleteOutlined /> : <UserAddOutlined />}
       loading={followStatus === 'LOADING' || unfollowStatus === 'LOADING'}
-      onClick={handleToogleFollow}
+      onClick={handleToggleFollow}
     >
       {isFollowing ? '언팔로우' : '팔로우'}
     </Button>
