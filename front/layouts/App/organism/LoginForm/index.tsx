@@ -10,6 +10,7 @@ import * as yup from 'yup';
 
 import { useFetchStatus } from '@modules/fetchStatus';
 import { login } from '@modules/user';
+import { setUserId } from '@utils/auth';
 import { PASS_HREF, SIGNUP_URL } from '@utils/urls';
 
 import { FormWrapper } from './styles';
@@ -32,7 +33,8 @@ const LoginForm = () => {
   const handleSubmit = useMemo(() => {
     return checkSubmit(async (formData) => {
       try {
-        await dispatch(login.asyncTunk(formData));
+        const user = await dispatch(login.asyncTunk(formData));
+        setUserId(user.id.toString());
       } catch (error) {
         message.error(JSON.stringify(error.response.data));
       }

@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { useFetchStatus } from '@modules/fetchStatus';
 import { logout, userSelector } from '@modules/user';
+import { removeUserId } from '@utils/auth';
 import { GET_USER_URL, PASS_HREF, PROFILE_URL } from '@utils/urls';
 
 const UserProfile = () => {
@@ -15,6 +16,7 @@ const UserProfile = () => {
   const myData = useSelector(userSelector.myData);
 
   const handleLogout = useCallback(() => {
+    removeUserId();
     dispatch(logout.requset({}));
   }, [dispatch]);
 
