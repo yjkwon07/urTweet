@@ -3,7 +3,7 @@ import React from 'react';
 import Head from 'next/head';
 
 import SEO, { IProps as ISEOProps } from '@components/SEO';
-import AppLayout from '@layouts/App';
+import BaseLayout from '@layouts/BaseLayout';
 import { SIGNUP_URL } from '@utils/urls';
 import Signup from '@views/Signup';
 
@@ -14,13 +14,13 @@ export interface IProps {
 
 const SignupPage = ({ title, seo }: IProps) => {
   return (
-    <AppLayout>
+    <BaseLayout>
       <Head>
         <title>{title}</title>
         <SEO title={seo.title} url={seo.url} description={seo.description} name={seo.name} keywords={seo.keywords} />
       </Head>
       <Signup />
-    </AppLayout>
+    </BaseLayout>
   );
 };
 

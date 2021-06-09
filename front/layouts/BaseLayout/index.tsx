@@ -14,7 +14,7 @@ import { globalStyles, SearchInput } from './styles';
 
 const { Header, Content } = Layout;
 
-const AppLayout: FC = ({ children }) => {
+const BaseLayout: FC = ({ children }) => {
   const router = useRouter();
   const { data: myData } = useMyUser({});
 
@@ -51,12 +51,13 @@ const AppLayout: FC = ({ children }) => {
       <Content style={{ padding: '0 50px', marginTop: 64, backgroundColor: '#FFF' }}>
         <div style={{ minHeight: 400, padding: 24 }}>
           <Row gutter={12}>
-            <Col xs={24} sm={24} md={8} lg={5} style={{ paddingTop: 12 }}>
+            <Col xs={24} sm={24} md={24} lg={8} style={{ paddingTop: 12 }}>
               {myData ? <UserProfile /> : <LoginForm />}
             </Col>
-            <Col xs={24} sm={24} md={16} lg={19} style={{ paddingTop: 12 }}>
+            <Col xs={24} sm={24} md={24} lg={9} style={{ paddingTop: 12 }}>
               {children}
             </Col>
+            <Col xs={24} sm={24} md={24} lg={7} style={{ paddingTop: 12 }} />
           </Row>
         </div>
       </Content>
@@ -64,4 +65,4 @@ const AppLayout: FC = ({ children }) => {
   );
 };
 
-export default AppLayout;
+export default BaseLayout;

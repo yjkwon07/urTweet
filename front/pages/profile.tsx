@@ -2,7 +2,7 @@ import React from 'react';
 
 import Head from 'next/head';
 
-import AppLayout from '@layouts/App';
+import BaseLayout from '@layouts/BaseLayout';
 import Profile from '@views/Profile';
 
 export interface IProps {
@@ -11,12 +11,12 @@ export interface IProps {
 
 const ProfilePage = ({ title }: IProps) => {
   return (
-    <AppLayout>
+    <BaseLayout>
       <Head>
         <title>{title}</title>
       </Head>
       <Profile />
-    </AppLayout>
+    </BaseLayout>
   );
 };
 

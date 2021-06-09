@@ -4,7 +4,7 @@ import Head from 'next/head';
 import { END } from 'redux-saga';
 
 import SEO, { IProps as ISEOProps } from '@components/SEO';
-import AppLayout from '@layouts/App';
+import BaseLayout from '@layouts/BaseLayout';
 import { listReadUserPost } from '@modules/post';
 import { DEAFULT_PAGE_SIZE } from '@modules/post/utils/constants';
 import wrapper from '@modules/store/configStore';
@@ -19,13 +19,13 @@ export interface IProps {
 
 const UserReadPages = ({ title, seo }: IProps) => {
   return (
-    <AppLayout>
+    <BaseLayout>
       <Head>
         <title>{title}</title>
         <SEO title={seo.title} url={seo.url} description={seo.description} name={seo.name} keywords={seo.keywords} />
       </Head>
       <UserRead isSSR />
-    </AppLayout>
+    </BaseLayout>
   );
 };
 

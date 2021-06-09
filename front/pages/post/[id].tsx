@@ -4,7 +4,7 @@ import Head from 'next/head';
 import { END } from 'redux-saga';
 
 import SEO, { IProps as ISEOProps } from '@components/SEO';
-import AppLayout from '@layouts/App';
+import BaseLayout from '@layouts/BaseLayout';
 import { readPost } from '@modules/post';
 import wrapper from '@modules/store/configStore';
 import { GET_POST_URL } from '@utils/urls';
@@ -16,13 +16,13 @@ export interface IProps {
 }
 const PostPage = ({ title, seo }: IProps) => {
   return (
-    <AppLayout>
+    <BaseLayout>
       <Head>
         <title>{title}</title>
         <SEO title={seo.title} url={seo.url} description={seo.description} name={seo.name} keywords={seo.keywords} />
       </Head>
       <PostRead isSSR />
-    </AppLayout>
+    </BaseLayout>
   );
 };
 
