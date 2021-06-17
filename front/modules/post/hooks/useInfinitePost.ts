@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useDispatch } from 'react-redux';
 
@@ -8,22 +8,30 @@ import { useAppSelector } from '@modules/store/slices';
 import { IListReadPostURL } from '../api/requestAPI';
 import { infinteListReadPost, postSelector } from '../slice';
 
-export interface IProps extends IListReadPostURL {
+interface IProps {
+  query: IListReadPostURL;
   isInitFetch?: boolean;
 }
 
-export default function useInfinitePost({ pageSize, isInitFetch = true }: IProps) {
+export default function useInfinitePost({ query: { lastId, pageSize }, isInitFetch = false }: IProps) {
   const dispatch = useDispatch();
   const { status } = useFetchStatus(infinteListReadPost.TYPE);
   const data = useAppSelector(postSelector.infinitePost) || [];
 
+  const isInitLoad = useRef(!isInitFetch);
   const hasMoreRead = useMemo(() => data?.length && data.length % pageSize === 0, [data?.length, pageSize]);
 
-  useEffect(() => {
-    if (isInitFetch && status === undefined) {
-      dispatch(infinteListReadPost.requset({ pageSize }));
-    }
-  }, [dispatch, isInitFetch, pageSize, status]);
+  const reload = useCallback(() => {
+    dispatch(infinteListReadPost.requset({ lastId, pageSize }));
+  }, [dispatch, lastId, pageSize]);
 
-  return { status, data, hasMoreRead };
+  useEffect(() => {
+    if (isInitLoad.current) {
+      reload();
+    } else {
+      isInitLoad.current = !isInitLoad.current;
+    }
+  }, [reload]);
+
+  return { status, data, hasMoreRead, reload };
 }

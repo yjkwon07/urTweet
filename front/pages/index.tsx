@@ -6,12 +6,12 @@ import { END } from 'redux-saga';
 import SEO, { IProps as ISEOProps } from '@components/SEO';
 import BaseLayout from '@layouts/BaseLayout';
 import { infinteListReadPost } from '@modules/post';
-import { DEAFULT_PAGE_SIZE } from '@modules/post/utils/constants';
 import wrapper from '@modules/store/configStore';
 import { HOME_URL } from '@utils/urls';
 import Home from '@views/Home';
+import { DEAFULT_PAGE_SIZE } from '@views/Home/config/constants';
 
-export interface IProps {
+interface IProps {
   title: string;
   seo: ISEOProps;
 }
@@ -29,7 +29,6 @@ const HomePage = ({ title, seo }: IProps) => {
 };
 
 // SSR
-// https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
 export const getServerSideProps = wrapper.getServerSideProps(async ({ store }) => {
   await store.dispatch(infinteListReadPost.asyncTunk({ pageSize: DEAFULT_PAGE_SIZE }));
   store.dispatch(END);
