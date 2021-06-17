@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Empty, Space, Spin } from 'antd';
+import { Empty, Spin } from 'antd';
 import { useDispatch } from 'react-redux';
 
 import PostCard from '@components/PostCard';
@@ -9,8 +9,8 @@ import { useAppSelector } from '@modules/store/slices';
 import { userSelector } from '@modules/user';
 
 import { DEAFULT_PAGE_SIZE } from './config/constants';
-import PostForm from './Organism/PostForm';
-import { StyledCenter } from './styles';
+import PostForm from './organism/PostForm';
+import { StyledBlock, StyledCenter } from './styles';
 
 interface IProps {
   isSSR: boolean;
@@ -44,8 +44,9 @@ const Home = ({ isSSR }: IProps) => {
   }, [status, postListData, hasMoreRead, dispatch, pageSize, lastId]);
 
   return (
-    <Space size={6} direction="vertical" style={{ width: '100%' }}>
+    <>
       {myData && <PostForm />}
+      <StyledBlock />
       {postListData.map((data) => (
         <PostCard key={data.id} data={data} />
       ))}
@@ -59,7 +60,7 @@ const Home = ({ isSSR }: IProps) => {
           <Empty description="정보를 불러오지 못했습니다." />
         </StyledCenter>
       )}
-    </Space>
+    </>
   );
 };
 
