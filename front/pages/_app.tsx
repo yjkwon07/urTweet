@@ -1,11 +1,14 @@
 import React from 'react';
 
+import { Global } from '@emotion/react';
 import moment from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 
 import wrapper from '@modules/store/configStore';
+import { globalStyles } from 'public/styles';
+
 import 'antd/dist/antd.css';
 
 moment.locale('ko');
@@ -15,6 +18,7 @@ const App = ({ Component, pageProps }: AppProps) => {
   return (
     <>
       <Head>
+        <Global styles={globalStyles} />
         <meta charSet="utf-8" />
         <meta
           name="viewport"
