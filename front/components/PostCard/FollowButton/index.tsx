@@ -8,7 +8,7 @@ import { useFetchStatus } from '@modules/fetchStatus';
 import { IPost } from '@modules/post/@types/db';
 import { follow, unFollow, userSelector } from '@modules/user';
 
-export interface IProps {
+interface IProps {
   data: IPost;
 }
 

@@ -6,7 +6,7 @@ import ImagesZoom from '@components/ImagesZoom';
 import { IIMage } from '@modules/post/@types/db';
 import { GET_IMAGE_URL } from '@utils/urls';
 
-export interface IProps {
+interface IProps {
   images: IIMage[];
 }
 
