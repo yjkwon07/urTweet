@@ -8,7 +8,6 @@ import * as yup from 'yup';
 
 import { useFetchStatus } from '@modules/fetchStatus';
 import { createComment } from '@modules/post';
-import { IPost } from '@modules/post/@types/db';
 import { userSelector } from '@modules/user';
 import { IMyUser } from '@modules/user/@types/db';
 import requiredLogin from '@utils/requiredLogin';
@@ -20,10 +19,10 @@ const COMMENT_SCHEMA = yup.object({
 type FormData = yup.InferType<typeof COMMENT_SCHEMA>;
 
 interface IProps {
-  data: IPost;
+  postId: number;
 }
 
-const CommentForm = ({ data }: IProps) => {
+const CommentForm = ({ postId }: IProps) => {
   const dispatch = useDispatch();
   const { status } = useFetchStatus(createComment.TYPE);
   const myData = useSelector(userSelector.myData);
@@ -40,7 +39,7 @@ const CommentForm = ({ data }: IProps) => {
       try {
         await dispatch(
           createComment.asyncTunk({
-            url: { postId: data.id },
+            url: { postId },
             body: { content: formData.content, userId: (myData as IMyUser).id },
           }),
         );
@@ -51,7 +50,7 @@ const CommentForm = ({ data }: IProps) => {
         reset();
       }
     });
-  }, [checkSubmit, dispatch, myData, data.id, reset]);
+  }, [checkSubmit, dispatch, myData, postId, reset]);
 
   return (
     <Form onFinish={handleSubmit}>

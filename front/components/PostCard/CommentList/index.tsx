@@ -4,17 +4,17 @@ import { Avatar, Comment, List, Tooltip } from 'antd';
 import moment from 'dayjs';
 import Link from 'next/link';
 
-import { IPost } from '@modules/post/@types/db';
+import { IComment } from '@modules/post/@types/db';
 import { GET_USER_URL, PASS_HREF } from '@utils/urls';
 
 interface IProps {
-  data: IPost;
+  commentList: IComment[];
 }
 
-const CommentList = ({ data }: IProps) => (
+const CommentList = ({ commentList }: IProps) => (
   <List
     itemLayout="horizontal"
-    dataSource={data.Comments}
+    dataSource={commentList}
     renderItem={(item) => (
       <li>
         <Comment

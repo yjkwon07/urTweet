@@ -5,30 +5,26 @@ import { Button } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { useFetchStatus } from '@modules/fetchStatus';
-import { IPost } from '@modules/post/@types/db';
 import { follow, unFollow, userSelector } from '@modules/user';
 
 interface IProps {
-  data: IPost;
+  userId: number;
 }
 
-const FollowButton = ({ data }: IProps) => {
+const FollowButton = ({ userId }: IProps) => {
   const dispatch = useDispatch();
   const myData = useSelector(userSelector.myData);
   const { status: followStatus } = useFetchStatus(follow.TYPE);
   const { status: unfollowStatus } = useFetchStatus(unFollow.TYPE);
 
-  const isFollowing = useMemo(() => !!myData?.Followings.find((_) => _.id === data.User.id), [
-    data.User.id,
-    myData?.Followings,
-  ]);
+  const isFollowing = useMemo(() => !!myData?.Followings.find((_) => _.id === userId), [userId, myData?.Followings]);
 
   const handleToggleFollow = useCallback(() => {
-    if (isFollowing) dispatch(unFollow.requset({ userId: data.User.id }));
-    else dispatch(follow.requset({ userId: data.User.id }));
-  }, [data.User.id, dispatch, isFollowing]);
+    if (isFollowing) dispatch(unFollow.requset({ userId }));
+    else dispatch(follow.requset({ userId }));
+  }, [userId, dispatch, isFollowing]);
 
-  if (!myData || data.User.id === myData.id) {
+  if (!myData || userId === myData.id) {
     return null;
   }
 
