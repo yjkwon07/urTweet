@@ -4,12 +4,13 @@ import {
   DeleteOutlined,
   EditOutlined,
   EllipsisOutlined,
+  ExclamationCircleOutlined,
   HeartOutlined,
   HeartTwoTone,
   MessageOutlined,
   RetweetOutlined,
 } from '@ant-design/icons';
-import { Card, Popover, Button, Divider, message, Popconfirm, Tooltip } from 'antd';
+import { Card, Popover, Button, Divider, message, Tooltip, Modal } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { useFetchStatus } from '@modules/fetchStatus';
@@ -24,6 +25,7 @@ import FollowButton from './FollowButton';
 import PostCardContent from './PostCardContent';
 import PostCardMeta from './PostCardMeta';
 
+const { confirm } = Modal;
 interface IProps {
   data: IPost;
 }
@@ -64,9 +66,16 @@ const PostCard = ({ data }: IProps) => {
     setEditMode(false);
   }, []);
 
-  const handleRemovePost = useCallback(() => {
-    if (!requiredLogin()) return;
-    dispatch(removePost.requset({ postId: data.id }));
+  const handleShowRemovePostConfirm = useCallback(() => {
+    confirm({
+      title: '정말로 삭제 하시겠습니까?',
+      icon: <ExclamationCircleOutlined />,
+      content: '삭제시 해당 컨텐츠는 복구 불가 합니다.',
+      async onOk() {
+        if (!requiredLogin()) return;
+        dispatch(removePost.requset({ postId: data.id }));
+      },
+    });
   }, [data.id, dispatch]);
 
   return (
@@ -89,7 +98,6 @@ const PostCard = ({ data }: IProps) => {
         </Tooltip>,
         <Tooltip key="more" placement="bottom" title="더보기">
           <Popover
-            trigger="click"
             content={
               data.User.id === myId && (
                 <Button.Group>
@@ -98,16 +106,14 @@ const PostCard = ({ data }: IProps) => {
                       <EditOutlined /> 수정
                     </Button>
                   )}
-                  <Popconfirm
-                    title="정말로 삭제하시겠습니까?"
-                    okText="삭제"
-                    onConfirm={handleRemovePost}
-                    cancelText="취소"
+                  <Button
+                    type="primary"
+                    danger
+                    loading={removePostStatus === 'LOADING'}
+                    onClick={handleShowRemovePostConfirm}
                   >
-                    <Button type="primary" danger loading={removePostStatus === 'LOADING'}>
-                      <DeleteOutlined /> 삭제
-                    </Button>
-                  </Popconfirm>
+                    <DeleteOutlined /> 삭제
+                  </Button>
                 </Button.Group>
               )
             }
