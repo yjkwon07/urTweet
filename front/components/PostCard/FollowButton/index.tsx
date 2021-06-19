@@ -1,12 +1,15 @@
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { UserAddOutlined, UserDeleteOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined, UserAddOutlined, UserDeleteOutlined } from '@ant-design/icons';
+import { Modal } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { useFetchStatus } from '@modules/fetchStatus';
 import { follow, unFollow, userSelector } from '@modules/user';
 
 import { StyledButton } from './styles';
+
+const { confirm } = Modal;
 
 interface IProps {
   userId: number;
@@ -22,9 +25,19 @@ const FollowButton = ({ userId }: IProps) => {
 
   const isFollowing = useMemo(() => !!myData?.Followings.find((_) => _.id === userId), [userId, myData?.Followings]);
 
-  const handleToggleFollow = useCallback(() => {
-    if (isFollowing) dispatch(unFollow.requset({ userId }));
-    else dispatch(follow.requset({ userId }));
+  const handleFollow = useCallback(() => {
+    dispatch(follow.requset({ userId }));
+  }, [userId, dispatch]);
+
+  const handleShowUnfollowConfirm = useCallback(() => {
+    confirm({
+      title: '정말로 언팔로우 하시겠습니까?',
+      icon: <ExclamationCircleOutlined />,
+      content: '언팔로우시 해당 멤버의 활동을 자세히 알 수 없게 됩니다.',
+      onOk() {
+        if (isFollowing) dispatch(unFollow.requset({ userId }));
+      },
+    });
   }, [userId, dispatch, isFollowing]);
 
   if (!myData || userId === myData.id) {
@@ -42,7 +55,7 @@ const FollowButton = ({ userId }: IProps) => {
           loading={unfollowStatus === 'LOADING'}
           onMouseEnter={() => setShowUnfollow(true)}
           onMouseLeave={() => setShowUnfollow(false)}
-          onClick={handleToggleFollow}
+          onClick={handleShowUnfollowConfirm}
         >
           {showUnfollow ? 'Unfollow' : 'Following'}
         </StyledButton>
@@ -52,7 +65,7 @@ const FollowButton = ({ userId }: IProps) => {
           type="primary"
           icon={<UserAddOutlined />}
           loading={followStatus === 'LOADING'}
-          onClick={handleToggleFollow}
+          onClick={handleFollow}
         >
           Follow
         </StyledButton>
