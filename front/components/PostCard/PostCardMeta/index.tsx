@@ -23,7 +23,7 @@ const PostCardMeta = ({ userId, nickname, createdAt, actions, description }: IPr
       avatar={
         <Link href={GET_USER_URL(userId)} passHref>
           <a href={PASS_HREF}>
-            <Avatar>{nickname}</Avatar>
+            <Avatar>{nickname[0]}</Avatar>
           </a>
         </Link>
       }
