@@ -17,7 +17,11 @@ import { GET_HASHTAG_URL, PASS_HREF } from '@utils/urls';
 import PostImages from '../PostImages';
 
 const POST_SCHEMA = yup.object({
-  content: yup.string().min(3, '게시글은 3자 이상 입력하여 주십시오.').required('게시글은 필수 입력 항목 입니다.'),
+  content: yup
+    .string()
+    .min(3, '게시글은 3자 이상 입력하여 주십시오.')
+    .max(140, '게시글은 140자 제한 입니다.')
+    .required('게시글은 필수 입력 항목 입니다.'),
 });
 
 type FormData = yup.InferType<typeof POST_SCHEMA>;
@@ -90,7 +94,14 @@ const PostCardContent = ({ postId, postContent, images, editMode = false, onCanc
           >
             <Controller
               control={control}
-              as={<Input.TextArea maxLength={140} autoSize={{ minRows: 3, maxRows: 5 }} />}
+              as={
+                <Input.TextArea
+                  maxLength={140}
+                  autoSize={{ minRows: 3, maxRows: 5 }}
+                  showCount
+                  defaultValue={postContent}
+                />
+              }
               name="content"
               id="edit_content"
               placeholder="게시글을 작성해 주세요."
