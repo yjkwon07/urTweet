@@ -35,6 +35,7 @@ const PostCard = ({ data }: IProps) => {
   const myId = useSelector(userSelector.myData)?.id;
   const { status: removePostStatus } = useFetchStatus(removePost.TYPE);
 
+  const [morePopOverOpen, setMorePopOverOpen] = useState(false);
   const [commentListOpened, setCommentListOpened] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const isLike = useMemo(() => !!data.Likers.find((v) => v.id === myId)?.id, [data.Likers, myId]);
@@ -64,6 +65,10 @@ const PostCard = ({ data }: IProps) => {
 
   const handleCancleEditMode = useCallback(() => {
     setEditMode(false);
+  }, []);
+
+  const handleToggleMorePopOver = useCallback(() => {
+    setMorePopOverOpen((prev) => !prev);
   }, []);
 
   const handleShowRemovePostConfirm = useCallback(() => {
@@ -98,24 +103,29 @@ const PostCard = ({ data }: IProps) => {
         </Tooltip>,
         <Tooltip key="more" placement="bottom" title="더보기">
           <Popover
+            trigger="onclick"
+            visible={morePopOverOpen}
+            onVisibleChange={handleToggleMorePopOver}
             content={
-              data.User.id === myId && (
-                <Button.Group>
-                  {!data.RetweetId && (
-                    <Button type="primary" onClick={handleEditMode}>
-                      <EditOutlined /> 수정
+              <div role="presentation" onClick={() => handleToggleMorePopOver()}>
+                {data.User.id === myId && (
+                  <Button.Group>
+                    {!data.RetweetId && (
+                      <Button type="primary" onClick={handleEditMode}>
+                        <EditOutlined /> 수정
+                      </Button>
+                    )}
+                    <Button
+                      type="primary"
+                      danger
+                      loading={removePostStatus === 'LOADING'}
+                      onClick={handleShowRemovePostConfirm}
+                    >
+                      <DeleteOutlined /> 삭제
                     </Button>
-                  )}
-                  <Button
-                    type="primary"
-                    danger
-                    loading={removePostStatus === 'LOADING'}
-                    onClick={handleShowRemovePostConfirm}
-                  >
-                    <DeleteOutlined /> 삭제
-                  </Button>
-                </Button.Group>
-              )
+                  </Button.Group>
+                )}
+              </div>
             }
           >
             <EllipsisOutlined />
