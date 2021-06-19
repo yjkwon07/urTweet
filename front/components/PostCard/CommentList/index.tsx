@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { IPost } from '@modules/post/@types/db';
 import { GET_USER_URL, PASS_HREF } from '@utils/urls';
 
-export interface IProps {
+interface IProps {
   data: IPost;
 }
 

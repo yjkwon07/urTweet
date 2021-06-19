@@ -10,6 +10,8 @@ import { useFetchStatus } from '@modules/fetchStatus';
 import { createComment } from '@modules/post';
 import { IPost } from '@modules/post/@types/db';
 import { userSelector } from '@modules/user';
+import { IMyUser } from '@modules/user/@types/db';
+import requiredLogin from '@utils/requiredLogin';
 
 const COMMENT_SCHEMA = yup.object({
   content: yup.string().min(3, '댓글은 3자 이상 입력하여 주십시오.').required('댓글은 필수 입력 항목 입니다.'),
@@ -17,7 +19,7 @@ const COMMENT_SCHEMA = yup.object({
 
 type FormData = yup.InferType<typeof COMMENT_SCHEMA>;
 
-export interface IProps {
+interface IProps {
   data: IPost;
 }
 
@@ -26,27 +28,30 @@ const CommentForm = ({ data }: IProps) => {
   const { status } = useFetchStatus(createComment.TYPE);
   const myData = useSelector(userSelector.myData);
   const { control, handleSubmit: checkSubmit, errors, reset } = useForm<FormData>({
-    mode: 'onBlur',
+    mode: 'onSubmit',
     resolver: yupResolver(COMMENT_SCHEMA),
   });
 
   const handleSubmit = useMemo(() => {
     return checkSubmit(async (formData) => {
-      reset();
-      if (!myData?.id) return;
+      if (!requiredLogin()) {
+        return;
+      }
       try {
         await dispatch(
           createComment.asyncTunk({
             url: { postId: data.id },
-            body: { content: formData.content, userId: myData.id },
+            body: { content: formData.content, userId: (myData as IMyUser).id },
           }),
         );
         message.success('댓글이 등록되었습니다.');
       } catch (error) {
         message.error(JSON.stringify(error.response.data));
+      } finally {
+        reset();
       }
     });
-  }, [checkSubmit, dispatch, myData, data?.id, reset]);
+  }, [checkSubmit, dispatch, myData, data.id, reset]);
 
   return (
     <Form onFinish={handleSubmit}>
