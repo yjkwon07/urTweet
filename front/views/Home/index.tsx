@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { Empty, Spin } from 'antd';
+import { Empty, Space, Spin } from 'antd';
 import { useDispatch } from 'react-redux';
 
 import PostCard from '@components/PostCard';
@@ -44,23 +44,24 @@ const Home = ({ isSSR }: IProps) => {
   }, [status, postListData, hasMoreRead, dispatch, pageSize, lastId]);
 
   return (
-    <>
+    <Space direction="vertical" size={0} split={<StyledBlock />}>
       {myData && <PostForm />}
-      <StyledBlock />
-      {postListData.map((data) => (
-        <PostCard key={data.id} data={data} />
-      ))}
-      {status === 'LOADING' && (
-        <StyledCenter>
-          <Spin />
-        </StyledCenter>
-      )}
-      {status === 'FAIL' && (
-        <StyledCenter>
-          <Empty description="정보를 불러오지 못했습니다." />
-        </StyledCenter>
-      )}
-    </>
+      <div style={{ display: 'table', borderCollapse: 'collapse' }}>
+        {postListData.map((data) => (
+          <PostCard key={data.id} data={data} />
+        ))}
+        {status === 'LOADING' && (
+          <StyledCenter>
+            <Spin />
+          </StyledCenter>
+        )}
+        {status === 'FAIL' && (
+          <StyledCenter>
+            <Empty description="정보를 불러오지 못했습니다." />
+          </StyledCenter>
+        )}
+      </div>
+    </Space>
   );
 };
 

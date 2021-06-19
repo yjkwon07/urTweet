@@ -10,6 +10,6 @@ export const StyledCenter = styled.div`
 
 export const StyledBlock = styled.div`
   height: 20px;
-  border: 1px 0 1px 0 solid #f0f0f0;
+  border: 1px solid #f0f0f0;
   background-color: rgb(247, 249, 250);
 `;
