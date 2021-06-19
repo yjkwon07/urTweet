@@ -19,6 +19,7 @@
     "@reduxjs/toolkit": "^1.5.1",
     "antd": "^4.15.4",
     "axios": "^0.21.1",
+    "classnames": "^2.3.1",
     "dayjs": "^1.10.4",
     "lodash": "^4.17.21",
     "next": "10.0.9",

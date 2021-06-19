@@ -46,9 +46,9 @@ const Home = ({ isSSR }: IProps) => {
   return (
     <Space direction="vertical" size={0} split={<StyledBlock />}>
       {myData && <PostForm />}
-      <div style={{ display: 'table', borderCollapse: 'collapse' }}>
+      <div>
         {postListData.map((data) => (
-          <PostCard key={data.id} data={data} />
+          <PostCard collapse key={data.id} data={data} />
         ))}
         {status === 'LOADING' && (
           <StyledCenter>
