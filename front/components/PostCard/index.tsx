@@ -9,24 +9,22 @@ import {
   MessageOutlined,
   RetweetOutlined,
 } from '@ant-design/icons';
-import { Card, Popover, Button, Avatar, Divider, message, Popconfirm, Tooltip } from 'antd';
-import moment from 'dayjs';
-import Link from 'next/link';
+import { Card, Popover, Button, Divider, message, Popconfirm, Tooltip } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { useFetchStatus } from '@modules/fetchStatus';
 import { likePost, removePost, retweetPost, unlikePost } from '@modules/post';
 import { IPost } from '@modules/post/@types/db';
 import { userSelector } from '@modules/user';
-import { GET_USER_URL, PASS_HREF } from '@utils/urls';
+import requiredLogin from '@utils/requiredLogin';
 
 import CommentForm from './CommentForm';
 import CommentList from './CommentList';
 import FollowButton from './FollowButton';
 import PostCardContent from './PostCardContent';
-import PostImages from './PostImages';
+import PostCardMeta from './PostCardMeta';
 
-export interface IProps {
+interface IProps {
   data: IPost;
 }
 
@@ -35,29 +33,27 @@ const PostCard = ({ data }: IProps) => {
   const myId = useSelector(userSelector.myData)?.id;
   const { status: removePostStatus } = useFetchStatus(removePost.TYPE);
 
-  const [commentFormOpened, setCommentFormOpened] = useState(false);
+  const [commentListOpened, setCommentListOpened] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const isLike = useMemo(() => !!data.Likers.find((v) => v.id === myId)?.id, [data.Likers, myId]);
 
-  const handleRetweet = useCallback(() => {
-    if (!myId) {
-      message.warn('로그인이 필요합니다.');
-      return;
+  const handleRetweet = useCallback(async () => {
+    try {
+      if (!requiredLogin()) return;
+      await dispatch(retweetPost.asyncTunk({ postId: data.id }));
+    } catch (error) {
+      message.error(JSON.stringify(error.response.data));
     }
-    dispatch(retweetPost.requset({ postId: data.id }));
-  }, [data.id, dispatch, myId]);
+  }, [data.id, dispatch]);
 
   const handleToggleLike = useCallback(() => {
-    if (!myId) {
-      message.warn('로그인이 필요합니다.');
-      return;
-    }
+    if (!requiredLogin()) return;
     if (!isLike) dispatch(likePost.requset({ postId: data.id }));
     else dispatch(unlikePost.requset({ postId: data.id }));
-  }, [data.id, dispatch, isLike, myId]);
+  }, [data.id, dispatch, isLike]);
 
   const handleToggleComment = useCallback(() => {
-    setCommentFormOpened((prev) => !prev);
+    setCommentListOpened((prev) => !prev);
   }, []);
 
   const handleEditMode = useCallback(() => {
@@ -69,30 +65,32 @@ const PostCard = ({ data }: IProps) => {
   }, []);
 
   const handleRemovePost = useCallback(() => {
-    if (!myId) {
-      message.warn('로그인이 필요합니다.');
-      return;
-    }
+    if (!requiredLogin()) return;
     dispatch(removePost.requset({ postId: data.id }));
-  }, [data.id, dispatch, myId]);
+  }, [data.id, dispatch]);
 
   return (
-    <div style={{ marginBottom: 20 }}>
-      <Card
-        cover={data.Images.length && <PostImages images={data.Images} />}
-        hoverable
-        actions={[
-          <RetweetOutlined key="retweet" title="리트윗" onClick={handleRetweet} />,
-          isLike ? (
-            <HeartTwoTone twoToneColor="#eb2f96" title="좋아요" key="heart" onClick={handleToggleLike} />
-          ) : (
-            <HeartOutlined key="heart" title="좋아요" onClick={handleToggleLike} />
-          ),
-          <MessageOutlined key="comment" title="댓글" onClick={handleToggleComment} />,
+    <Card
+      actions={[
+        <Tooltip key="retweet" placement="bottom" title="리트윗">
+          <RetweetOutlined onClick={handleRetweet} />
+        </Tooltip>,
+        isLike ? (
+          <Tooltip key="heart-cancel" placement="bottom" title="좋아요 취소">
+            <HeartTwoTone twoToneColor="#eb2f96" onClick={handleToggleLike} />
+          </Tooltip>
+        ) : (
+          <Tooltip key="hear" placement="bottom" title="좋아요">
+            <HeartOutlined onClick={handleToggleLike} />
+          </Tooltip>
+        ),
+        <Tooltip key="comment" placement="bottom" title="댓글">
+          <MessageOutlined onClick={handleToggleComment} />
+        </Tooltip>,
+        <Tooltip key="more" placement="bottom" title="더보기">
           <Popover
-            key="more"
+            trigger="click"
             content={
-              myId &&
               data.User.id === myId && (
                 <Button.Group>
                   {!data.RetweetId && (
@@ -106,7 +104,7 @@ const PostCard = ({ data }: IProps) => {
                     onConfirm={handleRemovePost}
                     cancelText="취소"
                   >
-                    <Button loading={removePostStatus === 'LOADING'}>
+                    <Button type="primary" danger loading={removePostStatus === 'LOADING'}>
                       <DeleteOutlined /> 삭제
                     </Button>
                   </Popconfirm>
@@ -115,74 +113,58 @@ const PostCard = ({ data }: IProps) => {
             }
           >
             <EllipsisOutlined />
-          </Popover>,
-        ]}
-        title={data.RetweetId && `${data.User.nickname}님이 리트윗하셨습니다.`}
-        extra={myId && data.User.id !== myId && <FollowButton data={data} />}
-      >
-        {data.RetweetId && data.Retweet ? (
-          <Card cover={data.Retweet.Images.length && <PostImages images={data.Retweet.Images} />}>
-            <Card.Meta
-              avatar={
-                <Link href={GET_USER_URL(data.Retweet.User.id.toString())} passHref>
-                  <a href={PASS_HREF}>
-                    <Avatar>{data.Retweet.User.nickname[0]}</Avatar>
-                  </a>
-                </Link>
-              }
-              title={
-                <div>
-                  {data.Retweet.User.nickname}
-                  <Tooltip title={moment(data.Retweet.createdAt).format('YYYY-MM-DD HH:mm:ss')}>
-                    <span style={{ color: '#ccc', marginLeft: '10px', fontSize: '14px' }}>
-                      {moment(data.Retweet.createdAt).fromNow()}
-                    </span>
-                  </Tooltip>
-                </div>
-              }
-              description={
-                <PostCardContent postId={data.id} postContent={data.content} onCancleEditMode={handleCancleEditMode} />
-              }
-            />
-          </Card>
-        ) : (
-          <Card.Meta
-            avatar={
-              <Link href={GET_USER_URL(data.User.id.toString())} passHref>
-                <a href={PASS_HREF}>
-                  <Avatar>{data.User.nickname[0]}</Avatar>
-                </a>
-              </Link>
-            }
-            title={
-              <div>
-                {data.User.nickname}
-                <Tooltip title={moment(data.createdAt).format('YYYY-MM-DD HH:mm:ss')}>
-                  <span style={{ color: '#ccc', marginLeft: '10px', fontSize: '14px' }}>
-                    {moment(data.createdAt).fromNow()}
-                  </span>
-                </Tooltip>
+          </Popover>
+        </Tooltip>,
+      ]}
+    >
+      <PostCardMeta
+        userId={data.User.id.toString()}
+        nickname={data.User.nickname}
+        createdAt={data.createdAt}
+        actions={myId && data.User.id !== myId && <FollowButton userId={data.UserId} />}
+        description={
+          data.RetweetId && data.Retweet ? (
+            <>
+              <div style={{ marginBottom: 10 }}>
+                <RetweetOutlined alt="리트윗" /> {data.User.nickname}님이 리트윗하셨습니다.
               </div>
-            }
-            description={
-              <PostCardContent
-                editMode={editMode}
-                postId={data.id}
-                postContent={data.content}
-                onCancleEditMode={handleCancleEditMode}
-              />
-            }
-          />
-        )}
-        {commentFormOpened && (
-          <div>
-            <Divider plain>{`${data.Comments.length}개의 댓글`}</Divider>
-            <CommentList data={data} />
-            {myId && <CommentForm data={data} />}
-          </div>
-        )}
-      </Card>
-    </div>
+              <Card style={{ borderRadius: 20 }}>
+                <PostCardMeta
+                  userId={data.Retweet.UserId.toString()}
+                  nickname={data.Retweet.User.nickname}
+                  createdAt={data.Retweet.createdAt}
+                  actions={myId && data.Retweet.UserId !== myId && <FollowButton userId={data.Retweet.UserId} />}
+                  description={
+                    <PostCardContent
+                      editMode={editMode}
+                      postId={data.id}
+                      postContent={data.content}
+                      images={data.Retweet.Images}
+                      onCancleEditMode={handleCancleEditMode}
+                    />
+                  }
+                />
+              </Card>
+            </>
+          ) : (
+            <PostCardContent
+              editMode={editMode}
+              postId={data.id}
+              postContent={data.content}
+              images={data.Images}
+              onCancleEditMode={handleCancleEditMode}
+            />
+          )
+        }
+      />
+      {commentListOpened && (
+        <div>
+          <Divider plain>{`${data.Comments.length}개의 댓글`}</Divider>
+          <CommentList commentList={data.Comments} />
+          {myId && <CommentForm postId={data.id} />}
+        </div>
+      )}
+    </Card>
   );
 };
 
