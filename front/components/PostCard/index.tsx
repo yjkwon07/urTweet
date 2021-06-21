@@ -37,7 +37,7 @@ export interface IProps {
 const PostCard = ({ data, collapse = false }: IProps) => {
   const dispatch = useDispatch();
   const myId = useSelector(userSelector.myData)?.id;
-  const { status: removePostStatus } = useFetchStatus(removePost.TYPE);
+  const { status: removePostStatus } = useFetchStatus(removePost.TYPE, data.id);
 
   const [morePopOverOpen, setMorePopOverOpen] = useState(false);
   const [commentListOpened, setCommentListOpened] = useState(false);

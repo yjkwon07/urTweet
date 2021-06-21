@@ -1,4 +1,4 @@
-import { all, debounce, fork, takeLatest } from 'redux-saga/effects';
+import { all, call, debounce, fork, takeLatest } from 'redux-saga/effects';
 
 import { createRequestSaga } from '@modules/helper';
 
@@ -61,11 +61,19 @@ function* watchListReadFollowing() {
 }
 
 function* watchFollow() {
-  yield takeLatest(follow.requset, followSaga);
+  yield takeLatest(follow.requset, function* (action) {
+    const actionMeta = action;
+    actionMeta.meta = { actionList: [action.payload.userId] };
+    yield call(followSaga, actionMeta);
+  });
 }
 
 function* watchUnFollow() {
-  yield takeLatest(unFollow.requset, unFollowSaga);
+  yield takeLatest(unFollow.requset, function* (action) {
+    const actionMeta = action;
+    actionMeta.meta = { actionList: [action.payload.userId] };
+    yield call(unFollowSaga, actionMeta);
+  });
 }
 
 function* watchRemoveFollowerMe() {

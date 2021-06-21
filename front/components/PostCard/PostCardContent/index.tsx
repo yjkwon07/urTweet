@@ -9,6 +9,7 @@ import { useDispatch } from 'react-redux';
 import regexifyString from 'regexify-string';
 import * as yup from 'yup';
 
+import { useFetchStatus } from '@modules/fetchStatus';
 import { modifyPost } from '@modules/post';
 import { IPost } from '@modules/post/@types/db';
 import requiredLogin from '@utils/requiredLogin';
@@ -36,13 +37,12 @@ export interface IProps {
 
 const PostCardContent = ({ postId, postContent, images, editMode = false, onCancleEditMode }: IProps) => {
   const dispatch = useDispatch();
+  const { status } = useFetchStatus(modifyPost.TYPE, postId);
   const { control, handleSubmit: checkSubmit, errors, reset } = useForm<FormData>({
     mode: 'onSubmit',
     resolver: yupResolver(POST_SCHEMA),
     defaultValues: { content: postContent },
   });
-
-  const [isLoading, setIsLoading] = useState(false);
 
   const HashTagPostContent = useMemo(
     () =>
@@ -70,7 +70,6 @@ const PostCardContent = ({ postId, postContent, images, editMode = false, onCanc
         return;
       }
       try {
-        setIsLoading(true);
         await dispatch(modifyPost.asyncTunk({ url: { postId }, body: { content: formData.content } }));
         message.success('게시글이 수정 되었습니다.');
       } catch (error) {
@@ -78,7 +77,6 @@ const PostCardContent = ({ postId, postContent, images, editMode = false, onCanc
       } finally {
         reset();
         onCancleEditMode();
-        setIsLoading(false);
       }
     });
   }, [checkSubmit, dispatch, onCancleEditMode, postId, reset]);
@@ -108,7 +106,7 @@ const PostCardContent = ({ postId, postContent, images, editMode = false, onCanc
             />
           </Form.Item>
           <Button.Group>
-            <Button type="primary" htmlType="submit" loading={isLoading}>
+            <Button type="primary" htmlType="submit" loading={status === 'LOADING'}>
               <EditOutlined /> 수정
             </Button>
             <Button onClick={onCancleEditMode}>

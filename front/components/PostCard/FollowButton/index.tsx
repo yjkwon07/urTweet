@@ -18,8 +18,8 @@ interface IProps {
 const FollowButton = ({ userId }: IProps) => {
   const dispatch = useDispatch();
   const myData = useSelector(userSelector.myData);
-  const { status: followStatus } = useFetchStatus(follow.TYPE);
-  const { status: unfollowStatus } = useFetchStatus(unFollow.TYPE);
+  const { status: followStatus } = useFetchStatus(follow.TYPE, userId);
+  const { status: unfollowStatus } = useFetchStatus(unFollow.TYPE, userId);
 
   const [showUnfollow, setShowUnfollow] = useState(false);
 

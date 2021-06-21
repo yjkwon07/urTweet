@@ -77,12 +77,18 @@ function* watchCreatePost() {
 }
 
 function* watchModifyPost() {
-  yield takeLatest(modifyPost.requset, modifyPostSaga);
+  yield takeLatest(modifyPost.requset, function* (action) {
+    const actionMeta = action;
+    actionMeta.meta = { actionList: [action.payload.url.postId] };
+    yield call(modifyPostSaga, actionMeta);
+  });
 }
 
 function* watchRemovePost() {
   yield takeLatest(removePost.requset, function* (action) {
-    yield call(removePostSaga, action);
+    const actionMeta = action;
+    actionMeta.meta = { actionList: [action.payload.postId] };
+    yield call(removePostSaga, actionMeta);
     const rootState: RootState = yield select();
     const { status, data } = rootState.FETCH_STATUS[removePost.TYPE];
     if (status === 'SUCCESS') {
