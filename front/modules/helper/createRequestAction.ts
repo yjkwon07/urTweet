@@ -2,8 +2,9 @@ import { createAction } from '@reduxjs/toolkit';
 import { AxiosResponse } from 'axios';
 
 import { createRequestAsyncThunk } from './createRequestAsyncThunk';
+import { IMeta } from './type';
 
-export const createRequestAction = <R, S, M = any, F = any>(
+export const createRequestAction = <R, S, M extends IMeta, F = any>(
   type: string,
   requestAPI?: (query: R) => Promise<AxiosResponse<S>>,
 ) => {

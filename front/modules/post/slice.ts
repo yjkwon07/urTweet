@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import _find from 'lodash/find';
 import _remove from 'lodash/remove';
 
-import { createRequestAction } from '@modules/helper/createRequestAction';
+import { createRequestAction } from '@modules/helper';
 
 import { IPost } from './@types/db';
 import {

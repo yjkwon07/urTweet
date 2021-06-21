@@ -1,7 +1,7 @@
 import { createAction, createSlice } from '@reduxjs/toolkit';
 import _remove from 'lodash/remove';
 
-import { createRequestAction } from '@modules/helper/createRequestAction';
+import { createRequestAction } from '@modules/helper';
 
 import { IMyUser, IUser } from './@types/db';
 import {

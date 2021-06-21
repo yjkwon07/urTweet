@@ -1,17 +1,23 @@
 import { createAction, createSlice } from '@reduxjs/toolkit';
 
 // Type
-interface ItypePayload {
+export type ItypePayload = {
   type: string;
-  data?: any;
-}
+  data: {
+    actionList: any[];
+    result?: any;
+  };
+};
 
-export interface IFetchReducer {
+export type IFetchStatus = 'INIT' | 'LOADING' | 'SUCCESS' | 'FAIL';
+
+export type IFetchReducer = {
   [key: string]: {
-    status: 'INIT' | 'LOADING' | 'SUCCESS' | 'FAIL';
+    status: IFetchStatus;
+    actionList: any[];
     data?: any;
   };
-}
+};
 
 // Name
 export const FETCH_STATUS = 'FETCH_STATUS';
@@ -33,25 +39,29 @@ const slice = createSlice({
       .addCase(initFetch, (state, { payload: { type } }) => {
         state[type] = {
           status: 'INIT',
+          actionList: [],
           data: null,
         };
       })
-      .addCase(request, (state, { payload: { type } }) => {
+      .addCase(request, (state, { payload: { type, data } }) => {
         state[type] = {
           status: 'LOADING',
+          actionList: state[type]?.actionList.concat(data.actionList) || data.actionList,
           data: null,
         };
       })
       .addCase(success, (state, { payload: { type, data } }) => {
         state[type] = {
           status: 'SUCCESS',
-          data,
+          actionList: state[type]?.actionList.filter((action) => data.actionList.indexOf(action) === -1) || [],
+          data: data.result,
         };
       })
       .addCase(fail, (state, { payload: { type, data } }) => {
         state[type] = {
           status: 'FAIL',
-          data,
+          actionList: state[type]?.actionList.filter((action) => data.actionList.indexOf(action) === -1) || [],
+          data: data.result,
         };
       })
       .addDefaultCase((state) => state),
