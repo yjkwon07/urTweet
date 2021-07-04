@@ -8,8 +8,8 @@ import BaseLayout from '@layouts/BaseLayout';
 import { infinteListReadPost } from '@modules/post';
 import wrapper from '@modules/store/configStore';
 import { HOME_URL } from '@utils/urls';
-import Home from '@views/Home';
-import { DEAFULT_PAGE_SIZE } from '@views/Home/config/constants';
+import PostListRead from '@views/Post/ListRead';
+import { DEAFULT_PAGE_SIZE } from '@views/Post/ListRead/config/constants';
 
 interface IProps {
   title: string;
@@ -23,7 +23,7 @@ const HomePage = ({ title, seo }: IProps) => {
         <title>{title}</title>
         <SEO title={seo.title} url={seo.url} description={seo.description} name={seo.name} keywords={seo.keywords} />
       </Head>
-      <Home isSSR />
+      <PostListRead isSSR />
     </BaseLayout>
   );
 };
