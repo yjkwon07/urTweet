@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
 import { Empty, Space, Spin } from 'antd';
-import { useDispatch } from 'react-redux';
 
 import PostCard from '@components/PostCard';
+import { useAppDispatch, useAppSelector } from '@hooks/useAppRedux';
 import useInfinitePost from '@modules/post/hooks/useInfinitePost';
-import { useAppSelector } from '@modules/store/slices';
 import { userSelector } from '@modules/user';
 
 import { DEAFULT_PAGE_SIZE } from './config/constants';
@@ -17,7 +16,7 @@ interface IProps {
 }
 
 const Home = ({ isSSR }: IProps) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const myData = useAppSelector(userSelector.myData);
 
   const [lastId, setLastId] = useState(0);

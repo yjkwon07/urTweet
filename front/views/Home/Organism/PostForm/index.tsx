@@ -6,9 +6,10 @@ import { Button, Form, Input, message, Image, Card } from 'antd';
 import Avatar from 'antd/lib/avatar/avatar';
 import Link from 'next/link';
 import { Controller, useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import * as yup from 'yup';
 
+import { useAppDispatch } from '@hooks/useAppRedux';
 import { createPost, uploadImages } from '@modules/post';
 import { IUploadImagePathRes } from '@modules/post/api/requestAPI';
 import { userSelector } from '@modules/user';
@@ -27,7 +28,7 @@ const POST_SCHEMA = yup.object({
 type FormData = yup.InferType<typeof POST_SCHEMA>;
 
 const PostForm = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const myData = useSelector(userSelector.myData);
   const { control, handleSubmit: checkSubmit, errors, reset } = useForm<FormData>({
     mode: 'onSubmit',
