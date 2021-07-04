@@ -1,6 +1,5 @@
 import { combineReducers, AnyAction } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
-import { TypedUseSelectorHook, useSelector } from 'react-redux';
 
 import { IFetchReducer, FETCH_STATUS, fetchStatusReducer } from '../fetchStatus';
 import { IState as IPost, POST, postReducer } from '../post';
@@ -29,5 +28,4 @@ const rootReducer = (state: RootState | undefined, action: AnyAction) => {
   }
 };
 
-export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 export default rootReducer;
