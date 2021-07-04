@@ -16,7 +16,7 @@ import {
   requestRemoveFollowerMe,
   requestSignup,
   requestUnfollow,
-} from './api/requestAPI';
+} from './api';
 
 export const USER = 'USER';
 

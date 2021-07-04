@@ -3,9 +3,9 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { useFetchStatus } from '@modules/fetchStatus';
-import { useAppSelector } from '@modules/store/slices';
 
 import { readMyUser, userSelector } from '../slice';
+import { useAppSelector } from '@hooks/useAppRedux';
 
 export interface IProps {
   isInitFetch?: boolean;

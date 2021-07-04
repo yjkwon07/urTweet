@@ -2,13 +2,13 @@ import { useEffect, useMemo } from 'react';
 
 import { useDispatch } from 'react-redux';
 
+import { useAppSelector } from '@hooks/useAppRedux';
 import { useFetchStatus } from '@modules/fetchStatus';
-import { useAppSelector } from '@modules/store/slices';
 
-import { IListReadFollowingURL } from '../api/requestAPI';
+import { ListReadFollowingURL } from '../api';
 import { listReadFollowing, userSelector } from '../slice';
 
-export interface IProps extends IListReadFollowingURL {
+export interface IProps extends ListReadFollowingURL {
   isInitFetch?: boolean;
 }
 

@@ -2,13 +2,13 @@ import { useEffect } from 'react';
 
 import { useDispatch } from 'react-redux';
 
+import { useAppSelector } from '@hooks/useAppRedux';
 import { useFetchStatus } from '@modules/fetchStatus';
-import { useAppSelector } from '@modules/store/slices';
 
-import { IUserURL } from '../api/requestAPI';
+import { ReadUserURL } from '../api';
 import { readUser, userSelector } from '../slice';
 
-export interface IProps extends IUserURL {
+export interface IProps extends ReadUserURL {
   isInitFetch?: boolean;
 }
 
