@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 
-import { useAppSelector } from '@modules/store/slices';
+import { useAppSelector } from '@hooks/useAppRedux';
 
-import { IFetchStatus } from '../slice';
+import { FetchStatus } from '../slice';
 
 export default function useFetchStatus(type: string, actionId?: any) {
-  const [status, setStatus] = useState<IFetchStatus | undefined>(undefined);
+  const [status, setStatus] = useState<FetchStatus | undefined>(undefined);
   const fetchStatus = useAppSelector((state) => state.FETCH_STATUS[type]?.status);
   const data = useAppSelector((state) => state.FETCH_STATUS[type]?.data);
   const actionList = useAppSelector((state) => state.FETCH_STATUS[type]?.actionList);

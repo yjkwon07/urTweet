@@ -1,7 +1,7 @@
 import { createAction, createSlice } from '@reduxjs/toolkit';
 
 // Type
-export type ItypePayload = {
+export type typePayload = {
   type: string;
   data: {
     actionList: any[];
@@ -9,11 +9,11 @@ export type ItypePayload = {
   };
 };
 
-export type IFetchStatus = 'INIT' | 'LOADING' | 'SUCCESS' | 'FAIL';
+export type FetchStatus = 'INIT' | 'LOADING' | 'SUCCESS' | 'FAIL';
 
-export type IFetchReducer = {
+export type FetchReducer = {
   [key: string]: {
-    status: IFetchStatus;
+    status: FetchStatus;
     actionList: any[];
     data?: any;
   };
@@ -23,13 +23,13 @@ export type IFetchReducer = {
 export const FETCH_STATUS = 'FETCH_STATUS';
 
 // Action
-export const initFetch = createAction<ItypePayload>(`${FETCH_STATUS}/initFetch`);
-export const request = createAction<ItypePayload>(`${FETCH_STATUS}/request`);
-export const success = createAction<ItypePayload>(`${FETCH_STATUS}/success`);
-export const fail = createAction<ItypePayload>(`${FETCH_STATUS}/fail`);
+export const initFetch = createAction<typePayload>(`${FETCH_STATUS}/initFetch`);
+export const request = createAction<typePayload>(`${FETCH_STATUS}/request`);
+export const success = createAction<typePayload>(`${FETCH_STATUS}/success`);
+export const fail = createAction<typePayload>(`${FETCH_STATUS}/fail`);
 
 // Reducer
-const initialState: IFetchReducer = {};
+const initialState: FetchReducer = {};
 const slice = createSlice({
   name: FETCH_STATUS,
   initialState,
@@ -53,14 +53,14 @@ const slice = createSlice({
       .addCase(success, (state, { payload: { type, data } }) => {
         state[type] = {
           status: 'SUCCESS',
-          actionList: state[type]?.actionList.filter((action) => data.actionList.indexOf(action) === -1) || [],
+          actionList: state[type]?.actionList.filter((action) => !data.actionList.includes(action)) || [],
           data: data.result,
         };
       })
       .addCase(fail, (state, { payload: { type, data } }) => {
         state[type] = {
           status: 'FAIL',
-          actionList: state[type]?.actionList.filter((action) => data.actionList.indexOf(action) === -1) || [],
+          actionList: state[type]?.actionList.filter((action) => !data.actionList.includes(action)) || [],
           data: data.result,
         };
       })
