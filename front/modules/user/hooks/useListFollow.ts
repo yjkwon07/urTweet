@@ -20,7 +20,7 @@ export default function useListFollow({ pageSize, isInitFetch = true }: IProps) 
   const hasMoreRead = useMemo(() => data?.length === pageSize, [data?.length, pageSize]);
 
   useEffect(() => {
-    if (isInitFetch && status === undefined) dispatch(listReadFollow.requset({ pageSize }));
+    if (isInitFetch && status === undefined) dispatch(listReadFollow.request({ pageSize }));
   }, [dispatch, isInitFetch, pageSize, status]);
 
   return { status, data, hasMoreRead };

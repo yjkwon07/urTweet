@@ -16,7 +16,7 @@ import {
   removePost,
   createComment,
   retweetPost,
-  infinteListReadPost,
+  infiniteListReadPost,
 } from './slice';
 
 const uploadImagesSaga = createRequestSaga(uploadImages, uploadImages.requestAPI);
@@ -26,7 +26,7 @@ const readPostSaga = createRequestSaga(readPost, readPost.requestAPI);
 const listReadUserPostSaga = createRequestSaga(listReadUserPost, listReadUserPost.requestAPI);
 const listReadHashTagPostSaga = createRequestSaga(listReadHashTagPost, listReadHashTagPost.requestAPI);
 const listReadPostSaga = createRequestSaga(listReadPost, listReadPost.requestAPI);
-const infiniteListReadPostSaga = createRequestSaga(infinteListReadPost, infinteListReadPost.requestAPI);
+const infiniteListReadPostSaga = createRequestSaga(infiniteListReadPost, infiniteListReadPost.requestAPI);
 const createPostSaga = createRequestSaga(createPost, createPost.requestAPI);
 const modifyPostSaga = createRequestSaga(modifyPost, modifyPost.requestAPI);
 const removePostSaga = createRequestSaga(removePost, removePost.requestAPI);
@@ -34,39 +34,39 @@ const createCommentSaga = createRequestSaga(createComment, createComment.request
 const retweetPostSaga = createRequestSaga(retweetPost, retweetPost.requestAPI);
 
 function* watchUploadImages() {
-  yield takeLatest(uploadImages.requset, uploadImagesSaga);
+  yield takeLatest(uploadImages.request, uploadImagesSaga);
 }
 
 function* watchLikePost() {
-  yield takeLatest(likePost.requset, likePostSaga);
+  yield takeLatest(likePost.request, likePostSaga);
 }
 
 function* watchUnlikePost() {
-  yield takeLatest(unlikePost.requset, unlikePostSaga);
+  yield takeLatest(unlikePost.request, unlikePostSaga);
 }
 
 function* watchReadPost() {
-  yield takeLatest(readPost.requset, readPostSaga);
+  yield takeLatest(readPost.request, readPostSaga);
 }
 
 function* watchListReadUserPost() {
-  yield throttle(300, listReadUserPost.requset, listReadUserPostSaga);
+  yield throttle(300, listReadUserPost.request, listReadUserPostSaga);
 }
 
 function* watchListReadHashTag() {
-  yield takeLatest(listReadHashTagPost.requset, listReadHashTagPostSaga);
+  yield takeLatest(listReadHashTagPost.request, listReadHashTagPostSaga);
 }
 
 function* watchListRead() {
-  yield takeLatest(listReadPost.requset, listReadPostSaga);
+  yield takeLatest(listReadPost.request, listReadPostSaga);
 }
 
 function* watchInfiniteListRead() {
-  yield throttle(300, infinteListReadPost.requset, infiniteListReadPostSaga);
+  yield throttle(300, infiniteListReadPost.request, infiniteListReadPostSaga);
 }
 
 function* watchCreatePost() {
-  yield debounce(300, createPost.requset, function* (action) {
+  yield debounce(300, createPost.request, function* (action) {
     yield call(createPostSaga, action);
     const rootState: RootState = yield select();
     const { status, data } = rootState.FETCH_STATUS[createPost.TYPE];
@@ -77,7 +77,7 @@ function* watchCreatePost() {
 }
 
 function* watchModifyPost() {
-  yield takeLatest(modifyPost.requset, function* (action) {
+  yield takeLatest(modifyPost.request, function* (action) {
     const actionMeta = action;
     actionMeta.meta = { actionList: [action.payload.url.postId] };
     yield call(modifyPostSaga, actionMeta);
@@ -85,7 +85,7 @@ function* watchModifyPost() {
 }
 
 function* watchRemovePost() {
-  yield takeLatest(removePost.requset, function* (action) {
+  yield takeLatest(removePost.request, function* (action) {
     const actionMeta = action;
     actionMeta.meta = { actionList: [action.payload.postId] };
     yield call(removePostSaga, actionMeta);
@@ -98,11 +98,11 @@ function* watchRemovePost() {
 }
 
 function* watchCreateComment() {
-  yield debounce(300, createComment.requset, createCommentSaga);
+  yield debounce(300, createComment.request, createCommentSaga);
 }
 
 function* watchRetweetPost() {
-  yield debounce(300, retweetPost.requset, retweetPostSaga);
+  yield debounce(300, retweetPost.request, retweetPostSaga);
 }
 
 export default function* postSaga() {

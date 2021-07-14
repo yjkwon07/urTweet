@@ -6,10 +6,11 @@ import { END } from 'redux-saga';
 import SEO, { IProps as ISEOProps } from '@components/SEO';
 import BaseLayout from '@layouts/BaseLayout';
 import { listReadHashTagPost } from '@modules/post';
-import { DEAFULT_PAGE_SIZE } from '@modules/post/utils/constants';
 import wrapper from '@modules/store/configStore';
 import { GET_HASHTAG_URL } from '@utils/urls';
 import HashtagListRead from '@views/Hashtag/List';
+
+const DEAFULT_PAGE_SIZE = 3;
 
 export interface IProps {
   title: string;

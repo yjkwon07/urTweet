@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 
 import { useDispatch } from 'react-redux';
 
+import { useAppSelector } from '@hooks/useAppRedux';
 import { useFetchStatus } from '@modules/fetchStatus';
-import { useAppSelector } from '@modules/store/slices';
 
 import { IPostURL } from '../api/requestAPI';
 import { postSelector, readPost } from '../slice';
@@ -18,7 +18,7 @@ export default function usePost({ postId, isInitFetch = true }: IProps) {
   const data = useAppSelector(postSelector.data);
 
   useEffect(() => {
-    if (isInitFetch && status === undefined) dispatch(readPost.requset({ postId }));
+    if (isInitFetch && status === undefined) dispatch(readPost.request({ postId }));
   }, [dispatch, isInitFetch, postId, status]);
 
   return { status, data };

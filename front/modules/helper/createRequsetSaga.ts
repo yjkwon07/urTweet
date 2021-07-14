@@ -14,7 +14,7 @@ type IPromiseAction<R, S, F, M> = {
 export const createRequestSaga = <R, S, F, M extends Meta>(
   actionCreator: {
     TYPE: string;
-    requset: ActionMetaPayload<R, M | undefined>;
+    request: ActionMetaPayload<R, M | undefined>;
     success: ActionMetaPayload<S, M | undefined>;
     failure: ActionMetaPayload<F, M | undefined>;
   },

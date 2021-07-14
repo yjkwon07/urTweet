@@ -25,7 +25,7 @@ export const POST = 'POST';
 // Action - API
 export const uploadImages = createRequestAction(`${POST}/uploadImages`, requestUploadPostImages);
 export const listReadUserPost = createRequestAction(`${POST}/listReadUserPost`, requestListReadUserPost);
-export const infinteListReadPost = createRequestAction(`${POST}infinteListReadPost`, requestListReadPost);
+export const infiniteListReadPost = createRequestAction(`${POST}infiniteListReadPost`, requestListReadPost);
 export const listReadHashTagPost = createRequestAction(`${POST}/listReadHashTagPost`, requestListReadHashtagPost);
 export const listReadPost = createRequestAction(`${POST}listReadPost`, requestListReadPost);
 export const readPost = createRequestAction(`${POST}/readPost`, requestReadPost);
@@ -63,7 +63,7 @@ const slice = createSlice({
       .addCase(listReadPost.success, (state, { payload: data }) => {
         state.list = data;
       })
-      .addCase(infinteListReadPost.success, (state, { payload: data }) => {
+      .addCase(infiniteListReadPost.success, (state, { payload: data }) => {
         state.infinitePost.push(...data);
       })
       .addCase(listReadUserPost.success, (state, { payload: data }) => {

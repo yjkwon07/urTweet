@@ -55,8 +55,8 @@ const PostCard = ({ data, collapse = false }: IProps) => {
 
   const handleToggleLike = useCallback(() => {
     if (!requiredLogin()) return;
-    if (!isLike) dispatch(likePost.requset({ postId: data.id }));
-    else dispatch(unlikePost.requset({ postId: data.id }));
+    if (!isLike) dispatch(likePost.request({ postId: data.id }));
+    else dispatch(unlikePost.request({ postId: data.id }));
   }, [data.id, dispatch, isLike]);
 
   const handleToggleComment = useCallback(() => {
@@ -82,7 +82,7 @@ const PostCard = ({ data, collapse = false }: IProps) => {
       content: '삭제시 해당 컨텐츠는 복구 불가 합니다.',
       async onOk() {
         if (!requiredLogin()) return;
-        dispatch(removePost.requset({ postId: data.id }));
+        dispatch(removePost.request({ postId: data.id }));
       },
     });
   }, [data.id, dispatch]);

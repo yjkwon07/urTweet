@@ -29,39 +29,39 @@ const unFollowSaga = createRequestSaga(unFollow, unFollow.requestAPI);
 const removeFollowerMeSaga = createRequestSaga(removeFollowerMe, removeFollowerMe.requestAPI);
 
 function* watchLogIn() {
-  yield takeLatest(login.requset, loginSaga);
+  yield takeLatest(login.request, loginSaga);
 }
 
 function* watchLogout() {
-  yield takeLatest(logout.requset, logoutSaga);
+  yield takeLatest(logout.request, logoutSaga);
 }
 
 function* watchSinup() {
-  yield debounce(300, signup.requset, signupSaga);
+  yield debounce(300, signup.request, signupSaga);
 }
 
 function* watchReadMyUser() {
-  yield takeLatest(readMyUser.requset, readMyUserSaga);
+  yield takeLatest(readMyUser.request, readMyUserSaga);
 }
 
 function* watchReadUser() {
-  yield takeLatest(readUser.requset, readUserSaga);
+  yield takeLatest(readUser.request, readUserSaga);
 }
 
 function* watchModifyNickname() {
-  yield takeLatest(modifyNickname.requset, modifyNicknameSaga);
+  yield takeLatest(modifyNickname.request, modifyNicknameSaga);
 }
 
 function* watchListReadFollow() {
-  yield takeLatest(listReadFollow.requset, listReadfollowSaga);
+  yield takeLatest(listReadFollow.request, listReadfollowSaga);
 }
 
 function* watchListReadFollowing() {
-  yield takeLatest(listReadFollowing.requset, listReadfollowingSaga);
+  yield takeLatest(listReadFollowing.request, listReadfollowingSaga);
 }
 
 function* watchFollow() {
-  yield takeLatest(follow.requset, function* (action) {
+  yield takeLatest(follow.request, function* (action) {
     const actionMeta = action;
     actionMeta.meta = { actionList: [action.payload.userId] };
     yield call(followSaga, actionMeta);
@@ -69,7 +69,7 @@ function* watchFollow() {
 }
 
 function* watchUnFollow() {
-  yield takeLatest(unFollow.requset, function* (action) {
+  yield takeLatest(unFollow.request, function* (action) {
     const actionMeta = action;
     actionMeta.meta = { actionList: [action.payload.userId] };
     yield call(unFollowSaga, actionMeta);
@@ -77,7 +77,7 @@ function* watchUnFollow() {
 }
 
 function* watchRemoveFollowerMe() {
-  yield takeLatest(removeFollowerMe.requset, removeFollowerMeSaga);
+  yield takeLatest(removeFollowerMe.request, removeFollowerMeSaga);
 }
 
 export default function* userSaga() {

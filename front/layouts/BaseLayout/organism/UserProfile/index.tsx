@@ -17,7 +17,7 @@ const UserProfile = () => {
 
   const handleLogout = useCallback(() => {
     removeUserId();
-    dispatch(logout.requset({}));
+    dispatch(logout.request({}));
   }, [dispatch]);
 
   if (!myData) return null;

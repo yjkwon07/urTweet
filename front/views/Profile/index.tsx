@@ -33,7 +33,7 @@ const Profile = () => {
     if (hasMoreReadFollowingListData) {
       const updatePagSize = followingPageSize + DEAFULT_PAGE_SIZE;
       setFollowingPageSize(updatePagSize);
-      dispatch(listReadFollowing.requset({ pageSize: updatePagSize }));
+      dispatch(listReadFollowing.request({ pageSize: updatePagSize }));
     }
   }, [dispatch, followingPageSize, hasMoreReadFollowingListData]);
 
@@ -41,7 +41,7 @@ const Profile = () => {
     if (hasMoreReadFollowListData) {
       const updatePagSize = followPageSize + DEAFULT_PAGE_SIZE;
       setFollowPageSize(updatePagSize);
-      dispatch(listReadFollow.requset({ pageSize: updatePagSize }));
+      dispatch(listReadFollow.request({ pageSize: updatePagSize }));
     }
   }, [dispatch, followPageSize, hasMoreReadFollowListData]);
 

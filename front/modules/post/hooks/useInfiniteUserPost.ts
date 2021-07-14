@@ -2,8 +2,8 @@ import { useEffect, useMemo } from 'react';
 
 import { useDispatch } from 'react-redux';
 
+import { useAppSelector } from '@hooks/useAppRedux';
 import { useFetchStatus } from '@modules/fetchStatus';
-import { useAppSelector } from '@modules/store/slices';
 
 import { IListReadUserPostURL } from '../api/requestAPI';
 import { listReadUserPost, postSelector } from '../slice';
@@ -20,7 +20,7 @@ export default function useInfiniteUserPost({ userId, pageSize, isInitFetch = tr
   const hasMoreRead = useMemo(() => data?.length && data.length % pageSize === 0, [data?.length, pageSize]);
 
   useEffect(() => {
-    if (isInitFetch && status === undefined && userId) dispatch(listReadUserPost.requset({ userId, pageSize }));
+    if (isInitFetch && status === undefined && userId) dispatch(listReadUserPost.request({ userId, pageSize }));
   }, [dispatch, isInitFetch, pageSize, status, userId]);
 
   return { status, data, hasMoreRead };

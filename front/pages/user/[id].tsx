@@ -6,17 +6,17 @@ import { END } from 'redux-saga';
 import SEO, { IProps as ISEOProps } from '@components/SEO';
 import BaseLayout from '@layouts/BaseLayout';
 import { listReadUserPost } from '@modules/post';
-import { DEAFULT_PAGE_SIZE } from '@modules/post/utils/constants';
 import wrapper from '@modules/store/configStore';
 import { readUser } from '@modules/user';
 import { GET_USER_URL } from '@utils/urls';
 import UserRead from '@views/User/Read';
 
+const DEAFULT_PAGE_SIZE = 10;
+
 export interface IProps {
   title: string;
   seo: ISEOProps;
 }
-
 const UserReadPages = ({ title, seo }: IProps) => {
   return (
     <BaseLayout>

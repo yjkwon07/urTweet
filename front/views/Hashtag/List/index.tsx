@@ -4,9 +4,9 @@ import { useRouter } from 'next/router';
 import { useDispatch } from 'react-redux';
 
 import PostCard from '@components/PostCard';
-import { listReadHashTagPost } from '@modules/post';
-import useInfiniteHashTagPost from '@modules/post/hooks/useInfiniteHashTagPost';
-import { DEAFULT_PAGE_SIZE } from '@modules/post/utils/constants';
+import { listReadHashTagPost, useInfiniteHashTagPost } from '@modules/post';
+
+const DEAFULT_PAGE_SIZE = 3;
 
 export interface IProps {
   isSSR: boolean;
@@ -29,7 +29,7 @@ const List = ({ isSSR }: IProps) => {
         if (window.scrollY + document.documentElement.clientHeight > document.documentElement.scrollHeight - 300) {
           if (hasMoreRead) {
             const lastId = postListData[postListData.length - 1].id;
-            dispatch(listReadHashTagPost.requset({ hashtag, lastId, pageSize }));
+            dispatch(listReadHashTagPost.request({ hashtag, lastId, pageSize }));
           }
         }
       }

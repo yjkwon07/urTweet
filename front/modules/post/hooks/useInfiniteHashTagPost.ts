@@ -2,8 +2,8 @@ import { useEffect, useMemo } from 'react';
 
 import { useDispatch } from 'react-redux';
 
+import { useAppSelector } from '@hooks/useAppRedux';
 import { useFetchStatus } from '@modules/fetchStatus';
-import { useAppSelector } from '@modules/store/slices';
 
 import { IListReadHashtagPostURL } from '../api/requestAPI';
 import { listReadHashTagPost, postSelector } from '../slice';
@@ -21,7 +21,7 @@ export default function useInfiniteHashTagPost({ hashtag, lastId, pageSize, isIn
 
   useEffect(() => {
     if (isInitFetch && status === undefined && hashtag)
-      dispatch(listReadHashTagPost.requset({ hashtag, lastId, pageSize }));
+      dispatch(listReadHashTagPost.request({ hashtag, lastId, pageSize }));
   }, [dispatch, pageSize, status, hashtag, lastId, isInitFetch]);
 
   return { status, data, hasMoreRead };

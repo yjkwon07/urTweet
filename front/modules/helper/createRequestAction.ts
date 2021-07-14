@@ -15,10 +15,10 @@ export const createRequestAction = <R, S, M extends Meta, F = any>(
   const action = {
     TYPE: type,
     requestAPI,
-    requset: createAction(REQUEST, (payload: R, meta?: M) => ({ payload, meta })),
+    request: createAction(REQUEST, (payload: R, meta?: M) => ({ payload, meta })),
     success: createAction(SUCCESS, (payload: S, meta?: M) => ({ payload, meta })),
     failure: createAction(FAILURE, (payload: F, meta?: M) => ({ payload, meta })),
   };
-  const asyncTunk = createRequestAsyncThunk<R, S, M>(action.requset);
+  const asyncTunk = createRequestAsyncThunk<R, S, M>(action.request);
   return { ...action, asyncTunk };
 };

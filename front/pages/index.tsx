@@ -5,7 +5,7 @@ import { END } from 'redux-saga';
 
 import SEO, { IProps as ISEOProps } from '@components/SEO';
 import BaseLayout from '@layouts/BaseLayout';
-import { infinteListReadPost } from '@modules/post';
+import { infiniteListReadPost } from '@modules/post';
 import wrapper from '@modules/store/configStore';
 import { HOME_URL } from '@utils/urls';
 import PostListRead from '@views/Post/ListRead';
@@ -30,7 +30,7 @@ const HomePage = ({ title, seo }: IProps) => {
 
 // SSR
 export const getServerSideProps = wrapper.getServerSideProps(async ({ store }) => {
-  await store.dispatch(infinteListReadPost.asyncTunk({ pageSize: DEAFULT_PAGE_SIZE }));
+  await store.dispatch(infiniteListReadPost.asyncTunk({ pageSize: DEAFULT_PAGE_SIZE }));
   store.dispatch(END);
   return {
     props: {

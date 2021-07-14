@@ -26,7 +26,7 @@ const FollowButton = ({ userId }: IProps) => {
   const isFollowing = useMemo(() => !!myData?.Followings.find((_) => _.id === userId), [userId, myData?.Followings]);
 
   const handleFollow = useCallback(() => {
-    dispatch(follow.requset({ userId }));
+    dispatch(follow.request({ userId }));
   }, [userId, dispatch]);
 
   const handleShowUnfollowConfirm = useCallback(() => {
@@ -35,7 +35,7 @@ const FollowButton = ({ userId }: IProps) => {
       icon: <ExclamationCircleOutlined />,
       content: '언팔로우시 해당 멤버의 활동을 자세히 알 수 없게 됩니다.',
       onOk() {
-        if (isFollowing) dispatch(unFollow.requset({ userId }));
+        if (isFollowing) dispatch(unFollow.request({ userId }));
       },
     });
   }, [userId, dispatch, isFollowing]);

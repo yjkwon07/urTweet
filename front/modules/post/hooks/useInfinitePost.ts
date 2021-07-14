@@ -2,11 +2,11 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useDispatch } from 'react-redux';
 
+import { useAppSelector } from '@hooks/useAppRedux';
 import { useFetchStatus } from '@modules/fetchStatus';
-import { useAppSelector } from '@modules/store/slices';
 
 import { IListReadPostURL } from '../api/requestAPI';
-import { infinteListReadPost, postSelector } from '../slice';
+import { infiniteListReadPost, postSelector } from '../slice';
 
 interface IProps {
   query: IListReadPostURL;
@@ -15,14 +15,14 @@ interface IProps {
 
 export default function useInfinitePost({ query: { lastId, pageSize }, isInitFetch = false }: IProps) {
   const dispatch = useDispatch();
-  const { status } = useFetchStatus(infinteListReadPost.TYPE);
+  const { status } = useFetchStatus(infiniteListReadPost.TYPE);
   const data = useAppSelector(postSelector.infinitePost) || [];
 
   const isInitLoad = useRef(!isInitFetch);
   const hasMoreRead = useMemo(() => data?.length && data.length % pageSize === 0, [data?.length, pageSize]);
 
   const reload = useCallback(() => {
-    dispatch(infinteListReadPost.requset({ lastId, pageSize }));
+    dispatch(infiniteListReadPost.request({ lastId, pageSize }));
   }, [dispatch, lastId, pageSize]);
 
   useEffect(() => {

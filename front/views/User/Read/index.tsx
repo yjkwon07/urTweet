@@ -36,7 +36,7 @@ const Read = ({ isSSR }: IProps) => {
         if (window.scrollY + document.documentElement.clientHeight > document.documentElement.scrollHeight - 300) {
           if (hasMoreRead) {
             const lastId = postListData[postListData.length - 1].id;
-            dispatch(listReadUserPost.requset({ userId, lastId, pageSize }));
+            dispatch(listReadUserPost.request({ userId, lastId, pageSize }));
           }
         }
       }

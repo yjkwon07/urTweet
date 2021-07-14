@@ -17,7 +17,7 @@ export default function useMyUser({ isInitFetch = true }: IProps) {
   const data = useAppSelector(userSelector.myData);
 
   useEffect(() => {
-    if (isInitFetch && status === undefined) dispatch(readMyUser.requset({}));
+    if (isInitFetch && status === undefined) dispatch(readMyUser.request({}));
   }, [dispatch, isInitFetch, status]);
 
   return { status, data };
