@@ -31,7 +31,7 @@ const NicknameEditForm = () => {
       if (!myData?.id) return;
       try {
         reset();
-        await dispatch(modifyNickname.asyncTunk({ nickname: formData.nickname }));
+        await dispatch(modifyNickname.asyncThunk({ nickname: formData.nickname }));
         message.success('닉네임이 변경 되었습니다.');
       } catch (error) {
         message.error(JSON.stringify(error.response.data));

@@ -33,7 +33,7 @@ const LoginForm = () => {
   const handleSubmit = useMemo(() => {
     return checkSubmit(async (formData) => {
       try {
-        const user = await dispatch(login.asyncTunk(formData));
+        const user = await dispatch(login.asyncThunk(formData));
         setUserId(user.id.toString());
       } catch (error) {
         message.error(JSON.stringify(error.response.data));

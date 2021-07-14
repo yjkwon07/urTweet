@@ -29,7 +29,7 @@ const PostPage = ({ title, seo }: IProps) => {
 export const getServerSideProps = wrapper.getServerSideProps(async (context) => {
   const postId = context.params?.id as string;
   if (postId) {
-    const postData = await context.store.dispatch(readPost.asyncTunk({ postId: Number(postId) }));
+    const postData = await context.store.dispatch(readPost.asyncThunk({ postId: Number(postId) }));
     context.store.dispatch(END);
     await context.store.sagaTask.toPromise();
     return {

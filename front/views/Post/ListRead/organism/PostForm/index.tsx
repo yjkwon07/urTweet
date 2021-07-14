@@ -42,7 +42,7 @@ const PostForm = () => {
   const handleSubmit = useCallback(() => {
     checkSubmit(async (formData) => {
       try {
-        await dispatch(createPost.asyncTunk({ content: formData.content, image: imageListPath }));
+        await dispatch(createPost.asyncThunk({ content: formData.content, image: imageListPath }));
         message.success('게시글이 등록되었습니다.');
       } catch (error) {
         message.error(JSON.stringify(error.response.data));
@@ -68,7 +68,7 @@ const PostForm = () => {
         [].forEach.call(e.target.files, (file) => {
           imageFormData.append('image', file);
         });
-        const listPath = await dispatch(uploadImages.asyncTunk(imageFormData));
+        const listPath = await dispatch(uploadImages.asyncThunk(imageFormData));
         setImageListPath(listPath);
       } catch (error) {
         message.error(JSON.stringify(error.response.data));

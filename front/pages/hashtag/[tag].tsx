@@ -33,7 +33,7 @@ const HashtagListReadPage = ({ title, seo }: IProps) => {
 export const getServerSideProps = wrapper.getServerSideProps(async ({ params, store }) => {
   const hashtag = params?.tag as string;
   if (hashtag) {
-    await store.dispatch(listReadHashTagPost.asyncTunk({ hashtag, pageSize: DEAFULT_PAGE_SIZE }));
+    await store.dispatch(listReadHashTagPost.asyncThunk({ hashtag, pageSize: DEAFULT_PAGE_SIZE }));
     store.dispatch(END);
     return {
       props: {

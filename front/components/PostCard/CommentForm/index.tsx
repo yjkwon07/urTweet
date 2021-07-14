@@ -38,7 +38,7 @@ const CommentForm = ({ postId }: IProps) => {
       }
       try {
         await dispatch(
-          createComment.asyncTunk({
+          createComment.asyncThunk({
             url: { postId },
             body: { content: formData.content, userId: (myData as IMyUser).id },
           }),

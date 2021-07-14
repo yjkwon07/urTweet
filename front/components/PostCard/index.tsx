@@ -47,7 +47,7 @@ const PostCard = ({ data, collapse = false }: IProps) => {
   const handleRetweet = useCallback(async () => {
     try {
       if (!requiredLogin()) return;
-      await dispatch(retweetPost.asyncTunk({ postId: data.id }));
+      await dispatch(retweetPost.asyncThunk({ postId: data.id }));
     } catch (error) {
       message.error(JSON.stringify(error.response.data));
     }

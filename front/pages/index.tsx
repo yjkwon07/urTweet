@@ -30,7 +30,7 @@ const HomePage = ({ title, seo }: IProps) => {
 
 // SSR
 export const getServerSideProps = wrapper.getServerSideProps(async ({ store }) => {
-  await store.dispatch(infiniteListReadPost.asyncTunk({ pageSize: DEAFULT_PAGE_SIZE }));
+  await store.dispatch(infiniteListReadPost.asyncThunk({ pageSize: DEAFULT_PAGE_SIZE }));
   store.dispatch(END);
   return {
     props: {

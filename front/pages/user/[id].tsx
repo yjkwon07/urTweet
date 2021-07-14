@@ -33,8 +33,8 @@ const UserReadPages = ({ title, seo }: IProps) => {
 export const getServerSideProps = wrapper.getServerSideProps(async (context) => {
   const userId = context.params?.id as string;
   if (userId) {
-    const userData = await context.store.dispatch(readUser.asyncTunk({ userId: Number(userId) }));
-    context.store.dispatch(listReadUserPost.asyncTunk({ userId: Number(userId), pageSize: DEAFULT_PAGE_SIZE }));
+    const userData = await context.store.dispatch(readUser.asyncThunk({ userId: Number(userId) }));
+    context.store.dispatch(listReadUserPost.asyncThunk({ userId: Number(userId), pageSize: DEAFULT_PAGE_SIZE }));
     context.store.dispatch(END);
     await context.store.sagaTask.toPromise();
     return {

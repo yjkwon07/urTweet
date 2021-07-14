@@ -43,7 +43,7 @@ const Signup = () => {
   const handleSubmit = useMemo(() => {
     return checkSubmit(async (formData) => {
       try {
-        await dispatch(signup.asyncTunk(formData));
+        await dispatch(signup.asyncThunk(formData));
         message.success('회원가입에 성공하셨습니다.');
         Router.push(HOME_URL);
       } catch (error) {
