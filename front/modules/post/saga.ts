@@ -16,7 +16,6 @@ import {
   removePost,
   createComment,
   retweetPost,
-  infiniteListReadPost,
 } from './slice';
 
 const uploadImagesSaga = createRequestSaga(uploadImages, uploadImages.requestAPI);
@@ -26,7 +25,6 @@ const readPostSaga = createRequestSaga(readPost, readPost.requestAPI);
 const listReadUserPostSaga = createRequestSaga(listReadUserPost, listReadUserPost.requestAPI);
 const listReadHashTagPostSaga = createRequestSaga(listReadHashTagPost, listReadHashTagPost.requestAPI);
 const listReadPostSaga = createRequestSaga(listReadPost, listReadPost.requestAPI);
-const infiniteListReadPostSaga = createRequestSaga(infiniteListReadPost, infiniteListReadPost.requestAPI);
 const createPostSaga = createRequestSaga(createPost, createPost.requestAPI);
 const modifyPostSaga = createRequestSaga(modifyPost, modifyPost.requestAPI);
 const removePostSaga = createRequestSaga(removePost, removePost.requestAPI);
@@ -61,10 +59,6 @@ function* watchListRead() {
   yield takeLatest(listReadPost.request, listReadPostSaga);
 }
 
-function* watchInfiniteListRead() {
-  yield throttle(300, infiniteListReadPost.request, infiniteListReadPostSaga);
-}
-
 function* watchCreatePost() {
   yield debounce(300, createPost.request, function* (action) {
     yield call(createPostSaga, action);
@@ -78,17 +72,15 @@ function* watchCreatePost() {
 
 function* watchModifyPost() {
   yield takeLatest(modifyPost.request, function* (action) {
-    const actionMeta = action;
-    actionMeta.meta = { actionList: [action.payload.url.postId] };
-    yield call(modifyPostSaga, actionMeta);
+    const actionMeta = { actionList: [action.payload.url.postId] };
+    yield call(modifyPostSaga, { ...action, meta: actionMeta });
   });
 }
 
 function* watchRemovePost() {
   yield takeLatest(removePost.request, function* (action) {
-    const actionMeta = action;
-    actionMeta.meta = { actionList: [action.payload.postId] };
-    yield call(removePostSaga, actionMeta);
+    const actionMeta = { actionList: [action.payload.postId] };
+    yield call(removePostSaga, { ...action, meta: actionMeta });
     const rootState: RootState = yield select();
     const { status, data } = rootState.FETCH_STATUS[removePost.TYPE];
     if (status === 'SUCCESS') {
@@ -114,7 +106,6 @@ export default function* postSaga() {
     fork(watchListReadUserPost),
     fork(watchListReadHashTag),
     fork(watchListRead),
-    fork(watchInfiniteListRead),
     fork(watchCreatePost),
     fork(watchModifyPost),
     fork(watchRemovePost),
