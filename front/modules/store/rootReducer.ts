@@ -1,16 +1,16 @@
 import { combineReducers, AnyAction } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
 
-import { IFetchReducer, FETCH_STATUS, fetchStatusReducer } from '../fetchStatus';
-import { IState as IPost, POST, postReducer } from '../post';
-import { IState as IUser, USER, userReducer } from '../user';
+import { IFetchStatusState, FETCH_STATUS, fetchStatusReducer } from '../fetchStatus';
+import { IPostState, POST, postReducer } from '../post';
+import { IUserState, USER, userReducer } from '../user';
 
 declare global {
-  type RootState = {
-    [FETCH_STATUS]: IFetchReducer;
-    [USER]: IUser;
-    [POST]: IPost;
-  };
+  interface RootState {
+    [FETCH_STATUS]: IFetchStatusState;
+    [USER]: IUserState;
+    [POST]: IPostState;
+  }
 }
 
 const rootReducer = (state: RootState | undefined, action: AnyAction) => {
