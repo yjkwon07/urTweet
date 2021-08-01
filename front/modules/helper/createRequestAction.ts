@@ -2,11 +2,11 @@ import { createAction } from '@reduxjs/toolkit';
 import { AxiosResponse } from 'axios';
 
 import { createRequestAsyncThunk } from './createRequestAsyncThunk';
-import { Meta } from './type';
+import { RequestCommonMeta } from './type';
 
-export const createRequestAction = <R, S, M extends Meta, F = any>(
+export const createRequestAction = <R, S, M extends RequestCommonMeta, F = any>(
   type: string,
-  requestAPI?: (query: R) => Promise<AxiosResponse<S>>,
+  requestAPI: (query: R) => Promise<AxiosResponse<S>>,
 ) => {
   const REQUEST = `${type}/request`;
   const SUCCESS = `${type}/success`;

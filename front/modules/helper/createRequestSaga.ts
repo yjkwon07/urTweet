@@ -1,8 +1,8 @@
 import { AxiosResponse } from 'axios';
 import { call, put } from 'redux-saga/effects';
 
-import { request, success, fail } from '../fetchStatus';
-import { ActionMetaPayload, Meta } from './type';
+import { requestFetchStatus, successFetchStatus, failureFetchStatus } from '../fetchStatus';
+import { ActionMetaPayload, RequestCommonMeta } from './type';
 
 type IPromiseAction<R, S, F, M> = {
   payload: R;
@@ -11,29 +11,29 @@ type IPromiseAction<R, S, F, M> = {
   reject?: (value: F) => void;
 };
 
-export const createRequestSaga = <R, S, F, M extends Meta>(
+export const createRequestSaga = <R, S, F, M extends RequestCommonMeta>(
   actionCreator: {
     TYPE: string;
     request: ActionMetaPayload<R, M | undefined>;
     success: ActionMetaPayload<S, M | undefined>;
     failure: ActionMetaPayload<F, M | undefined>;
   },
-  requestCall: any,
+  requestCall: (...args: any[]) => any,
 ) => {
   return function* (action: IPromiseAction<R, S, F, M>) {
     const actionList = action.meta?.actionList || [];
     try {
-      yield put(request({ type: actionCreator.TYPE, data: { actionList } }));
+      yield put(requestFetchStatus({ type: actionCreator.TYPE, actionList }));
       const { data }: AxiosResponse<S> = yield call(requestCall, action.payload);
       yield put(actionCreator.success(data, action.meta));
-      yield put(success({ type: actionCreator.TYPE, data: { result: data, actionList } }));
+      yield put(successFetchStatus({ type: actionCreator.TYPE, data, actionList }));
       if (action.resolve) {
         yield call(action.resolve, data);
       }
     } catch (error) {
       if (!error.response?.data) error.response = { data: '네트워크 오류' };
       yield put(actionCreator.failure(error, action.meta));
-      yield put(fail({ type: actionCreator.TYPE, data: { result: error, actionList } }));
+      yield put(failureFetchStatus({ type: actionCreator.TYPE, data: error, actionList }));
       if (action.reject) {
         yield call(action.reject, error);
       }
