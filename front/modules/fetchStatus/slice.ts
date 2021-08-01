@@ -1,67 +1,65 @@
 import { createAction, createSlice } from '@reduxjs/toolkit';
 
 // Type
-export type typePayload = {
+export interface IFetchStatusActionPayload {
   type: string;
-  data: {
-    actionList: any[];
-    result?: any;
-  };
-};
+  actionList: any[];
+  data?: any;
+}
 
 export type FetchStatus = 'INIT' | 'LOADING' | 'SUCCESS' | 'FAIL';
 
-export type FetchReducer = {
-  [key: string]: {
+export interface IFetchStatusState {
+  [type: string]: {
     status: FetchStatus;
     actionList: any[];
     data?: any;
   };
-};
+}
 
 // Name
 export const FETCH_STATUS = 'FETCH_STATUS';
 
 // Action
-export const initFetch = createAction<typePayload>(`${FETCH_STATUS}/initFetch`);
-export const request = createAction<typePayload>(`${FETCH_STATUS}/request`);
-export const success = createAction<typePayload>(`${FETCH_STATUS}/success`);
-export const fail = createAction<typePayload>(`${FETCH_STATUS}/fail`);
+export const initFetchStatus = createAction<Pick<IFetchStatusActionPayload, 'type'>>(`${FETCH_STATUS}/init`);
+export const requestFetchStatus = createAction<IFetchStatusActionPayload>(`${FETCH_STATUS}/request`);
+export const successFetchStatus = createAction<IFetchStatusActionPayload>(`${FETCH_STATUS}/success`);
+export const failureFetchStatus = createAction<IFetchStatusActionPayload>(`${FETCH_STATUS}/fail`);
 
 // Reducer
-const initialState: FetchReducer = {};
+const initialState: IFetchStatusState = {};
 const slice = createSlice({
   name: FETCH_STATUS,
   initialState,
   reducers: {},
   extraReducers: (builder) =>
     builder
-      .addCase(initFetch, (state, { payload: { type } }) => {
+      .addCase(initFetchStatus, (state, { payload: { type } }) => {
         state[type] = {
           status: 'INIT',
           actionList: [],
           data: null,
         };
       })
-      .addCase(request, (state, { payload: { type, data } }) => {
+      .addCase(requestFetchStatus, (state, { payload: { type, actionList } }) => {
         state[type] = {
           status: 'LOADING',
-          actionList: state[type]?.actionList.concat(data.actionList) || data.actionList,
+          actionList: state[type]?.actionList.concat(actionList) || actionList,
           data: null,
         };
       })
-      .addCase(success, (state, { payload: { type, data } }) => {
+      .addCase(successFetchStatus, (state, { payload: { type, actionList, data } }) => {
         state[type] = {
           status: 'SUCCESS',
-          actionList: state[type]?.actionList.filter((action) => !data.actionList.includes(action)) || [],
-          data: data.result,
+          actionList: state[type]?.actionList.filter((action) => !actionList.includes(action)) || [],
+          data,
         };
       })
-      .addCase(fail, (state, { payload: { type, data } }) => {
+      .addCase(failureFetchStatus, (state, { payload: { type, actionList, data } }) => {
         state[type] = {
           status: 'FAIL',
-          actionList: state[type]?.actionList.filter((action) => !data.actionList.includes(action)) || [],
-          data: data.result,
+          actionList: state[type]?.actionList.filter((action) => !actionList.includes(action)) || [],
+          data,
         };
       })
       .addDefaultCase((state) => state),

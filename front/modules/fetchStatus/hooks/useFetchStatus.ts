@@ -1,26 +1,19 @@
-import { useEffect, useState } from 'react';
-
 import { useAppSelector } from '@hooks/useAppRedux';
 
 import { FetchStatus } from '../slice';
 
-export default function useFetchStatus(type: string, actionId?: any) {
-  const [status, setStatus] = useState<FetchStatus>('INIT');
-  const fetchStatus = useAppSelector((state) => state.FETCH_STATUS[type]?.status);
-  const data = useAppSelector((state) => state.FETCH_STATUS[type]?.data);
-  const actionList = useAppSelector((state) => state.FETCH_STATUS[type]?.actionList);
+export default function useFetchStatus(type: string, actionId?: any): { status: FetchStatus; data: any } {
+  const { status, data, actionList } = useAppSelector(
+    (state) =>
+      state.FETCH_STATUS[type] || {
+        status: 'INIT',
+        actionList: [],
+        data: null,
+      },
+  );
 
-  useEffect(() => {
-    if (actionId && actionList) {
-      if (actionList.includes(actionId)) {
-        setStatus(fetchStatus);
-      } else {
-        setStatus('INIT');
-      }
-    } else {
-      setStatus(fetchStatus);
-    }
-  }, [actionId, actionList, fetchStatus]);
-
+  if (actionId && actionList && !actionList.includes(actionId)) {
+    return { status: 'INIT', data };
+  }
   return { status, data };
 }
