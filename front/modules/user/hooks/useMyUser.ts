@@ -3,9 +3,9 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { useFetchStatus } from '@modules/fetchStatus';
+import { useAppSelector } from '@modules/store/rootReducer';
 
 import { readMyUser, userSelector } from '../slice';
-import { useAppSelector } from '@hooks/useAppRedux';
 
 export interface IProps {
   isInitFetch?: boolean;
@@ -17,7 +17,7 @@ export default function useMyUser({ isInitFetch = true }: IProps) {
   const data = useAppSelector(userSelector.myData);
 
   useEffect(() => {
-    if (isInitFetch && status === undefined) dispatch(readMyUser.request({}));
+    if (status === 'INIT') dispatch(readMyUser.request({}));
   }, [dispatch, isInitFetch, status]);
 
   return { status, data };

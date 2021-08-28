@@ -1,4 +1,4 @@
-import { useAppSelector } from '@hooks/useAppRedux';
+import { useAppSelector } from '@modules/store/rootReducer';
 
 import { FetchStatus } from '../slice';
 

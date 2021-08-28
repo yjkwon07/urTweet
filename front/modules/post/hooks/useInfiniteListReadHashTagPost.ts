@@ -2,8 +2,8 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useDispatch } from 'react-redux';
 
-import { useAppSelector } from '@hooks/useAppRedux';
 import { useFetchStatus } from '@modules/fetchStatus';
+import { useAppSelector } from '@modules/store/rootReducer';
 
 import { ListReadHashtagPostUrlQuery } from '../api';
 import { listReadHashTagPost, listReadReset, postSelector } from '../slice';
@@ -15,7 +15,7 @@ interface IProps extends SubPartial<ListReadHashtagPostUrlQuery, 'lastId'> {
 export default function useInfiniteListReadHashTagPost({ hashtag, pageSize, isInitFetch = false }: IProps) {
   const dispatch = useDispatch();
   const { status } = useFetchStatus(listReadHashTagPost.TYPE);
-  const data = useAppSelector(postSelector.list);
+  const data = useAppSelector(postSelector.listData);
 
   const isInitLoaded = useRef(isInitFetch);
   const hasMoreRead = useMemo(() => data?.length && data.length % pageSize === 0, [data?.length, pageSize]);

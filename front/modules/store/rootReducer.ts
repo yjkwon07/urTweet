@@ -1,17 +1,22 @@
-import { combineReducers, AnyAction } from '@reduxjs/toolkit';
+import { AnyAction, combineReducers } from '@reduxjs/toolkit';
 import { HYDRATE } from 'next-redux-wrapper';
+import { TypedUseSelectorHook, useSelector } from 'react-redux';
 
-import { IFetchStatusState, FETCH_STATUS, fetchStatusReducer } from '../fetchStatus';
-import { IPostState, POST, postReducer } from '../post';
-import { IUserState, USER, userReducer } from '../user';
+import { FETCH_STATUS, fetchStatusReducer } from '../fetchStatus';
+import { POST, postReducer } from '../post';
+import { USER, userReducer } from '../user';
+
+const reducer = combineReducers({
+  [FETCH_STATUS]: fetchStatusReducer,
+  [USER]: userReducer,
+  [POST]: postReducer,
+});
 
 declare global {
-  interface RootState {
-    [FETCH_STATUS]: IFetchStatusState;
-    [USER]: IUserState;
-    [POST]: IPostState;
-  }
+  type RootState = ReturnType<typeof reducer>;
 }
+
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 const rootReducer = (state: RootState | undefined, action: AnyAction) => {
   switch (action.type) {
@@ -19,11 +24,7 @@ const rootReducer = (state: RootState | undefined, action: AnyAction) => {
       return action.payload;
 
     default: {
-      return combineReducers({
-        [FETCH_STATUS]: fetchStatusReducer,
-        [USER]: userReducer,
-        [POST]: postReducer,
-      })(state, action);
+      return reducer(state, action);
     }
   }
 };
