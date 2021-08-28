@@ -41,25 +41,28 @@ module.exports = {
     parser: '@typescript-eslint/parser', // AST 변환기
     ecmaFeatures: {
       jsx: true,
-      tsx: true,
     },
     ecmaVersion: 2018,
     sourceType: 'module',
   },
   /* extends와 plugins에 대한 세부 설정을 변경 */
   rules: {
+    'no-shadow': 'off',
     'no-console': 'off',
+    'no-alert': 'off',
     'func-names': 'off',
-    'import/no-named-as-default': 'off',
-    '@typescript-eslint/no-empty-function': 'off',
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
     'no-param-reassign': ['error', { props: true, ignorePropertyModificationsFor: ['state'] }],
+    'no-use-before-define': 'off', // 정의되기 전에 사용되도록 허용 ('React' was used before it was defined)
+    'react/jsx-uses-react': 'off',
+    'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off',
     'react/jsx-props-no-spreading': 'off',
     'react/jsx-filename-extension': ['error', { extensions: ['.js', '.jsx', '.tsx', '.ts'] }],
-    'no-use-before-define': 'off', // 정의되기 전에 사용되도록 허용 ('React' was used before it was defined)
+    '@typescript-eslint/no-empty-function': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-use-before-define': ['error'],
     '@typescript-eslint/no-explicit-any': ['off'],
+    'import/no-named-as-default': 'off',
     'import/no-cycle': ['error', { maxDepth: '∞', ignoreExternal: true }],
     'import/prefer-default-export': 'off',
     // airbnb ESLint 구성의 문제를 해결하기 위함
@@ -77,22 +80,49 @@ module.exports = {
     'import/order': [
       'error',
       {
-        groups: ['builtin', 'external', 'internal'],
+        groups: ['builtin', 'external', 'internal', ['sibling', 'parent'], 'object'],
         pathGroups: [
           {
             pattern: 'react',
             group: 'external',
             position: 'before',
           },
+          {
+            pattern: '@/**',
+            group: 'internal',
+          },
+          {
+            pattern: '@+(assets|images|styles)/**',
+            group: 'object',
+          },
+          {
+            pattern: '{.,..}/**/*.+(css|sass|less|scss)',
+            group: 'object',
+          },
+          {
+            pattern: '*.+(css|sass|less|scss)',
+            group: 'object',
+            patternOptions: { matchBase: true },
+            position: 'before',
+          },
         ],
         pathGroupsExcludedImportTypes: ['react'],
         'newlines-between': 'always',
+        warnOnUnassignedImports: true,
         alphabetize: {
           order: 'asc',
           caseInsensitive: true,
         },
       },
     ],
-    'prettier/prettier': 'error',
+    'prettier/prettier': ['error'],
+    'jsx-a11y/label-has-associated-control': [
+      'error',
+      {
+        required: {
+          some: ['nesting', 'id'],
+        },
+      },
+    ],
   },
 };

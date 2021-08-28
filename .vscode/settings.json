@@ -41,4 +41,7 @@
     "source.organizeImports": false,
     "source.fixAll.eslint": true
   },
+  "cSpell.words": [
+    "urtweet"
+  ],
 }
