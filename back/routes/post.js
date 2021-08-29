@@ -48,12 +48,6 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
   }
 });
 
-// POST /post/images (이미지 업로드)
-router.post('/images', isLoggedIn, upload.array('image'), (req, res, next) => {
-  res.send(req.files.map((v) => v.location.replace(/\/original\//, '/thumb/')));
-  // res.send(req.files.map((v) => v.filename));
-});
-
 // GET /post/:postId (게시글 조회)
 router.get('/:postId', async (req, res, next) => {
   try {
