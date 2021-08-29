@@ -9,7 +9,6 @@ import {
   unlikePost,
   readPost,
   listReadUserPost,
-  listReadHashTagPost,
   listReadPost,
   createPost,
   modifyPost,
@@ -23,7 +22,6 @@ const likePostSaga = createRequestSaga(likePost, likePost.requestAPI);
 const unlikePostSaga = createRequestSaga(unlikePost, unlikePost.requestAPI);
 const readPostSaga = createRequestSaga(readPost, readPost.requestAPI);
 const listReadUserPostSaga = createRequestSaga(listReadUserPost, listReadUserPost.requestAPI);
-const listReadHashTagPostSaga = createRequestSaga(listReadHashTagPost, listReadHashTagPost.requestAPI);
 const listReadPostSaga = createRequestSaga(listReadPost, listReadPost.requestAPI);
 const createPostSaga = createRequestSaga(createPost, createPost.requestAPI);
 const modifyPostSaga = createRequestSaga(modifyPost, modifyPost.requestAPI);
@@ -49,10 +47,6 @@ function* watchReadPost() {
 
 function* watchListReadUserPost() {
   yield throttle(300, listReadUserPost.request, listReadUserPostSaga);
-}
-
-function* watchListReadHashTag() {
-  yield takeLatest(listReadHashTagPost.request, listReadHashTagPostSaga);
 }
 
 function* watchListRead() {
@@ -104,7 +98,6 @@ export default function* postSaga() {
     fork(watchUnlikePost),
     fork(watchReadPost),
     fork(watchListReadUserPost),
-    fork(watchListReadHashTag),
     fork(watchListRead),
     fork(watchCreatePost),
     fork(watchModifyPost),

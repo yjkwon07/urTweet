@@ -20,37 +20,23 @@ export const requestReadPost = (url: ReadPostUrlQuery) => {
 
 /**
  * * post 게시글 리스트 정보 조회 GET
- * * url: /posts?lastId=:lasId&pageSize=:pageSize
+ * * url: /posts?page=:page&pageSize=:pageSize&hashtag=:hashtag
  * * body: empty
  * * res: IPost[]
  */
 export type ListReadPostUrlQuery = {
-  lastId: number;
+  page: number;
   pageSize: number;
+  hashtag?: string;
 };
+interface ListReadPostResData extends ListReadCommonRes {
+  list: IPost[];
+}
 export function GET_LIST_READ_POST_API(url: ListReadPostUrlQuery) {
-  return `/posts?lastId=${url.lastId}&pageSize=${url.pageSize}`;
+  return `/posts?page=${url.page}&pageSize=${url.pageSize}&hashtag=${url.hashtag || ''}`;
 }
 export const requestListReadPost = (url: ListReadPostUrlQuery) => {
-  return axios.get<IPost[]>(GET_LIST_READ_POST_API(url));
-};
-
-/**
- * * 해쉬태그로 게시글 검색 GET
- * * url: /hashtag/:hashtag?lastId=:lastId&pageSize=:pageSize
- * * body: empty
- * * res: IPost[]
- */
-export type ListReadHashtagPostUrlQuery = {
-  hashtag: string;
-  lastId: number;
-  pageSize: number;
-};
-export function GET_LIST_READ_HASHTAG_POST_API(url: ListReadHashtagPostUrlQuery) {
-  return `/hashtag/${encodeURIComponent(url.hashtag)}?lastId=${url.lastId}&pageSize=${url.pageSize}`;
-}
-export const requestListReadHashtagPost = (url: ListReadHashtagPostUrlQuery) => {
-  return axios.get<IPost[]>(GET_LIST_READ_HASHTAG_POST_API(url));
+  return axios.get<ListReadPostResData>(GET_LIST_READ_POST_API(url));
 };
 
 /**

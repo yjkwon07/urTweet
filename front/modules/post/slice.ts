@@ -1,6 +1,4 @@
-import { createAction, createSlice } from '@reduxjs/toolkit';
-import _find from 'lodash/find';
-import _remove from 'lodash/remove';
+import { createAction, createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit';
 
 import { createRequestAction } from '@modules/helper';
 
@@ -10,7 +8,6 @@ import {
   requestCreatePost,
   requestCreatePostRetweet,
   requestLikePost,
-  requestListReadHashtagPost,
   requestListReadPost,
   requestListReadUserPost,
   requestModifyPost,
@@ -25,7 +22,6 @@ export const POST = 'POST';
 // Action - API
 export const uploadImages = createRequestAction(`${POST}/uploadImages`, requestUploadPostImages);
 export const listReadUserPost = createRequestAction(`${POST}/listReadUserPost`, requestListReadUserPost);
-export const listReadHashTagPost = createRequestAction(`${POST}/listReadHashTagPost`, requestListReadHashtagPost);
 export const listReadPost = createRequestAction(`${POST}listReadPost`, requestListReadPost);
 export const readPost = createRequestAction(`${POST}/readPost`, requestReadPost);
 export const retweetPost = createRequestAction(`${POST}/retweetPost`, requestCreatePostRetweet);
@@ -38,18 +34,31 @@ export const createComment = createRequestAction(`${POST}/createComment`, reques
 
 // Action
 export const listReadReset = createAction(`${POST}/listReadReset`);
+export const listReadFilterReset = createAction(`${POST}/listReadFilterReset`);
+export const listReadFilterChange = createAction<Partial<IPostState['listReadFilter']>>(`${POST}/listReadFilterChange`);
+
+// Entity
+const postListDataAdapter = createEntityAdapter<IPost>({
+  selectId: (data) => data.id,
+});
 
 // Type
-export interface IPostState {
-  list: IPost[];
-  data: IPost | null;
-}
+export type IPostState = EntityState<IPost> & {
+  listReadFilter: {
+    page: number;
+    pageSize: number;
+    hashtag?: string;
+  };
+};
 
 // Reducer
-const initialState: IPostState = {
-  list: [], // 리스트 조회
-  data: null, // 단일 조회
-};
+const initialState: IPostState = postListDataAdapter.getInitialState({
+  listReadFilter: {
+    page: 1,
+    pageSize: 10,
+    hashtag: '',
+  },
+});
 
 const slice = createSlice({
   name: POST,
@@ -57,53 +66,63 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (builder) =>
     builder
-      .addCase(readPost.success, (state, { payload: data }) => {
-        state.data = data;
+      .addCase(listReadFilterReset, (state) => {
+        state.listReadFilter = initialState.listReadFilter;
+      })
+      .addCase(listReadFilterChange, (state, { payload: data }) => {
+        state.listReadFilter = { ...state.listReadFilter, ...data };
       })
       .addCase(listReadReset, (state) => {
-        state.list = initialState.list;
+        state.listReadFilter = initialState.listReadFilter;
+        postListDataAdapter.removeAll(state);
+      })
+      .addCase(readPost.success, (state, { payload: data }) => {
+        postListDataAdapter.setAll(state, [data]);
       })
       .addCase(listReadPost.success, (state, { payload: data, meta }) => {
-        if (meta?.isLoadMore) state.list.push(...data);
-        else state.list = data;
+        if (meta?.isLoadMore) postListDataAdapter.addMany(state, data.list);
+        else postListDataAdapter.setAll(state, data.list);
       })
-      .addCase(listReadUserPost.success, (state, { payload: data, meta }) => {
-        if (meta?.isLoadMore) state.list.push(...data);
-        else state.list = data;
+      .addCase(listReadUserPost.success, (state, { payload: data }) => {
+        postListDataAdapter.addMany(state, data);
       })
-      .addCase(listReadHashTagPost.success, (state, { payload: data, meta }) => {
-        if (meta?.isLoadMore) state.list.push(...data);
-        else state.list = data;
+      .addCase(retweetPost.success, (state, { payload: data }) => {
+        postListDataAdapter.addOne(state, data);
       })
-      .addCase(retweetPost.success, (state, { payload: data, meta }) => {
-        if (meta?.isLoadMore) state.list.unshift(data);
-      })
-      .addCase(createPost.success, (state, { payload: data, meta }) => {
-        if (meta?.isLoadMore) state.list.unshift(data);
+      .addCase(createPost.success, (state, { payload: data }) => {
+        postListDataAdapter.addOne(state, data);
       })
       .addCase(modifyPost.success, (state, { payload: { PostId, content } }) => {
-        const findPost = _find(state.list, { id: PostId });
-        if (findPost) findPost.content = content;
+        postListDataAdapter.updateOne(state, { id: PostId, changes: { content } });
       })
       .addCase(removePost.success, (state, { payload: { PostId } }) => {
-        _remove(state.list, { id: PostId });
+        postListDataAdapter.removeOne(state, PostId);
       })
       .addCase(likePost.success, (state, { payload: { PostId, UserId } }) => {
-        _find(state.list, { id: PostId })?.Likers.push({ id: UserId });
+        postListDataAdapter.updateOne(state, {
+          id: PostId,
+          changes: { Likers: state.entities[PostId]?.Likers.concat({ id: UserId }) },
+        });
       })
       .addCase(unlikePost.success, (state, { payload: { PostId, UserId } }) => {
-        const findPost = _find(state.list, { id: PostId });
-        if (findPost) _remove(findPost.Likers, { id: UserId });
+        postListDataAdapter.updateOne(state, {
+          id: PostId,
+          changes: { Likers: state.entities[PostId]?.Likers.filter((liker) => liker.id !== UserId) },
+        });
       })
       .addCase(createComment.success, (state, { payload: data }) => {
-        _find(state.list, { id: data.PostId })?.Comments.unshift(data);
+        postListDataAdapter.updateOne(state, {
+          id: data.PostId,
+          changes: { Comments: [data].concat(state.entities[data.PostId]?.Comments || []) },
+        });
       })
       .addDefaultCase((state) => state),
 });
 
 export const postSelector = {
-  list: (state: RootState) => state.POST.list,
-  data: (state: RootState) => state.POST.data,
+  listReadFilter: (state: RootState) => state.POST.listReadFilter,
+  listData: postListDataAdapter.getSelectors((state: RootState) => state.POST).selectAll,
+  data: postListDataAdapter.getSelectors((state: RootState) => state.POST).selectIds,
 };
 
 export const postReducer = slice.reducer;
