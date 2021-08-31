@@ -9,8 +9,6 @@ import * as yup from 'yup';
 import { useFetchStatus } from '@modules/fetchStatus';
 import { createComment } from '@modules/post';
 import { userSelector } from '@modules/user';
-import { IMyUser } from '@modules/user/@types/db';
-import requiredLogin from '@utils/requiredLogin';
 
 const COMMENT_SCHEMA = yup.object({
   content: yup.string().min(3, '댓글은 3자 이상 입력하여 주십시오.').required('댓글은 필수 입력 항목 입니다.'),
@@ -26,21 +24,24 @@ const CommentForm = ({ postId }: IProps) => {
   const dispatch = useDispatch();
   const { status } = useFetchStatus(createComment.TYPE);
   const myData = useSelector(userSelector.myData);
-  const { control, handleSubmit: checkSubmit, errors, reset } = useForm<FormData>({
+  const {
+    control,
+    handleSubmit: checkSubmit,
+    errors,
+    reset,
+  } = useForm<FormData>({
     mode: 'onSubmit',
     resolver: yupResolver(COMMENT_SCHEMA),
   });
 
   const handleSubmit = useMemo(() => {
     return checkSubmit(async (formData) => {
-      if (!requiredLogin()) {
-        return;
-      }
+      if (!myData) return;
       try {
         await dispatch(
           createComment.asyncThunk({
             url: { postId },
-            body: { content: formData.content, userId: (myData as IMyUser).id },
+            body: { content: formData.content, userId: myData.id },
           }),
         );
         message.success('댓글이 등록되었습니다.');

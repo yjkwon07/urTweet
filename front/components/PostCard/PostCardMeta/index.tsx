@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Card, Tooltip } from 'antd';
 import Avatar from 'antd/lib/avatar/avatar';
-import moment from 'dayjs';
+import dayjs from 'dayjs';
 import Link from 'next/link';
 
 import { GET_USER_URL, PASS_HREF } from '@utils/urls';
@@ -31,8 +31,8 @@ const PostCardMeta = ({ userId, nickname, createdAt, actions, description }: IPr
         <Title>
           <div>
             {nickname}
-            <Tooltip title={moment(createdAt).format('YYYY-MM-DD HH:mm:ss')}>
-              <span style={{ color: '#ccc', marginLeft: '10px', fontSize: '14px' }}>{moment(createdAt).fromNow()}</span>
+            <Tooltip title={dayjs(createdAt).format('YYYY-MM-DD HH:mm:ss')}>
+              <span style={{ color: '#ccc', marginLeft: '10px', fontSize: '14px' }}>{dayjs(createdAt).fromNow()}</span>
             </Tooltip>
           </div>
           {actions && <div>{actions}</div>}

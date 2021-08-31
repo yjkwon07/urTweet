@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 
 import { EditOutlined, UndoOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -11,8 +11,7 @@ import * as yup from 'yup';
 
 import { useFetchStatus } from '@modules/fetchStatus';
 import { modifyPost } from '@modules/post';
-import { IPost } from '@modules/post/@types/db';
-import requiredLogin from '@utils/requiredLogin';
+import { IIMage } from '@modules/post/@types/db';
 import { GET_HASHTAG_URL, PASS_HREF } from '@utils/urls';
 
 import PostImages from '../PostImages';
@@ -28,17 +27,22 @@ const POST_SCHEMA = yup.object({
 type FormData = yup.InferType<typeof POST_SCHEMA>;
 
 export interface IProps {
-  postId: IPost['id'];
-  postContent: IPost['content'];
-  images: IPost['Images'];
+  postId: number;
+  postContent: string;
+  images: IIMage[];
   editMode?: boolean;
-  onCancleEditMode: () => void;
+  onCancelEditMode: () => void;
 }
 
-const PostCardContent = ({ postId, postContent, images, editMode = false, onCancleEditMode }: IProps) => {
+const PostCardContent = ({ postId, postContent, images, editMode = false, onCancelEditMode }: IProps) => {
   const dispatch = useDispatch();
   const { status } = useFetchStatus(modifyPost.TYPE, postId);
-  const { control, handleSubmit: checkSubmit, errors, reset } = useForm<FormData>({
+  const {
+    control,
+    handleSubmit: checkSubmit,
+    errors,
+    reset,
+  } = useForm<FormData>({
     mode: 'onSubmit',
     resolver: yupResolver(POST_SCHEMA),
     defaultValues: { content: postContent },
@@ -66,20 +70,19 @@ const PostCardContent = ({ postId, postContent, images, editMode = false, onCanc
 
   const handleChangePost = useMemo(() => {
     return checkSubmit(async (formData) => {
-      if (!requiredLogin()) {
-        return;
-      }
       try {
-        await dispatch(modifyPost.asyncThunk({ url: { postId }, body: { content: formData.content } }));
+        await dispatch(
+          modifyPost.asyncThunk({ url: { postId }, body: { content: formData.content } }, { actionList: [postId] }),
+        );
         message.success('게시글이 수정 되었습니다.');
       } catch (error) {
         message.error(JSON.stringify(error.response.data));
       } finally {
         reset();
-        onCancleEditMode();
+        onCancelEditMode();
       }
     });
-  }, [checkSubmit, dispatch, onCancleEditMode, postId, reset]);
+  }, [checkSubmit, dispatch, onCancelEditMode, postId, reset]);
 
   return (
     <div>
@@ -109,7 +112,7 @@ const PostCardContent = ({ postId, postContent, images, editMode = false, onCanc
             <Button type="primary" htmlType="submit" loading={status === 'LOADING'}>
               <EditOutlined /> 수정
             </Button>
-            <Button onClick={onCancleEditMode}>
+            <Button onClick={onCancelEditMode}>
               <UndoOutlined /> 취소
             </Button>
           </Button.Group>

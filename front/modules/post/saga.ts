@@ -1,4 +1,4 @@
-import { all, fork, takeLatest, debounce, throttle, call, select, put } from 'redux-saga/effects';
+import { all, fork, takeLatest, debounce, call, select, put } from 'redux-saga/effects';
 
 import { createRequestSaga } from '@modules/helper';
 import { addPostToMe, removePostToMe } from '@modules/user';
@@ -8,7 +8,6 @@ import {
   likePost,
   unlikePost,
   readPost,
-  listReadUserPost,
   listReadPost,
   createPost,
   modifyPost,
@@ -21,7 +20,6 @@ const uploadImagesSaga = createRequestSaga(uploadImages, uploadImages.requestAPI
 const likePostSaga = createRequestSaga(likePost, likePost.requestAPI);
 const unlikePostSaga = createRequestSaga(unlikePost, unlikePost.requestAPI);
 const readPostSaga = createRequestSaga(readPost, readPost.requestAPI);
-const listReadUserPostSaga = createRequestSaga(listReadUserPost, listReadUserPost.requestAPI);
 const listReadPostSaga = createRequestSaga(listReadPost, listReadPost.requestAPI);
 const createPostSaga = createRequestSaga(createPost, createPost.requestAPI);
 const modifyPostSaga = createRequestSaga(modifyPost, modifyPost.requestAPI);
@@ -45,10 +43,6 @@ function* watchReadPost() {
   yield takeLatest(readPost.request, readPostSaga);
 }
 
-function* watchListReadUserPost() {
-  yield throttle(300, listReadUserPost.request, listReadUserPostSaga);
-}
-
 function* watchListRead() {
   yield takeLatest(listReadPost.request, listReadPostSaga);
 }
@@ -65,16 +59,12 @@ function* watchCreatePost() {
 }
 
 function* watchModifyPost() {
-  yield takeLatest(modifyPost.request, function* (action) {
-    const actionMeta = { actionList: [action.payload.url.postId] };
-    yield call(modifyPostSaga, { ...action, meta: actionMeta });
-  });
+  yield takeLatest(modifyPost.request, modifyPostSaga);
 }
 
 function* watchRemovePost() {
   yield takeLatest(removePost.request, function* (action) {
-    const actionMeta = { actionList: [action.payload.postId] };
-    yield call(removePostSaga, { ...action, meta: actionMeta });
+    yield call(removePostSaga, action);
     const rootState: RootState = yield select();
     const { status, data } = rootState.FETCH_STATUS[removePost.TYPE];
     if (status === 'SUCCESS') {
@@ -97,7 +87,6 @@ export default function* postSaga() {
     fork(watchLikePost),
     fork(watchUnlikePost),
     fork(watchReadPost),
-    fork(watchListReadUserPost),
     fork(watchListRead),
     fork(watchCreatePost),
     fork(watchModifyPost),

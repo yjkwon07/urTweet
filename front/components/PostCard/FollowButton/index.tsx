@@ -17,16 +17,20 @@ interface IProps {
 
 const FollowButton = ({ userId }: IProps) => {
   const dispatch = useDispatch();
+
   const myData = useSelector(userSelector.myData);
+  const isFollowing = useMemo(
+    () => !!myData?.Followings.find((Following) => Following.id === userId),
+    [userId, myData?.Followings],
+  );
+
   const { status: followStatus } = useFetchStatus(follow.TYPE, userId);
   const { status: unfollowStatus } = useFetchStatus(unFollow.TYPE, userId);
 
   const [showUnfollow, setShowUnfollow] = useState(false);
 
-  const isFollowing = useMemo(() => !!myData?.Followings.find((_) => _.id === userId), [userId, myData?.Followings]);
-
   const handleFollow = useCallback(() => {
-    dispatch(follow.request({ userId }));
+    dispatch(follow.request({ userId }, { actionList: [userId] }));
   }, [userId, dispatch]);
 
   const handleShowUnfollowConfirm = useCallback(() => {
@@ -35,14 +39,10 @@ const FollowButton = ({ userId }: IProps) => {
       icon: <ExclamationCircleOutlined />,
       content: '언팔로우시 해당 멤버의 활동을 자세히 알 수 없게 됩니다.',
       onOk() {
-        if (isFollowing) dispatch(unFollow.request({ userId }));
+        dispatch(unFollow.request({ userId }, { actionList: [userId] }));
       },
     });
-  }, [userId, dispatch, isFollowing]);
-
-  if (!myData || userId === myData.id) {
-    return null;
-  }
+  }, [userId, dispatch]);
 
   return (
     <>

@@ -1,4 +1,4 @@
-import { all, call, debounce, fork, takeLatest } from 'redux-saga/effects';
+import { all, debounce, fork, takeLatest } from 'redux-saga/effects';
 
 import { createRequestSaga } from '@modules/helper';
 
@@ -22,8 +22,8 @@ const signupSaga = createRequestSaga(signup, signup.requestAPI);
 const readMyUserSaga = createRequestSaga(readMyUser, readMyUser.requestAPI);
 const readUserSaga = createRequestSaga(readUser, readUser.requestAPI);
 const modifyNicknameSaga = createRequestSaga(modifyNickname, modifyNickname.requestAPI);
-const listReadfollowSaga = createRequestSaga(listReadFollow, listReadFollow.requestAPI);
-const listReadfollowingSaga = createRequestSaga(listReadFollowing, listReadFollowing.requestAPI);
+const listReadFollowSaga = createRequestSaga(listReadFollow, listReadFollow.requestAPI);
+const listReadFollowingSaga = createRequestSaga(listReadFollowing, listReadFollowing.requestAPI);
 const followSaga = createRequestSaga(follow, follow.requestAPI);
 const unFollowSaga = createRequestSaga(unFollow, unFollow.requestAPI);
 const removeFollowerMeSaga = createRequestSaga(removeFollowerMe, removeFollowerMe.requestAPI);
@@ -36,7 +36,7 @@ function* watchLogout() {
   yield takeLatest(logout.request, logoutSaga);
 }
 
-function* watchSinup() {
+function* watchSignup() {
   yield debounce(300, signup.request, signupSaga);
 }
 
@@ -53,27 +53,19 @@ function* watchModifyNickname() {
 }
 
 function* watchListReadFollow() {
-  yield takeLatest(listReadFollow.request, listReadfollowSaga);
+  yield takeLatest(listReadFollow.request, listReadFollowSaga);
 }
 
 function* watchListReadFollowing() {
-  yield takeLatest(listReadFollowing.request, listReadfollowingSaga);
+  yield takeLatest(listReadFollowing.request, listReadFollowingSaga);
 }
 
 function* watchFollow() {
-  yield takeLatest(follow.request, function* (action) {
-    const actionMeta = action;
-    actionMeta.meta = { actionList: [action.payload.userId] };
-    yield call(followSaga, actionMeta);
-  });
+  yield takeLatest(follow.request, followSaga);
 }
 
 function* watchUnFollow() {
-  yield takeLatest(unFollow.request, function* (action) {
-    const actionMeta = action;
-    actionMeta.meta = { actionList: [action.payload.userId] };
-    yield call(unFollowSaga, actionMeta);
-  });
+  yield takeLatest(unFollow.request, unFollowSaga);
 }
 
 function* watchRemoveFollowerMe() {
@@ -84,7 +76,7 @@ export default function* userSaga() {
   yield all([
     fork(watchLogIn),
     fork(watchLogout),
-    fork(watchSinup),
+    fork(watchSignup),
     fork(watchReadMyUser),
     fork(watchReadUser),
     fork(watchModifyNickname),
