@@ -1,8 +1,6 @@
 import { useAppSelector } from '@modules/store/rootReducer';
 
-import { FetchStatus } from '../slice';
-
-export default function useFetchStatus(type: string, actionId?: any): { status: FetchStatus; data: any } {
+export default function useFetchStatus(type: string, actionId?: any) {
   const { status, data, actionList } = useAppSelector(
     (state) =>
       state.FETCH_STATUS[type] || {
