@@ -120,7 +120,8 @@ const PostCardContent = ({ postId, postContent, images, editMode = false, onCanc
       ) : (
         <>
           {HashTagPostContent}
-          {images.length && <PostImages images={images} />}
+          <div style={{ marginTop: 10 }} />
+          {!!images.length && <PostImages images={images} />}
         </>
       )}
     </div>

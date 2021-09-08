@@ -1,13 +1,13 @@
 import React from 'react';
 
-import { Card, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 import Avatar from 'antd/lib/avatar/avatar';
 import dayjs from 'dayjs';
 import Link from 'next/link';
 
 import { GET_USER_URL, PASS_HREF } from '@utils/urls';
 
-import { Title } from './styles';
+import { StyledCardMeta, Title } from './styles';
 
 export interface IProps {
   userId: string;
@@ -19,7 +19,7 @@ export interface IProps {
 
 const PostCardMeta = ({ userId, nickname, createdAt, actions, description }: IProps) => {
   return (
-    <Card.Meta
+    <StyledCardMeta
       avatar={
         <Link href={GET_USER_URL(userId)} passHref>
           <a href={PASS_HREF}>

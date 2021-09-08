@@ -50,6 +50,7 @@ const FollowButton = ({ userId }: IProps) => {
         <StyledButton
           shape="round"
           type="primary"
+          ghost
           danger={showUnfollow}
           icon={showUnfollow && <UserDeleteOutlined />}
           loading={unfollowStatus === 'LOADING'}
@@ -63,6 +64,7 @@ const FollowButton = ({ userId }: IProps) => {
         <StyledButton
           shape="round"
           type="primary"
+          ghost
           icon={<UserAddOutlined />}
           loading={followStatus === 'LOADING'}
           onClick={handleFollow}
