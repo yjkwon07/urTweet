@@ -2,57 +2,57 @@ import React, { useCallback, useState } from 'react';
 
 import { PlusOutlined } from '@ant-design/icons';
 
-import ImagesZoom from '@components/ImagesZoom';
+import ImageListZoom from '@components/ImageListZoom';
 import { IIMage } from '@modules/post/@types/db';
 import { GET_IMAGE_URL } from '@utils/urls';
 
 interface IProps {
-  images: IIMage[];
+  imageList: IIMage[];
 }
 
-const PostImages = ({ images }: IProps) => {
-  const [showImagesZoom, setShowImagesZoom] = useState(false);
+const PostImages = ({ imageList }: IProps) => {
+  const [showImageListZoom, setShowImageListZoom] = useState(false);
 
   const handleZoom = useCallback(() => {
-    setShowImagesZoom(true);
+    setShowImageListZoom(true);
   }, []);
 
   const handleClose = useCallback(() => {
-    setShowImagesZoom(false);
+    setShowImageListZoom(false);
   }, []);
 
-  if (images.length === 1) {
+  if (imageList.length === 1) {
     return (
       <div>
         <img
-          src={GET_IMAGE_URL(images[0].src)}
-          alt={images[0].src}
+          src={GET_IMAGE_URL(imageList[0].src)}
+          alt={imageList[0].src}
           style={{ width: '100%', display: 'inline-block' }}
           role="presentation"
           onClick={handleZoom}
         />
-        {showImagesZoom && <ImagesZoom images={images} onClose={handleClose} />}
+        {showImageListZoom && <ImageListZoom imageList={imageList} onClose={handleClose} />}
       </div>
     );
   }
-  if (images.length === 2) {
+  if (imageList.length === 2) {
     return (
       <div>
         <img
-          src={GET_IMAGE_URL(images[0].src)}
-          alt={images[0].src}
+          src={GET_IMAGE_URL(imageList[0].src)}
+          alt={imageList[0].src}
           style={{ width: '50%', display: 'inline-block' }}
           role="presentation"
           onClick={handleZoom}
         />
         <img
-          src={GET_IMAGE_URL(images[1].src)}
-          alt={images[1].src}
+          src={GET_IMAGE_URL(imageList[1].src)}
+          alt={imageList[1].src}
           style={{ width: '50%', display: 'inline-block' }}
           role="presentation"
           onClick={handleZoom}
         />
-        {showImagesZoom && <ImagesZoom images={images} onClose={handleClose} />}
+        {showImageListZoom && <ImageListZoom imageList={imageList} onClose={handleClose} />}
       </div>
     );
   }
@@ -60,15 +60,15 @@ const PostImages = ({ images }: IProps) => {
     <div style={{ position: 'relative' }}>
       <div>
         <img
-          src={GET_IMAGE_URL(images[0].src)}
-          alt={images[0].src}
+          src={GET_IMAGE_URL(imageList[0].src)}
+          alt={imageList[0].src}
           style={{ width: '50%', display: 'inline-block' }}
           role="presentation"
           onClick={handleZoom}
         />
         <img
-          src={GET_IMAGE_URL(images[1].src)}
-          alt={images[0].src}
+          src={GET_IMAGE_URL(imageList[1].src)}
+          alt={imageList[0].src}
           style={{ width: '50%', display: 'inline-block' }}
           role="presentation"
           onClick={handleZoom}
@@ -91,11 +91,11 @@ const PostImages = ({ images }: IProps) => {
         >
           <PlusOutlined />
           <br />
-          {images.length - 2}
+          {imageList.length - 2}
           개의 사진 더보기
         </div>
       </div>
-      {showImagesZoom && <ImagesZoom images={images} onClose={handleClose} />}
+      {showImageListZoom && <ImageListZoom imageList={imageList} onClose={handleClose} />}
     </div>
   );
 };

@@ -9,11 +9,11 @@ import { GET_IMAGE_URL } from '@utils/urls';
 import { Overlay, Header, CloseBtn, ImgWrapper, Indicator, SlickWrapper, globalStyles } from './styles';
 
 export interface IProps {
-  images: IIMage[];
+  imageList: IIMage[];
   onClose: () => void;
 }
 
-const ImagesZoom = ({ images, onClose }: IProps) => {
+const ImageListZoom = ({ imageList, onClose }: IProps) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   return (
@@ -33,7 +33,7 @@ const ImagesZoom = ({ images, onClose }: IProps) => {
             slidesToShow={1}
             slidesToScroll={1}
           >
-            {images.map((image) => (
+            {imageList.map((image) => (
               <ImgWrapper key={image.src}>
                 <img src={GET_IMAGE_URL(image.src, true)} alt={image.src} />
               </ImgWrapper>
@@ -41,7 +41,7 @@ const ImagesZoom = ({ images, onClose }: IProps) => {
           </Slick>
           <Indicator>
             <div>
-              {currentSlide + 1} / {images.length}
+              {currentSlide + 1} / {imageList.length}
             </div>
           </Indicator>
         </div>
@@ -50,4 +50,4 @@ const ImagesZoom = ({ images, onClose }: IProps) => {
   );
 };
 
-export default ImagesZoom;
+export default ImageListZoom;
