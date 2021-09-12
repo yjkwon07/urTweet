@@ -1,10 +1,10 @@
 import { IUserInfo } from '@modules/user/@types/db';
 
-export interface IPost {
-  Comments: IComment[];
-  Images: IIMage[];
-  Likers: ILiker[];
-  Retweet: IPost | null;
+export type Post = {
+  Comments: Comment[];
+  Images: IMage[];
+  Likers: Liker[];
+  Retweet: Post | null;
   RetweetId: number | null;
   User: Pick<IUserInfo, 'id' | 'nickname'>;
   UserId: number;
@@ -12,20 +12,20 @@ export interface IPost {
   createdAt: string;
   id: number;
   updatedAt: string;
-}
+};
 
-export interface ILiker {
+export type Liker = {
   id: number;
-}
+};
 
-export interface ILike {
+export type Like = {
   createdAt: string;
   updatedAt: string;
   PostId: number;
   UserId: number;
-}
+};
 
-export interface IComment {
+export type Comment = {
   id: number;
   content: string;
   createdAt: string;
@@ -33,12 +33,12 @@ export interface IComment {
   UserId: number;
   PostId: number;
   User: Pick<IUserInfo, 'id' | 'nickname'>;
-}
+};
 
-export interface IIMage {
+export type IMage = {
   PostId: number;
   createdAt: string;
   id: number;
   src: string;
   updatedAt: string;
-}
+};

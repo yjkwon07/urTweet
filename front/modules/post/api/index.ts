@@ -1,121 +1,118 @@
 import { axios } from '@modules/client';
 
-import { IComment, IPost } from '../@types/db';
+import { Comment, Post } from '../@types';
 
 /**
- * * post 게시글 정보 조회 GET
+ * * 게시글 정보 조회 GET
  * * url: /post/:postId
  * * body: empty
- * * res: IPost
+ * * res: ReadPostRes
  */
 export type ReadPostUrlQuery = {
   postId: number;
 };
+export interface ReadPostResData extends ListReadCommonRes {
+  item: Post;
+}
+export interface ReadPostRes extends CommonRes {
+  resData: ReadPostResData;
+}
 export function GET_READ_POST_API(url: ReadPostUrlQuery) {
   return `/post/${url.postId}`;
 }
 export const requestReadPost = (url: ReadPostUrlQuery) => {
-  return axios.get<IPost>(GET_READ_POST_API(url));
+  return axios.get<ReadPostRes>(GET_READ_POST_API(url));
 };
 
 /**
- * * post 게시글 리스트 정보 조회 GET
- * * url: /posts?page=:page&pageSize=:pageSize&hashtag=:hashtag
+ * * 게시글 리스트 정보 조회 GET
+ * * url: /posts?page=:page&pageSize=:pageSize&hashtag=:hashtag&userId=:userId
  * * body: empty
- * * res: IPost[]
+ * * res: ListReadPostRes
  */
 export type ListReadPostUrlQuery = {
   page: number;
   pageSize: number;
   hashtag?: string;
+  userId?: number;
 };
-interface ListReadPostResData extends ListReadCommonRes {
-  list: IPost[];
+export interface ListReadPostResData extends ListReadCommonRes {
+  list: Post[];
+}
+export interface ListReadPostRes extends CommonRes {
+  resData: ListReadPostResData;
 }
 export function GET_LIST_READ_POST_API(url: ListReadPostUrlQuery) {
-  return `/posts?page=${url.page}&pageSize=${url.pageSize}&hashtag=${url.hashtag || ''}`;
+  return `/posts?page=${url.page}&pageSize=${url.pageSize}&hashtag=${url.hashtag || ''}&userId=${url.userId}`;
 }
 export const requestListReadPost = (url: ListReadPostUrlQuery) => {
-  return axios.get<ListReadPostResData>(GET_LIST_READ_POST_API(url));
-};
-
-/**
- * * post 유저 게시글 리스트 정보 조회 GET
- * * url: /user/:userId/posts?lastId=:lastId&pageSize=:pageSize
- * * body: empty
- * * res: IPost[]
- */
-export type ListReadUserPostUrlQuery = {
-  userId: number;
-  lastId: number;
-  pageSize: number;
-};
-export function GET_LIST_READ_USER_POST_API(url: ListReadUserPostUrlQuery) {
-  return `/user/${url.userId}/posts?lastId=${url.lastId}&pageSize=${url.pageSize}`;
-}
-export const requestListReadUserPost = (url: ListReadUserPostUrlQuery) => {
-  return axios.get<IPost[]>(GET_LIST_READ_USER_POST_API(url));
+  return axios.get<ListReadPostRes>(GET_LIST_READ_POST_API(url));
 };
 
 /**
  * * 해당 게시글 리트윗 POST
  * * url: /post/:postId/retweet
  * * body: empty
- * * res: IPost
+ * * res: CreatePostRetweetRes
  */
 export type CreatePostRetweetUrlQuery = {
   postId: number;
 };
+export interface CreatePostRetweetRes extends CommonRes {
+  resData: Post;
+}
 export function GET_CREATE_POST_RETWEET_API(url: CreatePostRetweetUrlQuery) {
   return `/post/${url.postId}/retweet`;
 }
 export const requestCreatePostRetweet = (url: CreatePostRetweetUrlQuery) => {
-  return axios.post<IPost>(GET_CREATE_POST_RETWEET_API(url));
+  return axios.post<Post>(GET_CREATE_POST_RETWEET_API(url));
 };
 
 /**
  * * 게시글 등록 POST
  * * url: /post
  * * body: CreatePostBodyQuery
- * * res: IPost
+ * * res: CreatePostRes
  */
 export type CreatePostBodyQuery = {
   content: string;
-  image?: string[] | string;
+  image?: string[];
 };
+export interface CreatePostRes extends CommonRes {
+  resData: Post;
+}
 export function GET_CREATE_POST_API() {
   return `/post`;
 }
 export const requestCreatePost = (body: CreatePostBodyQuery) => {
-  return axios.post<IPost>(GET_CREATE_POST_API(), body);
+  return axios.post<CreatePostRes>(GET_CREATE_POST_API(), body);
 };
 
 /**
  * * 게시글 수정 PATCH
  * * url: /post/:postId
- * * body: ModifyPostBodyQuery
- * * res: ModifyPostRes
+ * * body: UpdatePostBodyQuery
+ * * res: UpdatePostRes
  */
-type ModifyPostUrlQuery = {
+export type UpdatePostUrlQuery = {
   postId: number;
 };
-type ModifyPostBodyQuery = {
+export type UpdatePostBodyQuery = {
   content: string;
-  image?: string[] | string;
+  image?: string[];
 };
-export type ModifyPostReq = {
-  url: ModifyPostUrlQuery;
-  body: ModifyPostBodyQuery;
+export type UpdatePostReq = {
+  url: UpdatePostUrlQuery;
+  body: UpdatePostBodyQuery;
 };
-export type ModifyPostRes = {
-  PostId: number;
-  content: string;
-};
-export function GET_MODIFY_POST_API(url: ModifyPostUrlQuery) {
+export interface UpdatePostRes extends CommonRes {
+  resData: { PostId: number; content: string };
+}
+export function GET_MODIFY_POST_API(url: UpdatePostUrlQuery) {
   return `/post/${url.postId}`;
 }
-export const requestModifyPost = ({ url, body }: ModifyPostReq) => {
-  return axios.patch<ModifyPostRes>(GET_MODIFY_POST_API(url), body);
+export const requestModifyPost = ({ url, body }: UpdatePostReq) => {
+  return axios.patch<UpdatePostRes>(GET_MODIFY_POST_API(url), body);
 };
 
 /**
@@ -127,9 +124,9 @@ export const requestModifyPost = ({ url, body }: ModifyPostReq) => {
 export type RemovePostUrlQuery = {
   postId: number;
 };
-export type RemovePostRes = {
-  PostId: number;
-};
+export interface RemovePostRes extends CommonRes {
+  resData: { PostId: number };
+}
 export function GET_REMOVE_POST_API(url: RemovePostUrlQuery) {
   return `/post/${url.postId}`;
 }
@@ -138,7 +135,7 @@ export const requestRemovePost = (url: RemovePostUrlQuery) => {
 };
 
 /**
- * * 해당 게시글 좋아요 PATCH
+ * * 게시글 좋아요 PATCH
  * * url: /post/:postId/like
  * * body: empty
  * * res: LikePostRes
@@ -146,10 +143,9 @@ export const requestRemovePost = (url: RemovePostUrlQuery) => {
 export type LikePostUrlQuery = {
   postId: number;
 };
-export type LikePostRes = {
-  PostId: number;
-  UserId: number;
-};
+export interface LikePostRes extends CommonRes {
+  resData: { PostId: number; UserId: number };
+}
 export function GET_MODIFY_LIKE_POST_API(url: LikePostUrlQuery) {
   return `/post/${url.postId}/like`;
 }
@@ -158,7 +154,7 @@ export const requestLikePost = (url: LikePostUrlQuery) => {
 };
 
 /**
- * * 해당 게시글 좋아요 취소 DELETE
+ * * 게시글 좋아요 취소 DELETE
  * * url: /post/:postId/like
  * * body: empty
  * * res: UnlikePostRes
@@ -166,10 +162,9 @@ export const requestLikePost = (url: LikePostUrlQuery) => {
 export type UnLikePostUrlQuery = {
   postId: number;
 };
-export type UnlikePostRes = {
-  PostId: number;
-  UserId: number;
-};
+export interface UnlikePostRes extends CommonRes {
+  resData: { PostId: number; UserId: number };
+}
 export function GET_REMOVE_LIKE_POST_API(url: UnLikePostUrlQuery) {
   return `/post/${url.postId}/like`;
 }
@@ -181,37 +176,25 @@ export const requestUnlikePost = (url: UnLikePostUrlQuery) => {
  * * 해당 게시글 댓글 등록 POST
  * * url: /post/:postId/comment
  * * body: CreateCommentBodyQuery
- * * res: IUnlikePostRes
+ * * res: CreateCommentRes
  */
-type CreateCommentUrlQuery = {
+export type CreateCommentUrlQuery = {
   postId: number;
 };
-type CreateCommentBodyQuery = {
+export type CreateCommentBodyQuery = {
   content: string;
   userId: number;
 };
-export type ICreateCommentReq = {
+export type CreateCommentReq = {
   url: CreateCommentUrlQuery;
   body: CreateCommentBodyQuery;
 };
+export interface CreateCommentRes extends CommonRes {
+  resData: Comment;
+}
 export function GET_CREATE_COMMENT_API(url: CreateCommentUrlQuery) {
   return `/post/${url.postId}/comment`;
 }
-export const requestCreateComment = ({ url, body }: ICreateCommentReq) => {
-  return axios.post<IComment>(GET_CREATE_COMMENT_API(url), body);
-};
-
-/**
- * * 해당 게시글 이미지 업로드 POST
- * * url: /post/images
- * * body: UploadImageBody
- * * res: UploadImagePathRes
- */
-export type UploadImageBody = FormData;
-export type UploadImagePathRes = string[];
-export function GET_UPLOAD_POST_IMAGES_API() {
-  return `/post/images`;
-}
-export const requestUploadPostImages = (body: UploadImageBody) => {
-  return axios.post<UploadImagePathRes>(GET_UPLOAD_POST_IMAGES_API(), body);
+export const requestCreateComment = ({ url, body }: CreateCommentReq) => {
+  return axios.post<CreateCommentRes>(GET_CREATE_COMMENT_API(url), body);
 };
