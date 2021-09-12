@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Avatar, Comment, List, Tooltip } from 'antd';
-import moment from 'dayjs';
+import dayjs from 'dayjs';
 import Link from 'next/link';
 
 import { IComment } from '@modules/post/@types/db';
@@ -28,8 +28,8 @@ const CommentList = ({ commentList }: IProps) => (
           }
           content={item.content}
           datetime={
-            <Tooltip title={moment(item.createdAt).format('YYYY-MM-DD HH:mm:ss')}>
-              <span>{moment(item.createdAt).fromNow()}</span>
+            <Tooltip title={dayjs(item.createdAt).format('YYYY-MM-DD HH:mm:ss')}>
+              <span>{dayjs(item.createdAt).fromNow()}</span>
             </Tooltip>
           }
         />

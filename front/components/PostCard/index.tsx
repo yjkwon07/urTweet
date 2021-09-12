@@ -18,6 +18,7 @@ import { useFetchStatus } from '@modules/fetchStatus';
 import { likePost, removePost, retweetPost, unlikePost } from '@modules/post';
 import { IPost } from '@modules/post/@types/db';
 import { userSelector } from '@modules/user';
+import isCustomAxiosError from '@utils/isCustomAxiosError';
 import requiredLogin from '@utils/requiredLogin';
 
 import CommentForm from './CommentForm';
@@ -49,7 +50,9 @@ const PostCard = ({ data, collapse = false }: IProps) => {
       if (!requiredLogin()) return;
       await dispatch(retweetPost.asyncThunk({ postId: data.id }));
     } catch (error) {
-      message.error(JSON.stringify(error.response.data));
+      if (isCustomAxiosError(error)) {
+        message.error(JSON.stringify(error.response?.data));
+      }
     }
   }, [data.id, dispatch]);
 
@@ -163,7 +166,7 @@ const PostCard = ({ data, collapse = false }: IProps) => {
                       editMode={editMode}
                       postId={data.id}
                       postContent={data.content}
-                      images={data.Retweet.Images}
+                      imageList={data.Retweet.Images}
                       onCancelEditMode={handleCancelEditMode}
                     />
                   }
@@ -175,7 +178,7 @@ const PostCard = ({ data, collapse = false }: IProps) => {
               editMode={editMode}
               postId={data.id}
               postContent={data.content}
-              images={data.Images}
+              imageList={data.Images}
               onCancelEditMode={handleCancelEditMode}
             />
           )
@@ -185,7 +188,7 @@ const PostCard = ({ data, collapse = false }: IProps) => {
         <>
           <Divider plain>{`${data.Comments.length}개의 댓글`}</Divider>
           <CommentList commentList={data.Comments} />
-          {myId && <CommentForm postId={data.id} />}
+          {myId && <CommentForm userId={myId} postId={data.id} />}
         </>
       )}
     </StyledCard>
