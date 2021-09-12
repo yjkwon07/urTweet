@@ -7,44 +7,37 @@ import Link from 'next/link';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import regexifyString from 'regexify-string';
-import * as yup from 'yup';
 
 import { useFetchStatus } from '@modules/fetchStatus';
 import { modifyPost } from '@modules/post';
+import { FormUpdatePost } from '@modules/post/@types';
 import { IIMage } from '@modules/post/@types/db';
+import { UPDATE_POST_SCHEMA } from '@modules/post/config';
+import isCustomAxiosError from '@utils/isCustomAxiosError';
 import { GET_HASHTAG_URL, PASS_HREF } from '@utils/urls';
 
 import PostImages from '../PostImages';
 
-const POST_SCHEMA = yup.object({
-  content: yup
-    .string()
-    .min(3, '게시글은 3자 이상 입력하여 주십시오.')
-    .max(140, '게시글은 140자 제한 입니다.')
-    .required('게시글은 필수 입력 항목 입니다.'),
-});
-
-type FormData = yup.InferType<typeof POST_SCHEMA>;
-
 export interface IProps {
   postId: number;
   postContent: string;
-  images: IIMage[];
+  imageList: IIMage[];
   editMode?: boolean;
   onCancelEditMode: () => void;
 }
 
-const PostCardContent = ({ postId, postContent, images, editMode = false, onCancelEditMode }: IProps) => {
+const PostCardContent = ({ postId, postContent, imageList, editMode = false, onCancelEditMode }: IProps) => {
   const dispatch = useDispatch();
   const { status } = useFetchStatus(modifyPost.TYPE, postId);
+
   const {
     control,
     handleSubmit: checkSubmit,
     errors,
     reset,
-  } = useForm<FormData>({
+  } = useForm<FormUpdatePost>({
     mode: 'onSubmit',
-    resolver: yupResolver(POST_SCHEMA),
+    resolver: yupResolver(UPDATE_POST_SCHEMA),
     defaultValues: { content: postContent },
   });
 
@@ -76,7 +69,9 @@ const PostCardContent = ({ postId, postContent, images, editMode = false, onCanc
         );
         message.success('게시글이 수정 되었습니다.');
       } catch (error) {
-        message.error(JSON.stringify(error.response.data));
+        if (isCustomAxiosError(error)) {
+          message.error(JSON.stringify(error.response?.data));
+        }
       } finally {
         reset();
         onCancelEditMode();
@@ -121,7 +116,7 @@ const PostCardContent = ({ postId, postContent, images, editMode = false, onCanc
         <>
           {HashTagPostContent}
           <div style={{ marginTop: 10 }} />
-          {!!images.length && <PostImages images={images} />}
+          {!!imageList.length && <PostImages imageList={imageList} />}
         </>
       )}
     </div>

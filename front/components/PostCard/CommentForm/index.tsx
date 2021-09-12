@@ -7,8 +7,8 @@ import { useDispatch } from 'react-redux';
 
 import { useFetchStatus } from '@modules/fetchStatus';
 import { createComment } from '@modules/post';
-import { FormComment } from '@modules/post/@types/type';
-import { COMMENT_SCHEMA } from '@modules/post/config';
+import { FormCreateComment } from '@modules/post/@types';
+import { CREATE_COMMENT_SCHEMA } from '@modules/post/config';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
 
 interface IProps {
@@ -25,9 +25,9 @@ const CommentForm = ({ userId, postId }: IProps) => {
     handleSubmit: checkSubmit,
     errors,
     reset,
-  } = useForm<FormComment>({
+  } = useForm<FormCreateComment>({
     mode: 'onSubmit',
-    resolver: yupResolver(COMMENT_SCHEMA),
+    resolver: yupResolver(CREATE_COMMENT_SCHEMA),
   });
 
   const handleSubmit = useMemo(() => {
