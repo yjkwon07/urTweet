@@ -2,10 +2,10 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import { ExclamationCircleOutlined, UserAddOutlined, UserDeleteOutlined } from '@ant-design/icons';
 import { Modal } from 'antd';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { useFetchStatus } from '@modules/fetchStatus';
-import { follow, unFollow, userSelector } from '@modules/user';
+import { follow, unFollow, useMyUser } from '@modules/user';
 
 import { StyledButton } from './styles';
 
@@ -17,15 +17,14 @@ interface IProps {
 
 const FollowButton = ({ userId }: IProps) => {
   const dispatch = useDispatch();
+  const { status: followStatus } = useFetchStatus(follow.TYPE, userId);
+  const { status: unfollowStatus } = useFetchStatus(unFollow.TYPE, userId);
+  const { data: myData } = useMyUser();
 
-  const myData = useSelector(userSelector.myData);
   const isFollowing = useMemo(
     () => !!myData?.Followings.find((Following) => Following.id === userId),
     [userId, myData?.Followings],
   );
-
-  const { status: followStatus } = useFetchStatus(follow.TYPE, userId);
-  const { status: unfollowStatus } = useFetchStatus(unFollow.TYPE, userId);
 
   const [showUnfollow, setShowUnfollow] = useState(false);
 
