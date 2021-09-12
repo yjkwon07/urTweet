@@ -63,7 +63,7 @@ function findPostWithoutUserPassword(where) {
 }
 
 function findPostListWithoutUserPassword({ where = {}, limit, offset, hashtag }) {
-  return Post.findAll({
+  return Post.findAndCountAll({
     where,
     offset,
     limit,
@@ -112,6 +112,7 @@ function findPostListWithoutUserPassword({ where = {}, limit, offset, hashtag })
         ],
       },
     ],
+    distinct: true,
   });
 }
 

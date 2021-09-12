@@ -1,10 +1,8 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
-const { Op } = require('sequelize');
 
 const { findUserWithoutPassword, findUser } = require('../query/user');
-const { findPostListWithoutUserPassword } = require('../query/post');
 const { User } = require('../models');
 const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
 const { SUCCESS, CLIENT_ERROR, USER_ERROR, DEFAULT_SUCCESS_MESSAGE } = require('../constant');
@@ -84,25 +82,6 @@ router.get('/:userId', async (req, res, next) => {
     } else {
       res.status(CLIENT_ERROR).send('존재하지 않는 사용자입니다.');
     }
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-});
-
-// GET /user/:userId/posts (사용자 정보로 post 조회)
-router.get('/:userId/posts', async (req, res, next) => {
-  try {
-    const UserId = parseInt(req.params.userId, 10);
-    const lastId = parseInt(req.query.lastId, 10);
-    const limit = parseInt(req.params.pageSize, 10) || 10;
-
-    const where = { UserId };
-    if (lastId) {
-      where.id = { [Op.lt]: lastId };
-    }
-    const posts = await findPostListWithoutUserPassword({ where, limit });
-    res.status(SUCCESS).send(posts);
   } catch (error) {
     console.error(error);
     next(error);

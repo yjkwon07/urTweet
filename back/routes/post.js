@@ -4,8 +4,9 @@ const { findPost, findRetweetPost, findPostWithoutUserPassword } = require('../q
 const { findCommentWithoutUserPassword } = require('../query/comment');
 const { Post, Comment, Image, Hashtag } = require('../models');
 const { isLoggedIn } = require('./middlewares');
-const { awsUpload: upload } = require('./upload');
+const { upload } = require('./upload');
 const { SUCCESS, CLIENT_ERROR, PAGE_ERROR } = require('../constant');
+const { resDataFormat } = require('../utils/resFormat');
 
 const router = express.Router();
 
@@ -32,13 +33,8 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
       await post.addHashtags(result.map((hashtag) => hashtag[0]));
     }
     if (image) {
-      if (Array.isArray(image)) {
-        const images = await Promise.all(image.map((image) => Image.create({ src: image })));
-        await post.addImages(images);
-      } else {
-        const image = await Image.create({ src: image });
-        await post.addImages(image);
-      }
+      const images = await Promise.all(image.map((image) => Image.create({ src: image })));
+      await post.addImages(images);
     }
     const postWithoutUserPassword = await findPostWithoutUserPassword({ id: post.id });
     res.status(SUCCESS).send(postWithoutUserPassword);
@@ -57,7 +53,7 @@ router.get('/:postId', async (req, res, next) => {
       return res.status(PAGE_ERROR).send('존재하지 않는 게시글입니다.');
     }
     const postWithoutUserPassword = await findPostWithoutUserPassword({ id: postId });
-    res.status(SUCCESS).send(postWithoutUserPassword);
+    res.status(SUCCESS).send(resDataFormat(postWithoutUserPassword));
   } catch (error) {
     console.error(error);
     next(error);
@@ -95,7 +91,7 @@ router.post('/:postId/retweet', isLoggedIn, async (req, res, next) => {
   }
 });
 
-// POST /post/:postId/comment (게시글 작성)
+// POST /post/:postId/comment (댓글 작성)
 router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {
   try {
     const postId = parseInt(req.params.postId, 10);
@@ -158,8 +154,9 @@ router.delete('/:postId/like', isLoggedIn, async (req, res, next) => {
 router.patch('/:postId', isLoggedIn, async (req, res, next) => {
   try {
     const postId = parseInt(req.params.postId, 10);
-    const content = req.body.content;
     const myId = parseInt(req.user.id, 10);
+    const content = req.body.content;
+    const image = req.body.image;
     const hashtags = content.match(/#[^\s#]+/g);
 
     await Post.update(
@@ -182,7 +179,11 @@ router.patch('/:postId', isLoggedIn, async (req, res, next) => {
       );
       await post.setHashtags(result.map((v) => v[0]));
     }
-    res.status(SUCCESS).send({ PostId: postId, content });
+    if (image) {
+      const images = await Promise.all(image.map((image) => Image.create({ src: image })));
+      await post.setImages(images);
+    }
+    res.status(SUCCESS).send(post);
   } catch (error) {
     console.error(error);
     next(error);
