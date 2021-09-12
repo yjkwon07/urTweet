@@ -1,10 +1,12 @@
 import { createAction } from '@reduxjs/toolkit';
 import { AxiosResponse } from 'axios';
 
+import { CustomAxiosError } from '@typings/type';
+
 import { createRequestAsyncThunk } from './createRequestAsyncThunk';
 import { RequestCommonMeta } from './type';
 
-export const createRequestAction = <R, S, M extends RequestCommonMeta, F = any>(
+export const createRequestAction = <R, S, M extends RequestCommonMeta>(
   type: string,
   requestAPI: (query: R) => Promise<AxiosResponse<S>>,
 ) => {
@@ -16,7 +18,7 @@ export const createRequestAction = <R, S, M extends RequestCommonMeta, F = any>(
     TYPE: type,
     request: createAction(REQUEST, (payload: R, meta?: M) => ({ payload, meta })),
     success: createAction(SUCCESS, (payload: S, meta?: M) => ({ payload, meta })),
-    failure: createAction(FAILURE, (payload: F, meta?: M) => ({ payload, meta })),
+    failure: createAction(FAILURE, (payload: CustomAxiosError, meta?: M) => ({ payload, meta })),
     requestAPI,
   };
   const asyncThunk = createRequestAsyncThunk<R, S, M>(action.request);
