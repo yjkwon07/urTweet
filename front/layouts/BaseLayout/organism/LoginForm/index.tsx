@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback } from 'react';
 
 import { LockOutlined, MailOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -36,8 +36,8 @@ const LoginForm = () => {
     resolver: yupResolver(LOGIN_SCHEMA),
   });
 
-  const handleSubmit = useMemo(() => {
-    return checkSubmit(async (formData) => {
+  const handleSubmit = useCallback(
+    async (formData) => {
       try {
         const user = await dispatch(login.asyncThunk(formData));
         setUserId(user.id.toString());
@@ -46,11 +46,12 @@ const LoginForm = () => {
           message.error(JSON.stringify(error.response.data));
         }
       }
-    });
-  }, [checkSubmit, dispatch]);
+    },
+    [dispatch],
+  );
 
   return (
-    <FormWrapper onFinish={() => handleSubmit()}>
+    <FormWrapper onSubmitCapture={checkSubmit(handleSubmit)}>
       <Form.Item
         htmlFor="user_email"
         validateStatus={errors.email ? 'error' : 'success'}
