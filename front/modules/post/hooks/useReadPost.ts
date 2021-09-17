@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { useDispatch } from 'react-redux';
 
@@ -13,8 +13,14 @@ export default function useReadPost(query: ReadPostUrlQuery) {
   const { status } = useFetchStatus(readPost.TYPE);
   const data = useAppSelector(postSelector.data);
 
+  const isInitFetch = useRef(!!data.length);
+
   useEffect(() => {
-    dispatch(readPost.request({ postId: query.postId }));
+    if (!isInitFetch.current) {
+      dispatch(readPost.request({ postId: query.postId }));
+    } else {
+      isInitFetch.current = false;
+    }
   }, [dispatch, query.postId, status]);
 
   return { status, data };

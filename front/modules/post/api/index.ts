@@ -65,7 +65,7 @@ export function GET_CREATE_POST_RETWEET_API(url: CreatePostRetweetUrlQuery) {
   return `/post/${url.postId}/retweet`;
 }
 export const requestCreatePostRetweet = (url: CreatePostRetweetUrlQuery) => {
-  return axios.post<Post>(GET_CREATE_POST_RETWEET_API(url));
+  return axios.post<CreatePostRetweetRes>(GET_CREATE_POST_RETWEET_API(url));
 };
 
 /**
@@ -106,13 +106,13 @@ export type UpdatePostReq = {
   body: UpdatePostBodyQuery;
 };
 export interface UpdatePostRes extends CommonRes {
-  resData: { PostId: number; content: string };
+  resData: Post;
 }
-export function GET_MODIFY_POST_API(url: UpdatePostUrlQuery) {
+export function GET_UPDATE_POST_API(url: UpdatePostUrlQuery) {
   return `/post/${url.postId}`;
 }
-export const requestModifyPost = ({ url, body }: UpdatePostReq) => {
-  return axios.patch<UpdatePostRes>(GET_MODIFY_POST_API(url), body);
+export const requestUpdatePost = ({ url, body }: UpdatePostReq) => {
+  return axios.patch<UpdatePostRes>(GET_UPDATE_POST_API(url), body);
 };
 
 /**
@@ -146,11 +146,11 @@ export type LikePostUrlQuery = {
 export interface LikePostRes extends CommonRes {
   resData: { PostId: number; UserId: number };
 }
-export function GET_MODIFY_LIKE_POST_API(url: LikePostUrlQuery) {
+export function GET_LIKE_POST_API(url: LikePostUrlQuery) {
   return `/post/${url.postId}/like`;
 }
 export const requestLikePost = (url: LikePostUrlQuery) => {
-  return axios.patch<LikePostRes>(GET_MODIFY_LIKE_POST_API(url));
+  return axios.patch<LikePostRes>(GET_LIKE_POST_API(url));
 };
 
 /**
@@ -165,11 +165,11 @@ export type UnLikePostUrlQuery = {
 export interface UnlikePostRes extends CommonRes {
   resData: { PostId: number; UserId: number };
 }
-export function GET_REMOVE_LIKE_POST_API(url: UnLikePostUrlQuery) {
+export function GET_UNLIKE_POST_API(url: UnLikePostUrlQuery) {
   return `/post/${url.postId}/like`;
 }
 export const requestUnlikePost = (url: UnLikePostUrlQuery) => {
-  return axios.delete<UnlikePostRes>(GET_REMOVE_LIKE_POST_API(url));
+  return axios.delete<UnlikePostRes>(GET_UNLIKE_POST_API(url));
 };
 
 /**

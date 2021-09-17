@@ -4,47 +4,29 @@ import { createRequestSaga } from '@modules/helper';
 import { addPostToMe, removePostToMe } from '@modules/user';
 
 import {
-  uploadImages,
   likePost,
   unlikePost,
   readPost,
   listReadPost,
   createPost,
-  modifyPost,
+  updatePost,
   removePost,
   createComment,
   retweetPost,
 } from './slice';
 
-const uploadImagesSaga = createRequestSaga(uploadImages, uploadImages.requestAPI);
-const likePostSaga = createRequestSaga(likePost, likePost.requestAPI);
-const unlikePostSaga = createRequestSaga(unlikePost, unlikePost.requestAPI);
+const retweetPostSaga = createRequestSaga(retweetPost, retweetPost.requestAPI);
+const createPostSaga = createRequestSaga(createPost, createPost.requestAPI);
 const readPostSaga = createRequestSaga(readPost, readPost.requestAPI);
 const listReadPostSaga = createRequestSaga(listReadPost, listReadPost.requestAPI);
-const createPostSaga = createRequestSaga(createPost, createPost.requestAPI);
-const modifyPostSaga = createRequestSaga(modifyPost, modifyPost.requestAPI);
+const updatePostSaga = createRequestSaga(updatePost, updatePost.requestAPI);
 const removePostSaga = createRequestSaga(removePost, removePost.requestAPI);
+const unlikePostSaga = createRequestSaga(unlikePost, unlikePost.requestAPI);
+const likePostSaga = createRequestSaga(likePost, likePost.requestAPI);
 const createCommentSaga = createRequestSaga(createComment, createComment.requestAPI);
-const retweetPostSaga = createRequestSaga(retweetPost, retweetPost.requestAPI);
 
-function* watchUploadImages() {
-  yield takeLatest(uploadImages.request, uploadImagesSaga);
-}
-
-function* watchLikePost() {
-  yield takeLatest(likePost.request, likePostSaga);
-}
-
-function* watchUnlikePost() {
-  yield takeLatest(unlikePost.request, unlikePostSaga);
-}
-
-function* watchReadPost() {
-  yield takeLatest(readPost.request, readPostSaga);
-}
-
-function* watchListRead() {
-  yield takeLatest(listReadPost.request, listReadPostSaga);
+function* watchRetweetPost() {
+  yield debounce(300, retweetPost.request, retweetPostSaga);
 }
 
 function* watchCreatePost() {
@@ -58,8 +40,16 @@ function* watchCreatePost() {
   });
 }
 
-function* watchModifyPost() {
-  yield takeLatest(modifyPost.request, modifyPostSaga);
+function* watchReadPost() {
+  yield takeLatest(readPost.request, readPostSaga);
+}
+
+function* watchListRead() {
+  yield takeLatest(listReadPost.request, listReadPostSaga);
+}
+
+function* watchUpdatePost() {
+  yield takeLatest(updatePost.request, updatePostSaga);
 }
 
 function* watchRemovePost() {
@@ -73,23 +63,26 @@ function* watchRemovePost() {
   });
 }
 
+function* watchLikePost() {
+  yield takeLatest(likePost.request, likePostSaga);
+}
+
+function* watchUnlikePost() {
+  yield takeLatest(unlikePost.request, unlikePostSaga);
+}
+
 function* watchCreateComment() {
   yield debounce(300, createComment.request, createCommentSaga);
 }
 
-function* watchRetweetPost() {
-  yield debounce(300, retweetPost.request, retweetPostSaga);
-}
-
 export default function* postSaga() {
   yield all([
-    fork(watchUploadImages),
     fork(watchLikePost),
     fork(watchUnlikePost),
     fork(watchReadPost),
     fork(watchListRead),
     fork(watchCreatePost),
-    fork(watchModifyPost),
+    fork(watchUpdatePost),
     fork(watchRemovePost),
     fork(watchCreateComment),
     fork(watchRetweetPost),
