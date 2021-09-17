@@ -3,11 +3,11 @@ import React, { useCallback, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 
 import ImageListZoom from '@components/ImageListZoom';
-import { IIMage } from '@modules/post/@types/db';
+import { IMage } from '@modules/post/@types/db';
 import { GET_IMAGE_URL } from '@utils/urls';
 
 interface IProps {
-  imageList: IIMage[];
+  imageList: IMage[];
 }
 
 const PostImages = ({ imageList }: IProps) => {

@@ -4,7 +4,7 @@ import { Avatar, Comment, List, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import Link from 'next/link';
 
-import { IComment } from '@modules/post/@types/db';
+import { Comment as IComment } from '@modules/post/@types/db';
 import { GET_USER_URL, PASS_HREF } from '@utils/urls';
 
 interface IProps {

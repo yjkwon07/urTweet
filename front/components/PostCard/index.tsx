@@ -12,12 +12,12 @@ import {
 } from '@ant-design/icons';
 import { Card, Popover, Button, Divider, message, Tooltip, Modal } from 'antd';
 import classNames from 'classnames';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { useFetchStatus } from '@modules/fetchStatus';
 import { likePost, removePost, retweetPost, unlikePost } from '@modules/post';
-import { IPost } from '@modules/post/@types/db';
-import { userSelector } from '@modules/user';
+import { Post } from '@modules/post/@types/db';
+import { useMyUser } from '@modules/user';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
 import requiredLogin from '@utils/requiredLogin';
 
@@ -31,19 +31,19 @@ import { StyledCard } from './styles';
 const { confirm } = Modal;
 
 export interface IProps {
-  data: IPost;
+  data: Post;
   collapse?: boolean;
 }
 
 const PostCard = ({ data, collapse = false }: IProps) => {
   const dispatch = useDispatch();
-  const myId = useSelector(userSelector.myData)?.id;
   const { status: removePostStatus } = useFetchStatus(removePost.TYPE, data.id);
+  const { data: myData } = useMyUser();
 
   const [morePopOverOpen, setMorePopOverOpen] = useState(false);
   const [commentListOpen, setCommentListOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const isLike = useMemo(() => !!data.Likers.find((v) => v.id === myId), [data.Likers, myId]);
+  const isLike = useMemo(() => !!data.Likers.find((v) => v.id === myData?.id), [data.Likers, myData?.id]);
 
   const handleRetweet = useCallback(async () => {
     try {
@@ -62,7 +62,7 @@ const PostCard = ({ data, collapse = false }: IProps) => {
     else dispatch(unlikePost.request({ postId: data.id }));
   }, [data.id, dispatch, isLike]);
 
-  const handleToggleCommentListShow = useCallback(() => {
+  const handleToggleCommentList = useCallback(() => {
     setCommentListOpen((prev) => !prev);
   }, []);
 
@@ -78,7 +78,7 @@ const PostCard = ({ data, collapse = false }: IProps) => {
     setMorePopOverOpen((prev) => !prev);
   }, []);
 
-  const handleShowRemovePostConfirm = useCallback(() => {
+  const handleRemoveConfirmPost = useCallback(() => {
     confirm({
       title: '정말로 삭제 하시겠습니까?',
       icon: <ExclamationCircleOutlined />,
@@ -106,7 +106,7 @@ const PostCard = ({ data, collapse = false }: IProps) => {
           </Tooltip>
         ),
         <Tooltip key="comment" placement="bottom" title="댓글">
-          <MessageOutlined onClick={handleToggleCommentListShow} />
+          <MessageOutlined onClick={handleToggleCommentList} />
         </Tooltip>,
         <Tooltip key="more" placement="bottom" title="더보기">
           <Popover
@@ -115,14 +115,14 @@ const PostCard = ({ data, collapse = false }: IProps) => {
             onVisibleChange={handleToggleMorePopOver}
             content={
               <div role="presentation" onClick={handleToggleMorePopOver}>
-                {data.User.id === myId && !data.RetweetId && (
+                {data.User.id === myData?.id && !data.RetweetId && (
                   <p>
                     <Button type="primary" ghost size="small" onClick={handleEditMode}>
                       <EditOutlined /> 수정
                     </Button>
                   </p>
                 )}
-                {data.User.id === myId && (
+                {data.User.id === myData?.id && (
                   <p>
                     <Button
                       type="primary"
@@ -130,7 +130,7 @@ const PostCard = ({ data, collapse = false }: IProps) => {
                       ghost
                       size="small"
                       loading={removePostStatus === 'LOADING'}
-                      onClick={handleShowRemovePostConfirm}
+                      onClick={handleRemoveConfirmPost}
                     >
                       <DeleteOutlined /> 삭제
                     </Button>
@@ -148,7 +148,7 @@ const PostCard = ({ data, collapse = false }: IProps) => {
         userId={data.User.id.toString()}
         nickname={data.User.nickname}
         createdAt={data.createdAt}
-        actions={myId && data.User.id !== myId && <FollowButton userId={data.UserId} />}
+        actions={myData?.id && data.User.id !== myData?.id && <FollowButton userId={data.UserId} />}
         description={
           data.Retweet ? (
             <>
@@ -160,7 +160,9 @@ const PostCard = ({ data, collapse = false }: IProps) => {
                   userId={data.Retweet.UserId.toString()}
                   nickname={data.Retweet.User.nickname}
                   createdAt={data.Retweet.createdAt}
-                  actions={myId && data.Retweet.UserId !== myId && <FollowButton userId={data.Retweet.UserId} />}
+                  actions={
+                    myData?.id && data.Retweet.UserId !== myData?.id && <FollowButton userId={data.Retweet.UserId} />
+                  }
                   description={
                     <PostCardContent
                       editMode={editMode}
@@ -188,7 +190,7 @@ const PostCard = ({ data, collapse = false }: IProps) => {
         <>
           <Divider plain>{`${data.Comments.length}개의 댓글`}</Divider>
           <CommentList commentList={data.Comments} />
-          {myId && <CommentForm userId={myId} postId={data.id} />}
+          {myData?.id && <CommentForm userId={myData?.id} postId={data.id} />}
         </>
       )}
     </StyledCard>

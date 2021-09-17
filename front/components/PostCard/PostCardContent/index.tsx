@@ -9,10 +9,10 @@ import { useDispatch } from 'react-redux';
 import regexifyString from 'regexify-string';
 
 import { useFetchStatus } from '@modules/fetchStatus';
-import { modifyPost } from '@modules/post';
-import { FormUpdatePost } from '@modules/post/@types';
-import { IIMage } from '@modules/post/@types/db';
-import { UPDATE_POST_SCHEMA } from '@modules/post/config';
+import { updatePost } from '@modules/post';
+import { FormEditPost } from '@modules/post/@types';
+import { IMage } from '@modules/post/@types/db';
+import { EDIT_POST_SCHEMA } from '@modules/post/config';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
 import { GET_HASHTAG_URL, PASS_HREF } from '@utils/urls';
 
@@ -21,23 +21,23 @@ import PostImages from '../PostImages';
 export interface IProps {
   postId: number;
   postContent: string;
-  imageList: IIMage[];
+  imageList: IMage[];
   editMode?: boolean;
   onCancelEditMode: () => void;
 }
 
 const PostCardContent = ({ postId, postContent, imageList, editMode = false, onCancelEditMode }: IProps) => {
   const dispatch = useDispatch();
-  const { status } = useFetchStatus(modifyPost.TYPE, postId);
+  const { status } = useFetchStatus(updatePost.TYPE, postId);
 
   const {
     control,
     handleSubmit: checkSubmit,
     errors,
     reset,
-  } = useForm<FormUpdatePost>({
+  } = useForm<FormEditPost>({
     mode: 'onSubmit',
-    resolver: yupResolver(UPDATE_POST_SCHEMA),
+    resolver: yupResolver(EDIT_POST_SCHEMA),
     defaultValues: { content: postContent },
   });
 
@@ -48,7 +48,6 @@ const PostCardContent = ({ postId, postContent, imageList, editMode = false, onC
         pattern: /(#[^\s#]+)/g,
         decorator(word, index) {
           if (word.match(/(#[^\s#]+)/)) {
-            // word => #hasgh
             return (
               <Link href={GET_HASHTAG_URL(word.slice(1))} key={index} passHref>
                 <a href={PASS_HREF}>{word}</a>
@@ -65,7 +64,7 @@ const PostCardContent = ({ postId, postContent, imageList, editMode = false, onC
     return checkSubmit(async (formData) => {
       try {
         await dispatch(
-          modifyPost.asyncThunk({ url: { postId }, body: { content: formData.content } }, { actionList: [postId] }),
+          updatePost.asyncThunk({ url: { postId }, body: { content: formData.content } }, { actionList: [postId] }),
         );
         message.success('게시글이 수정 되었습니다.');
       } catch (error) {
