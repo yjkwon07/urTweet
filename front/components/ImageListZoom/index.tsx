@@ -3,13 +3,13 @@ import React, { useState } from 'react';
 import { Global } from '@emotion/react';
 import Slick from 'react-slick';
 
-import { IIMage } from '@modules/post/@types/db';
+import { IMage } from '@modules/post/@types/db';
 import { GET_IMAGE_URL } from '@utils/urls';
 
 import { Overlay, Header, CloseBtn, ImgWrapper, Indicator, SlickWrapper, globalStyles } from './styles';
 
 export interface IProps {
-  imageList: IIMage[];
+  imageList: IMage[];
   onClose: () => void;
 }
 
