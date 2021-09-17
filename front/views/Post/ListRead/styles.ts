@@ -8,8 +8,15 @@ export const StyledCenter = styled.div`
   border-radius: 4px;
 `;
 
-export const StyledBlock = styled.div`
-  height: 20px;
+export const StyledFormBlock = styled.div`
+  height: 30px;
   border: 1px solid #f0f0f0;
+  border-radius: 8px;
   background-color: rgb(247, 249, 250);
+`;
+
+export const StyledFormEmptyBlock = styled.div`
+  height: 36px;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
 `;
