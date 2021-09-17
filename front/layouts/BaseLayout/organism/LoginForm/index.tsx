@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 
-import { LockOutlined, LoginOutlined, MailOutlined } from '@ant-design/icons';
+import { LockOutlined, MailOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Input, Button, Form, message } from 'antd';
 import Link from 'next/link';
@@ -11,6 +11,7 @@ import * as yup from 'yup';
 import { useFetchStatus } from '@modules/fetchStatus';
 import { login } from '@modules/user';
 import { setUserId } from '@utils/auth';
+import isCustomAxiosError from '@utils/isCustomAxiosError';
 import { PASS_HREF, SIGNUP_URL } from '@utils/urls';
 
 import { FormWrapper } from './styles';
@@ -25,8 +26,13 @@ type FormData = yup.InferType<typeof LOGIN_SCHEMA>;
 const LoginForm = () => {
   const dispatch = useDispatch();
   const { status } = useFetchStatus(login.TYPE);
-  const { control, handleSubmit: checkSubmit, errors } = useForm<FormData>({
-    mode: 'onBlur',
+
+  const {
+    control,
+    handleSubmit: checkSubmit,
+    errors,
+  } = useForm<FormData>({
+    mode: 'onSubmit',
     resolver: yupResolver(LOGIN_SCHEMA),
   });
 
@@ -36,7 +42,9 @@ const LoginForm = () => {
         const user = await dispatch(login.asyncThunk(formData));
         setUserId(user.id.toString());
       } catch (error) {
-        message.error(JSON.stringify(error.response.data));
+        if (isCustomAxiosError(error)) {
+          message.error(JSON.stringify(error.response.data));
+        }
       }
     });
   }, [checkSubmit, dispatch]);
@@ -44,7 +52,6 @@ const LoginForm = () => {
   return (
     <FormWrapper onFinish={() => handleSubmit()}>
       <Form.Item
-        label="이메일"
         htmlFor="user_email"
         validateStatus={errors.email ? 'error' : 'success'}
         help={errors.email ? errors.email?.message : ''}
@@ -52,17 +59,15 @@ const LoginForm = () => {
       >
         <Controller
           control={control}
-          as={<Input prefix={<MailOutlined />} />}
+          as={<Input prefix={<MailOutlined />} size="large" />}
           name="email"
           id="user_email"
           type="email"
-          placeholder="User Email"
+          placeholder="이메일"
           autoComplete="email"
-          defaultValue=""
         />
       </Form.Item>
       <Form.Item
-        label="비밀번호"
         htmlFor="user_password"
         validateStatus={errors.password ? 'error' : 'success'}
         help={errors.password ? errors.password?.message : ''}
@@ -70,18 +75,25 @@ const LoginForm = () => {
       >
         <Controller
           control={control}
-          as={<Input.Password prefix={<LockOutlined />} />}
+          as={<Input.Password prefix={<LockOutlined />} size="large" />}
           name="password"
           id="user_password"
           type="password"
-          placeholder="Password"
+          placeholder="비밀번호"
           autoComplete="current-password"
-          defaultValue=""
         />
       </Form.Item>
       <Form.Item>
-        <Button block type="primary" htmlType="submit" loading={status === 'LOADING'}>
-          <LoginOutlined /> Log in
+        <Button
+          className="login-button"
+          block
+          size="large"
+          shape="round"
+          type="primary"
+          htmlType="submit"
+          loading={status === 'LOADING'}
+        >
+          <span>로그인</span>
         </Button>
         Or{' '}
         <Link href={SIGNUP_URL} passHref>
