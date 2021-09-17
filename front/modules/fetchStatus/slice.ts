@@ -3,7 +3,7 @@ import { createAction, createSlice } from '@reduxjs/toolkit';
 // Type
 export interface IFetchStatusActionPayload {
   type: string;
-  actionList: any[];
+  actionList?: any[];
   data?: any;
 }
 
@@ -41,24 +41,24 @@ const slice = createSlice({
           data: null,
         };
       })
-      .addCase(requestFetchStatus, (state, { payload: { type, actionList } }) => {
+      .addCase(requestFetchStatus, (state, { payload: { type, actionList = [] } }) => {
         state[type] = {
           status: 'LOADING',
           actionList: state[type]?.actionList.concat(actionList) || actionList,
           data: null,
         };
       })
-      .addCase(successFetchStatus, (state, { payload: { type, actionList, data } }) => {
+      .addCase(successFetchStatus, (state, { payload: { type, actionList = [], data } }) => {
         state[type] = {
           status: 'SUCCESS',
-          actionList: state[type]?.actionList.filter((action) => !actionList.includes(action)) || [],
+          actionList: state[type]?.actionList.filter((action) => !actionList?.includes(action)) || [],
           data,
         };
       })
-      .addCase(failureFetchStatus, (state, { payload: { type, actionList, data } }) => {
+      .addCase(failureFetchStatus, (state, { payload: { type, actionList = [], data } }) => {
         state[type] = {
           status: 'FAIL',
-          actionList: state[type]?.actionList.filter((action) => !actionList.includes(action)) || [],
+          actionList: state[type]?.actionList.filter((action) => !actionList?.includes(action)) || [],
           data,
         };
       })
