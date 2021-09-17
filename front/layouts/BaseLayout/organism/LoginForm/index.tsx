@@ -6,22 +6,15 @@ import { Input, Button, Form, message } from 'antd';
 import Link from 'next/link';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
-import * as yup from 'yup';
 
 import { useFetchStatus } from '@modules/fetchStatus';
-import { login } from '@modules/user';
+import { login, LOGIN_SCHEMA } from '@modules/user';
+import { FormLogin } from '@modules/user/@types';
 import { setUserId } from '@utils/auth';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
 import { PASS_HREF, SIGNUP_URL } from '@utils/urls';
 
 import { FormWrapper } from './styles';
-
-const LOGIN_SCHEMA = yup.object({
-  email: yup.string().email('올바르지 않은 이메일 양식입니다.').required('이메일은 필수 입력입니다.'),
-  password: yup.string().required('비밀번호는 필수 입력입니다.'),
-});
-
-type FormData = yup.InferType<typeof LOGIN_SCHEMA>;
 
 const LoginForm = () => {
   const dispatch = useDispatch();
@@ -31,7 +24,7 @@ const LoginForm = () => {
     control,
     handleSubmit: checkSubmit,
     errors,
-  } = useForm<FormData>({
+  } = useForm<FormLogin>({
     mode: 'onSubmit',
     resolver: yupResolver(LOGIN_SCHEMA),
   });
