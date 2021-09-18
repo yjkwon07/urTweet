@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Global } from '@emotion/react';
 import Slick from 'react-slick';
 
+import usePreventBodyScroll from '@hooks/usePreventBodyScroll';
 import { IMage } from '@modules/post/@types/db';
 import { GET_IMAGE_URL } from '@utils/urls';
 
@@ -14,6 +15,7 @@ export interface IProps {
 }
 
 const ImageListZoom = ({ imageList, onClose }: IProps) => {
+  usePreventBodyScroll();
   const [currentSlide, setCurrentSlide] = useState(0);
 
   return (

@@ -35,6 +35,11 @@ export const globalStyles = css`
     transform: none !important;
   }
 
+  body.body-scroll-prevent {
+    height: 100vh;
+    overflow-y: hidden;
+  }
+
   .mt-45 {
     margin-top: 45px !important;
   }
