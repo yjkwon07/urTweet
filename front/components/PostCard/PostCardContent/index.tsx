@@ -1,6 +1,5 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
-import { EditOutlined, UndoOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button, Input, Form, message } from 'antd';
 import Link from 'next/link';
@@ -17,6 +16,7 @@ import isCustomAxiosError from '@utils/isCustomAxiosError';
 import { GET_HASHTAG_URL, PASS_HREF } from '@utils/urls';
 
 import PostImages from '../PostImages';
+import { StyledForm } from './styles';
 
 export interface IProps {
   postId: number;
@@ -60,8 +60,8 @@ const PostCardContent = ({ postId, postContent, imageList, editMode = false, onC
     [postContent],
   );
 
-  const handleChangePost = useMemo(() => {
-    return checkSubmit(async (formData) => {
+  const handleChangePost = useCallback(
+    async (formData) => {
       try {
         await dispatch(
           updatePost.asyncThunk({ url: { postId }, body: { content: formData.content } }, { actionList: [postId] }),
@@ -75,13 +75,14 @@ const PostCardContent = ({ postId, postContent, imageList, editMode = false, onC
         reset();
         onCancelEditMode();
       }
-    });
-  }, [checkSubmit, dispatch, onCancelEditMode, postId, reset]);
+    },
+    [dispatch, onCancelEditMode, postId, reset],
+  );
 
   return (
     <div>
       {editMode ? (
-        <Form style={{ marginBottom: '20px' }} onFinish={handleChangePost}>
+        <StyledForm onSubmitCapture={checkSubmit(handleChangePost)}>
           <Form.Item
             validateStatus={errors.content ? 'error' : 'success'}
             help={errors.content ? errors.content?.message : ''}
@@ -102,19 +103,18 @@ const PostCardContent = ({ postId, postContent, imageList, editMode = false, onC
               placeholder="게시글을 작성해 주세요."
             />
           </Form.Item>
-          <Button.Group>
-            <Button type="primary" htmlType="submit" loading={status === 'LOADING'}>
-              <EditOutlined /> 수정
+          <div className="btn-group">
+            <Button className="submit-button mr-5" type="primary" htmlType="submit" loading={status === 'LOADING'}>
+              수정
             </Button>
-            <Button onClick={onCancelEditMode}>
-              <UndoOutlined /> 취소
+            <Button className="cancel-button" onClick={onCancelEditMode}>
+              취소
             </Button>
-          </Button.Group>
-        </Form>
+          </div>
+        </StyledForm>
       ) : (
         <>
-          {HashTagPostContent}
-          <div style={{ marginTop: 10 }} />
+          <div className="mb-10">{HashTagPostContent}</div>
           {!!imageList.length && <PostImages imageList={imageList} />}
         </>
       )}

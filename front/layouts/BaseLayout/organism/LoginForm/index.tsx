@@ -14,7 +14,7 @@ import { setUserId } from '@utils/auth';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
 import { PASS_HREF, SIGNUP_URL } from '@utils/urls';
 
-import { FormWrapper } from './styles';
+import { StyledForm } from './styles';
 
 const LoginForm = () => {
   const dispatch = useDispatch();
@@ -44,7 +44,7 @@ const LoginForm = () => {
   );
 
   return (
-    <FormWrapper onSubmitCapture={checkSubmit(handleSubmit)}>
+    <StyledForm onSubmitCapture={checkSubmit(handleSubmit)}>
       <Form.Item
         htmlFor="user_email"
         validateStatus={errors.email ? 'error' : 'success'}
@@ -96,7 +96,7 @@ const LoginForm = () => {
           <a href={PASS_HREF}>register now!</a>
         </Link>
       </Form.Item>
-    </FormWrapper>
+    </StyledForm>
   );
 };
 

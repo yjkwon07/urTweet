@@ -10,7 +10,7 @@ import {
   MessageOutlined,
   RetweetOutlined,
 } from '@ant-design/icons';
-import { Card, Popover, Button, Divider, message, Tooltip, Modal } from 'antd';
+import { Popover, Button, Divider, message, Tooltip, Modal } from 'antd';
 import classNames from 'classnames';
 import { useDispatch } from 'react-redux';
 
@@ -26,7 +26,7 @@ import CommentList from './CommentList';
 import FollowButton from './FollowButton';
 import PostCardContent from './PostCardContent';
 import PostCardMeta from './PostCardMeta';
-import { StyledCard } from './styles';
+import { StyledCard, StyledRetweetCard } from './styles';
 
 const { confirm } = Modal;
 
@@ -152,10 +152,10 @@ const PostCard = ({ data, collapse = false }: IProps) => {
         description={
           data.Retweet ? (
             <>
-              <div style={{ marginBottom: 10 }}>
+              <div className="mb-10">
                 <RetweetOutlined alt="리트윗" /> {data.User.nickname}님이 리트윗하셨습니다.
               </div>
-              <Card style={{ borderRadius: 20 }}>
+              <StyledRetweetCard>
                 <PostCardMeta
                   userId={data.Retweet.UserId.toString()}
                   nickname={data.Retweet.User.nickname}
@@ -173,7 +173,7 @@ const PostCard = ({ data, collapse = false }: IProps) => {
                     />
                   }
                 />
-              </Card>
+              </StyledRetweetCard>
             </>
           ) : (
             <PostCardContent

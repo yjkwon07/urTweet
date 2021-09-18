@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import { Form } from 'antd';
 
-export const FormWrapper = styled(Form)`
+export const StyledForm = styled(Form)`
   background-color: #fff;
   border: 1px solid #d9d9d9;
   border-radius: 8px;
