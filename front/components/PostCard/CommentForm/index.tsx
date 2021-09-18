@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback } from 'react';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Form, Input, Button, message } from 'antd';
@@ -11,6 +11,8 @@ import { FormCreateComment } from '@modules/post/@types';
 import { CREATE_COMMENT_SCHEMA } from '@modules/post/config';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
 
+import { StyledForm } from './styles';
+
 interface IProps {
   userId: number;
   postId: number;
@@ -18,7 +20,7 @@ interface IProps {
 
 const CommentForm = ({ userId, postId }: IProps) => {
   const dispatch = useDispatch();
-  const { status } = useFetchStatus(createComment.TYPE);
+  const { status } = useFetchStatus(createComment.TYPE, postId);
 
   const {
     control,
@@ -30,14 +32,17 @@ const CommentForm = ({ userId, postId }: IProps) => {
     resolver: yupResolver(CREATE_COMMENT_SCHEMA),
   });
 
-  const handleSubmit = useMemo(() => {
-    return checkSubmit(async (formData) => {
+  const handleSubmit = useCallback(
+    async (formData) => {
       try {
         await dispatch(
-          createComment.asyncThunk({
-            url: { postId },
-            body: { content: formData.content, userId },
-          }),
+          createComment.asyncThunk(
+            {
+              url: { postId },
+              body: { content: formData.content, userId },
+            },
+            { actionList: [postId] },
+          ),
         );
         message.success('댓글이 등록되었습니다.');
       } catch (error) {
@@ -47,11 +52,12 @@ const CommentForm = ({ userId, postId }: IProps) => {
       } finally {
         reset();
       }
-    });
-  }, [checkSubmit, dispatch, postId, reset, userId]);
+    },
+    [dispatch, postId, reset, userId],
+  );
 
   return (
-    <Form onFinish={handleSubmit}>
+    <StyledForm onSubmitCapture={checkSubmit(handleSubmit)}>
       <Form.Item
         validateStatus={errors.content ? 'error' : 'success'}
         help={errors.content ? errors.content?.message : ''}
@@ -66,17 +72,12 @@ const CommentForm = ({ userId, postId }: IProps) => {
           defaultValue=""
         />
       </Form.Item>
-      <div style={{ position: 'relative', margin: 0 }}>
-        <Button
-          style={{ position: 'absolute', right: 0, top: '-15px', zIndex: 1 }}
-          type="primary"
-          htmlType="submit"
-          loading={status === 'LOADING'}
-        >
+      <div className="btn-group">
+        <Button className="submit-button" type="primary" htmlType="submit" shape="round" loading={status === 'LOADING'}>
           댓글달기
         </Button>
       </div>
-    </Form>
+    </StyledForm>
   );
 };
 
