@@ -43,6 +43,12 @@ export const globalStyles = css`
   .mt-45 {
     margin-top: 45px !important;
   }
+  .mr-5 {
+    margin-right: 5px !important;
+  }
+  .mb-10 {
+    margin-bottom: 10px !important;
+  }
   .mb-50 {
     margin-bottom: 50px !important;
   }
