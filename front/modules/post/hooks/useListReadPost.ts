@@ -9,17 +9,18 @@ import { ListReadPostUrlQuery } from '../api';
 import { listReadPost, postSelector } from '../slice';
 
 interface IProps {
+  mode?: 'infinite' | 'page';
   filter?: ListReadPostUrlQuery;
-  mode: 'infinite' | 'page';
 }
 
-export default function useListReadPost({ filter, mode }: IProps) {
+export default function useListReadPost({ mode, filter }: IProps) {
   const dispatch = useDispatch();
   const { status, data: result } = useFetchStatus(listReadPost.TYPE);
   const data = useAppSelector(postSelector.listData);
 
   const isInitFetch = useRef(!!data.length);
   const isMoreRead = useMemo(() => result?.resData.nextPage, [result?.resData.nextPage]);
+  const totalCount = useMemo(() => result?.resData.totalCount, [result?.resData.totalCount]);
 
   useEffect(() => {
     if (!isInitFetch.current) {
@@ -29,5 +30,5 @@ export default function useListReadPost({ filter, mode }: IProps) {
     }
   }, [dispatch, filter, mode]);
 
-  return { status, data, isMoreRead };
+  return { status, data, isMoreRead, totalCount };
 }
