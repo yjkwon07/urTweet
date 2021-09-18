@@ -34,4 +34,11 @@ export const globalStyles = css`
   .ant-card-cover {
     transform: none !important;
   }
+
+  .mt-45 {
+    margin-top: 45px !important;
+  }
+  .mb-50 {
+    margin-bottom: 50px !important;
+  }
 `;

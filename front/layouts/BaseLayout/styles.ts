@@ -8,15 +8,32 @@ export const SearchInput = styled(Input.Search)`
 export const StyledLayout = styled(Layout)`
   background-color: #f0f2f5;
   .header {
+    height: 45px;
+    background-color: rgb(112 119 158);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    color: rgb(255 255 255 / 85%);
+    display: flex;
+    align-items: center;
+    padding-left: 15px;
+    & {
+      .logo {
+        font-size: 25px;
+      }
+      .title {
+        font-weight: 500;
+      }
+    }
+  }
+
+  .header-menu {
     padding-left: 200px !important;
     & {
       .content {
         position: sticky;
-        top: 50px;
+        top: 100px;
         & {
-          .blank {
-            margin-bottom: 45px;
-          }
           .menu {
             background-color: #f0f2f5;
             & .menu-item {
@@ -45,7 +62,7 @@ export const StyledLayout = styled(Layout)`
     & {
       .content {
         position: sticky;
-        top: 50px;
+        top: 100px;
       }
     }
   }

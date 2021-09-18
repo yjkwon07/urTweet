@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 
-import { HomeOutlined, UserOutlined } from '@ant-design/icons';
+import { ExperimentTwoTone, HomeOutlined, UserOutlined } from '@ant-design/icons';
 import { Menu, Col, Layout, Row } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -24,13 +24,16 @@ const BaseLayout: FC<IProps> = ({ filterGroup, children }) => {
   return (
     <StyledLayout>
       <Content>
-        <div style={{ height: 50 }} />
+        <div className="header mb-50">
+          <span>
+            <ExperimentTwoTone className="logo" /> <span className="title">UrTweet</span>
+          </span>
+        </div>
         <Row gutter={30}>
-          <Col className="header" xs={24} sm={24} md={24} lg={8}>
+          <Col className="header-menu" xs={24} sm={24} md={24} lg={8}>
             <div className="content">
               {getUserId() ? <UserProfile /> : <LoginForm />}
-              <div className="blank" />
-              <Menu className="menu" mode="vertical" defaultSelectedKeys={[router.pathname]}>
+              <Menu className="menu mt-45" mode="vertical" defaultSelectedKeys={[router.pathname]}>
                 <Menu.Item key={HOME_URL} className="menu-item">
                   <Link href={HOME_URL} passHref>
                     <a href={PASS_HREF}>
