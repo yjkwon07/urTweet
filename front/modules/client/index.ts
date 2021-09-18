@@ -27,9 +27,9 @@ axios.interceptors.response.use(
   (error) => {
     console.error(`error`, error);
 
-    if (!error?.data) {
+    if (!error?.response?.data) {
       // eslint-disable-next-line no-param-reassign
-      error.data = { resMsg: '네트워크 오류' };
+      error.response = { data: { resMsg: '네트워크 오류' } };
     }
     return Promise.reject(error);
   },
