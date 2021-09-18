@@ -8,7 +8,7 @@ import { StyledCard } from '@components/PostCard/styles';
 import { useFetchStatus } from '@modules/fetchStatus';
 import { logout, useMyUser } from '@modules/user';
 import { removeUserId } from '@utils/auth';
-import { GET_USER_URL, PASS_HREF, PROFILE_URL } from '@utils/urls';
+import { GET_USER_URL, PASS_HREF } from '@utils/urls';
 
 import { StyledCardMeta } from './styles';
 
@@ -27,31 +27,19 @@ const UserProfile = () => {
     <StyledCard
       actions={[
         <div key="twit">
-          <Link href={GET_USER_URL(myData.id.toString())} passHref>
-            <a href={PASS_HREF}>
-              게시글
-              <br />
-              {myData.Posts.length}
-            </a>
-          </Link>
+          게시글
+          <br />
+          {myData.Posts.length}
         </div>,
         <div key="followings">
-          <Link href={PROFILE_URL} passHref>
-            <a href={PASS_HREF}>
-              팔로잉
-              <br />
-              {myData.Followings.length}
-            </a>
-          </Link>
+          팔로잉
+          <br />
+          {myData.Followings.length}
         </div>,
         <div key="followers">
-          <Link href={PROFILE_URL} passHref>
-            <a href={PASS_HREF}>
-              팔로워
-              <br />
-              {myData.Followers.length}
-            </a>
-          </Link>
+          팔로워
+          <br />
+          {myData.Followers.length}
         </div>,
       ]}
     >
