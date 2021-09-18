@@ -89,7 +89,7 @@ const LoginForm = () => {
         >
           <span>로그인</span>
         </Button>
-        Or{' '}
+        or{' '}
         <Link href={SIGNUP_URL} passHref>
           <a href={PASS_HREF}>register now!</a>
         </Link>

@@ -16,8 +16,9 @@ export const FormWrapper = styled(Form)`
     .login-button {
       border: '1px solid #d9d9d9';
       height: 52px;
+      margin-bottom: 10px;
       & > span {
-        font-size: '17px';
+        font-size: 17px;
         font-weight: 700;
       }
     }
