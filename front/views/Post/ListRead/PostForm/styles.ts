@@ -1,7 +1,14 @@
 import styled from '@emotion/styled';
-import { Form } from 'antd';
+import { Card, Form } from 'antd';
 
-export const FormWrapper = styled(Form)`
+export const StyledCard = styled(Card)`
+  & {
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+`;
+
+export const StyledForm = styled(Form)`
   margin-bottom: 20;
 
   .content {
@@ -48,6 +55,17 @@ export const FormWrapper = styled(Form)`
       .button_wrapper {
         margin-top: 5px;
         text-align: center;
+      }
+    }
+  }
+
+  & {
+    .ant-form-item {
+      margin-bottom: 0px;
+      & textarea {
+        border-radius: 12px;
+        background-color: #f9f9f9;
+        padding: 10px;
       }
     }
   }

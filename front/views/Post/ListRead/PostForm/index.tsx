@@ -2,7 +2,7 @@ import React, { useCallback, useRef, useState } from 'react';
 
 import { FileImageTwoTone } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Button, Form, Input, message, Image, Card } from 'antd';
+import { Button, Form, Input, message, Image } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 
@@ -12,7 +12,7 @@ import { FormEditPost } from '@modules/post/@types';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
 import { GET_IMAGE_URL } from '@utils/urls';
 
-import { FormWrapper } from './styles';
+import { StyledCard, StyledForm } from './styles';
 
 const PostForm = () => {
   const dispatch = useDispatch();
@@ -31,8 +31,8 @@ const PostForm = () => {
   const [imageListPath, setImageListPath] = useState<string[]>([]);
   const imageInput = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = useCallback(() => {
-    checkSubmit(async (formData) => {
+  const handleSubmit = useCallback(
+    async (formData) => {
       try {
         await dispatch(createPost.asyncThunk({ content: formData.content, image: imageListPath }));
         message.success('게시글이 등록되었습니다.');
@@ -44,8 +44,9 @@ const PostForm = () => {
         reset();
         setImageListPath([]);
       }
-    })();
-  }, [checkSubmit, dispatch, imageListPath, reset]);
+    },
+    [dispatch, imageListPath, reset],
+  );
 
   const handleClickImageUpload = useCallback(() => {
     if (imageInput.current) imageInput.current.click();
@@ -76,8 +77,8 @@ const PostForm = () => {
   );
 
   return (
-    <Card>
-      <FormWrapper encType="multipart/form-data" onFinish={handleSubmit}>
+    <StyledCard>
+      <StyledForm encType="multipart/form-data" onSubmitCapture={checkSubmit(handleSubmit)}>
         <div className="content">
           <Form.Item
             className="form"
@@ -118,8 +119,8 @@ const PostForm = () => {
             ))}
           </Image.PreviewGroup>
         </div>
-      </FormWrapper>
-    </Card>
+      </StyledForm>
+    </StyledCard>
   );
 };
 
