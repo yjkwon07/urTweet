@@ -17,3 +17,7 @@ export const StyledCard = styled(Card)`
     }
   }
 `;
+
+export const StyledRetweetCard = styled(Card)`
+  border-radius: 20px;
+`;
