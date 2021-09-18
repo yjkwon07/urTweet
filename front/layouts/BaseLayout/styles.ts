@@ -1,9 +1,5 @@
 import styled from '@emotion/styled';
-import { Input, Layout } from 'antd';
-
-export const SearchInput = styled(Input.Search)`
-  vertical-align: middle;
-`;
+import { Layout } from 'antd';
 
 export const StyledLayout = styled(Layout)`
   background-color: #f0f2f5;
@@ -57,6 +53,7 @@ export const StyledLayout = styled(Layout)`
       }
     }
   }
+
   .filter {
     padding-right: 200px !important;
     & {

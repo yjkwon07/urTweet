@@ -1,16 +1,15 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 import { Avatar, Button } from 'antd';
 import Link from 'next/link';
 import { useDispatch } from 'react-redux';
 
-import { StyledCard } from '@components/PostCard/styles';
 import { useFetchStatus } from '@modules/fetchStatus';
 import { logout, useMyUser } from '@modules/user';
 import { removeUserId } from '@utils/auth';
 import { GET_USER_URL, PASS_HREF } from '@utils/urls';
 
-import { StyledCardMeta } from './styles';
+import { StyledCard, StyledCardMeta } from './styles';
 
 const UserProfile = () => {
   const dispatch = useDispatch();

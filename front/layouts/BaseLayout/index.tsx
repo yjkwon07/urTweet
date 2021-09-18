@@ -5,11 +5,9 @@ import { Menu, Col, Layout, Row } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
-import { getUserId } from '@utils/auth';
 import { PASS_HREF, HOME_URL, PROFILE_URL } from '@utils/urls';
 
-import LoginForm from './organism/LoginForm';
-import UserProfile from './organism/UserProfile';
+import UserStatusView from './organism/UserStatusView';
 import { StyledLayout } from './styles';
 
 const { Content } = Layout;
@@ -32,7 +30,7 @@ const BaseLayout: FC<IProps> = ({ filterGroup, children }) => {
         <Row gutter={30}>
           <Col className="header-menu" xs={24} sm={24} md={24} lg={8}>
             <div className="content">
-              {getUserId() ? <UserProfile /> : <LoginForm />}
+              <UserStatusView />
               <Menu className="menu mt-45" mode="vertical" defaultSelectedKeys={[router.pathname]}>
                 <Menu.Item key={HOME_URL} className="menu-item">
                   <Link href={HOME_URL} passHref>
