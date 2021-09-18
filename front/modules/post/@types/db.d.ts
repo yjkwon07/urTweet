@@ -6,7 +6,7 @@ export type Post = {
   Likers: Liker[];
   Retweet: Post | null;
   RetweetId: number | null;
-  User: Pick<IUserInfo, 'id' | 'nickname'>;
+  User: { id: number; nickname: string };
   UserId: number;
   content: string;
   createdAt: string;
@@ -32,7 +32,7 @@ export type Comment = {
   updatedAt: string;
   UserId: number;
   PostId: number;
-  User: Pick<IUserInfo, 'id' | 'nickname'>;
+  User: { id: number; nickname: string };
 };
 
 export type IMage = {
