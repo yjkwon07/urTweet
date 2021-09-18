@@ -13,4 +13,9 @@ export const StyledCardMeta = styled(Card.Meta)`
 export const Title = styled.div`
   display: flex;
   justify-content: space-between;
+  & > span {
+    color: #ccc;
+    margin-left: 10px;
+    font-size: 14px;
+  }
 `;

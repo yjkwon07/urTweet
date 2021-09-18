@@ -32,7 +32,7 @@ const PostCardMeta = ({ userId, nickname, createdAt, actions, description }: IPr
           <div>
             {nickname}
             <Tooltip title={dayjs(createdAt).format('YYYY-MM-DD HH:mm:ss')}>
-              <span style={{ color: '#ccc', marginLeft: '10px', fontSize: '14px' }}>{dayjs(createdAt).fromNow()}</span>
+              <span>{dayjs(createdAt).fromNow()}</span>
             </Tooltip>
           </div>
           {actions && <div>{actions}</div>}
