@@ -1,19 +1,21 @@
 import React, { useCallback } from 'react';
 
-import { LogoutOutlined } from '@ant-design/icons';
-import { Card, Avatar, Button } from 'antd';
+import { Avatar, Button } from 'antd';
 import Link from 'next/link';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
+import { StyledCard } from '@components/PostCard/styles';
 import { useFetchStatus } from '@modules/fetchStatus';
-import { logout, userSelector } from '@modules/user';
+import { logout, useMyUser } from '@modules/user';
 import { removeUserId } from '@utils/auth';
 import { GET_USER_URL, PASS_HREF, PROFILE_URL } from '@utils/urls';
+
+import { StyledCardMeta } from './styles';
 
 const UserProfile = () => {
   const dispatch = useDispatch();
   const { status: logoutStatus } = useFetchStatus(logout.TYPE);
-  const myData = useSelector(userSelector.myData);
+  const { data: myData } = useMyUser();
 
   const handleLogout = useCallback(() => {
     removeUserId();
@@ -22,7 +24,7 @@ const UserProfile = () => {
 
   if (!myData) return null;
   return (
-    <Card
+    <StyledCard
       actions={[
         <div key="twit">
           <Link href={GET_USER_URL(myData.id.toString())} passHref>
@@ -53,7 +55,7 @@ const UserProfile = () => {
         </div>,
       ]}
     >
-      <Card.Meta
+      <StyledCardMeta
         avatar={
           <Link href={GET_USER_URL(myData.id.toString())} passHref>
             <a href={PASS_HREF}>
@@ -61,13 +63,16 @@ const UserProfile = () => {
             </a>
           </Link>
         }
-        title={myData.nickname}
+        title={
+          <div className="title">
+            {myData.nickname}
+            <Button className="logout-button" shape="round" onClick={handleLogout} loading={logoutStatus === 'LOADING'}>
+              <span>로그아웃</span>
+            </Button>
+          </div>
+        }
       />
-      <Button style={{ marginTop: 15 }} onClick={handleLogout} loading={logoutStatus === 'LOADING'}>
-        <LogoutOutlined />
-        로그아웃
-      </Button>
-    </Card>
+    </StyledCard>
   );
 };
 
