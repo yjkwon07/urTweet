@@ -59,6 +59,7 @@ const LoginForm = () => {
           type="email"
           placeholder="이메일"
           autoComplete="email"
+          defaultValue=""
         />
       </Form.Item>
       <Form.Item
@@ -75,6 +76,7 @@ const LoginForm = () => {
           type="password"
           placeholder="비밀번호"
           autoComplete="current-password"
+          defaultValue=""
         />
       </Form.Item>
       <Form.Item>
