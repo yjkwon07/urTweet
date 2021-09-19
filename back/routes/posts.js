@@ -1,8 +1,8 @@
 const express = require('express');
 
 const { findPostListWithoutUserPassword } = require('../query/post');
-const { SUCCESS } = require('../constant');
-const { resListDataFormat } = require('../utils/resFormat');
+const { SUCCESS, CLIENT_ERROR } = require('../constant');
+const { resListDataFormat, resErrorDataFormat } = require('../utils/resFormat');
 
 const router = express.Router();
 
@@ -31,7 +31,11 @@ router.get('/', async (req, res, next) => {
       totalCount,
     };
 
-    res.status(SUCCESS).send(resListDataFormat(result));
+    if (list.length) {
+      res.status(SUCCESS).send(resListDataFormat(SUCCESS, '', result));
+    } else {
+      res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '조회하신 결과가 없습니다.'));
+    }
   } catch (error) {
     console.error(error);
     next(error);

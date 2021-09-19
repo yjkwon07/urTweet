@@ -1,8 +1,6 @@
-const { SUCCESS } = require('../constant');
-
-function resListDataFormat(data) {
+function resListDataFormat(resCode, resMsg, data) {
   return {
-    resCode: SUCCESS,
+    resCode,
     resData: {
       list: data.list,
       curPage: data.curPage,
@@ -10,18 +8,34 @@ function resListDataFormat(data) {
       rowsPerPage: data.rowsPerPage,
       totalCount: data.totalCount,
     },
-    resMsg: '',
+    resMsg,
   };
 }
 
-function resDataFormat(item) {
+function resItemDataFormat(resCode, resMsg, item) {
   return {
-    resCode: SUCCESS,
+    resCode,
     resData: {
       item,
     },
-    resMsg: '',
+    resMsg,
   };
 }
 
-module.exports = { resListDataFormat, resDataFormat };
+function resDataFormat(resCode, resMsg, resData) {
+  return {
+    resCode,
+    resData,
+    resMsg,
+  };
+}
+
+function resErrorDataFormat(resCode, resMsg) {
+  return {
+    resCode,
+    resData: null,
+    resMsg,
+  };
+}
+
+module.exports = { resListDataFormat, resItemDataFormat, resDataFormat, resErrorDataFormat };
