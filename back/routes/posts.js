@@ -13,7 +13,7 @@ router.get('/', async (req, res, next) => {
     const page = parseInt(req.query.page, 10);
     const hashtag = decodeURIComponent(req.query.hashtag);
     const UserId = parseInt(req.params.userId, 10);
-    const offset = page === 1 ? 0 : page * limit;
+    const offset = page === 1 ? 0 : (page - 1) * limit;
 
     const where = {};
     if (UserId) where.UserId = UserId;
