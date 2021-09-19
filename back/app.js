@@ -35,7 +35,7 @@ if (env === 'production') {
   app.use(
     cors({
       origin: config.origin, // *, true, "front-server", 요청 http 허용 [], "", true(all)
-      credentials: true, // Access-Allow-Credential = true => 쿠키 전달, flalse일 경우 응답 헤더가 리소스와 함께 반환되지 않습니다. 이 헤더가 없으면 브라우저에서 응답을 무시하고 웹 컨텐츠로 반환되지 않는다는 점을 주의하세요.
+      credentials: true, // Access-Allow-Credential = true => 쿠키 전달, false일 경우 응답 헤더가 리소스와 함께 반환되지 않습니다. 이 헤더가 없으면 브라우저에서 응답을 무시하고 웹 컨텐츠로 반환되지 않는다는 점을 주의하세요.
     }),
   );
 } else {

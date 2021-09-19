@@ -18,7 +18,7 @@ const awsUpload = multer({
 const localUpload = multer({
   storage: multer.diskStorage({
     destination(req, file, done) {
-      done(null, 'uploads/original/');
+      done(null, 'uploads');
     },
     filename(req, file, done) {
       const ext = path.extname(file.originalname); // 확장자 추출(.png)
