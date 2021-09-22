@@ -4,27 +4,26 @@ const { findPost, findRetweetPost, findPostWithoutUserPassword } = require('../q
 const { findCommentWithoutUserPassword } = require('../query/comment');
 const { Post, Comment, Image, Hashtag } = require('../models');
 const { isLoggedIn } = require('./middlewares');
-const { upload } = require('./upload');
 const { SUCCESS, CLIENT_ERROR, PAGE_ERROR } = require('../constant');
 const { resDataFormat } = require('../utils/resFormat');
 
 const router = express.Router();
 
 // POST /post (게시글 업로드)
-router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
+router.post('/', isLoggedIn, async (req, res, next) => {
   try {
     const content = req.body.content;
-    const myId = parseInt(req.user.id, 10);
+    const myId = req.user.id;
     const image = req.body.image;
-    const hashtags = content.match(/#[^\s#]+/g);
+    const hashtagList = content.match(/#[^\s#]+/g);
 
     const post = await Post.create({
       UserId: myId,
       content,
     });
-    if (hashtags) {
+    if (hashtagList) {
       const result = await Promise.all(
-        Array.from(new Set(hashtags.map((tag) => tag.slice(1).toLowerCase()))).map((tag) =>
+        Array.from(new Set(hashtagList.map((tag) => tag.slice(1).toLowerCase()))).map((tag) =>
           Hashtag.findOrCreate({
             where: { name: tag },
           }),
@@ -37,7 +36,7 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
       await post.addImages(images);
     }
     const postWithoutUserPassword = await findPostWithoutUserPassword({ id: post.id });
-    res.status(SUCCESS).send(postWithoutUserPassword);
+    res.status(SUCCESS).send(resDataFormat(SUCCESS, '등록완료', postWithoutUserPassword));
   } catch (error) {
     console.error(error);
     next(error);
