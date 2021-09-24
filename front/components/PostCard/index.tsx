@@ -11,7 +11,6 @@ import {
   RetweetOutlined,
 } from '@ant-design/icons';
 import { Popover, Button, Divider, message, Tooltip, Modal } from 'antd';
-import classNames from 'classnames';
 import { useDispatch } from 'react-redux';
 
 import { useFetchStatus } from '@modules/fetchStatus';
@@ -32,10 +31,9 @@ const { confirm } = Modal;
 
 export interface IProps {
   data: Post;
-  collapse?: boolean;
 }
 
-const PostCard = ({ data, collapse = false }: IProps) => {
+const PostCard = ({ data }: IProps) => {
   const dispatch = useDispatch();
   const { status: removePostStatus } = useFetchStatus(removePost.TYPE, data.id);
   const { data: myData } = useMyUser();
@@ -91,7 +89,6 @@ const PostCard = ({ data, collapse = false }: IProps) => {
 
   return (
     <StyledCard
-      className={classNames({ collapse })}
       actions={[
         <Tooltip key="retweet" placement="bottom" title="리트윗">
           <RetweetOutlined onClick={handleRetweet} />
