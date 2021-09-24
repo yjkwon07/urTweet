@@ -25,25 +25,20 @@ export const StyledForm = styled(Form)`
   }
 
   .actions {
-    position: relative;
-    margin-top: 20px;
-    margin-bottom: 30px;
+    margin-top: 10px;
+    text-align: right;
 
     .file {
-      position: absolute;
-      right: 80px;
-      bottom: -15px;
+      margin-right: 5px;
     }
 
     .submit {
-      position: absolute;
-      right: 0;
-      bottom: -15px;
       font-weight: bold;
     }
   }
 
   .image_preview {
+    margin-top: 10px !important;
     margin: auto;
     text-align: center;
     width: 400px;
