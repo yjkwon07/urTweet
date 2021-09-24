@@ -1,4 +1,4 @@
-import { createAction, createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit';
+import { createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit';
 
 import { createRequestAction } from '@modules/helper';
 
@@ -6,7 +6,7 @@ import { Post } from './@types';
 import {
   requestCreateComment,
   requestCreatePost,
-  requestCreatePostRetweet,
+  requestCreateRetweet,
   requestLikePost,
   requestListReadPost,
   requestUpdatePost,
@@ -18,7 +18,7 @@ import {
 export const POST = 'POST';
 
 // Action - API
-export const retweetPost = createRequestAction(`${POST}/retweetPost`, requestCreatePostRetweet);
+export const createRetweet = createRequestAction(`${POST}/createRetweet`, requestCreateRetweet);
 export const createPost = createRequestAction(`${POST}/createPost`, requestCreatePost);
 export const listReadPost = createRequestAction(`${POST}listReadPost`, requestListReadPost);
 export const readPost = createRequestAction(`${POST}/readPost`, requestReadPost);
@@ -27,9 +27,6 @@ export const removePost = createRequestAction(`${POST}/removePost`, requestRemov
 export const likePost = createRequestAction(`${POST}/likePost`, requestLikePost);
 export const unlikePost = createRequestAction(`${POST}/unlikePost`, requestUnlikePost);
 export const createComment = createRequestAction(`${POST}/createComment`, requestCreateComment);
-
-// Action
-export const listReadReset = createAction(`${POST}/listReadReset`);
 
 // Entity
 const postListDataAdapter = createEntityAdapter<Post>({
@@ -45,29 +42,36 @@ const initialState: PostState = postListDataAdapter.getInitialState();
 const slice = createSlice({
   name: POST,
   initialState,
-  reducers: {},
+  reducers: {
+    listDataReset: (state) => {
+      postListDataAdapter.removeAll(state);
+    },
+  },
   extraReducers: (builder) =>
     builder
-      .addCase(listReadReset, (state) => {
-        postListDataAdapter.removeAll(state);
+      .addCase(createRetweet.success, (state, { payload: { resData } }) => {
+        const list = postListDataAdapter.getSelectors().selectAll(state);
+        postListDataAdapter.setAll(state, [resData].concat(list));
       })
-      .addCase(readPost.success, (state, { payload: { resData } }) => {
-        postListDataAdapter.setAll(state, [resData.item]);
+      .addCase(createPost.success, (state, { payload: { resData } }) => {
+        const list = postListDataAdapter.getSelectors().selectAll(state);
+        postListDataAdapter.setAll(state, [resData].concat(list));
       })
       .addCase(listReadPost.success, (state, { payload: { resData }, meta }) => {
+        const { list } = resData;
         if (meta?.isLoadMore) {
           postListDataAdapter.removeMany(
             state,
-            resData.list.map((data) => data.id),
+            list.map((data) => data.id),
           );
-          postListDataAdapter.addMany(state, resData.list);
-        } else postListDataAdapter.setAll(state, resData.list);
+          postListDataAdapter.addMany(state, list);
+        } else {
+          postListDataAdapter.setAll(state, list);
+        }
       })
-      .addCase(retweetPost.success, (state, { payload: { resData } }) => {
-        postListDataAdapter.addOne(state, resData);
-      })
-      .addCase(createPost.success, (state, { payload: { resData } }) => {
-        postListDataAdapter.addOne(state, resData);
+      .addCase(readPost.success, (state, { payload: { resData } }) => {
+        const { item } = resData;
+        postListDataAdapter.setAll(state, [item]);
       })
       .addCase(updatePost.success, (state, { payload: { resData } }) => {
         postListDataAdapter.updateOne(state, {
@@ -93,16 +97,14 @@ const slice = createSlice({
       .addCase(createComment.success, (state, { payload: { resData } }) => {
         postListDataAdapter.updateOne(state, {
           id: resData.PostId,
-          changes: { Comments: [resData].concat(state.entities[resData.PostId]?.Comments || []) },
+          changes: { Comments: state.entities[resData.PostId]?.Comments.concat(resData) },
         });
       })
       .addDefaultCase((state) => state),
 });
 
-export const postSelector = {
-  listData: postListDataAdapter.getSelectors((state: RootState) => state.POST).selectAll,
-  data: postListDataAdapter.getSelectors((state: RootState) => state.POST).selectIds,
-};
+const { selectAll: listData, selectIds: data } = postListDataAdapter.getSelectors((state: RootState) => state.POST);
 
-export const postReducer = slice.reducer;
+export const postSelector = { listData, data };
 export const postAction = slice.actions;
+export const postReducer = slice.reducer;

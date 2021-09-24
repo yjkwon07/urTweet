@@ -18,13 +18,6 @@ export type Liker = {
   id: number;
 };
 
-export type Like = {
-  createdAt: string;
-  updatedAt: string;
-  PostId: number;
-  UserId: number;
-};
-
 export type Comment = {
   id: number;
   content: string;

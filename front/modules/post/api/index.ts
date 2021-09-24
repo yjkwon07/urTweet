@@ -53,19 +53,19 @@ export const requestListReadPost = (url: ListReadPostUrlQuery) => {
  * * 해당 게시글 리트윗 POST
  * * url: /post/:postId/retweet
  * * body: empty
- * * res: CreatePostRetweetRes
+ * * res: CreateRetweetRes
  */
-export type CreatePostRetweetUrlQuery = {
+export type CreateRetweetUrlQuery = {
   postId: number;
 };
-export interface CreatePostRetweetRes extends CommonRes {
+export interface CreateRetweetRes extends CommonRes {
   resData: Post;
 }
-export function GET_CREATE_POST_RETWEET_API(url: CreatePostRetweetUrlQuery) {
+export function GET_CREATE_RETWEET_API(url: CreateRetweetUrlQuery) {
   return `/post/${url.postId}/retweet`;
 }
-export const requestCreatePostRetweet = (url: CreatePostRetweetUrlQuery) => {
-  return axios.post<CreatePostRetweetRes>(GET_CREATE_POST_RETWEET_API(url));
+export const requestCreateRetweet = (url: CreateRetweetUrlQuery) => {
+  return axios.post<CreateRetweetRes>(GET_CREATE_RETWEET_API(url));
 };
 
 /**

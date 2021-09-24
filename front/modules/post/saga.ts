@@ -12,10 +12,10 @@ import {
   updatePost,
   removePost,
   createComment,
-  retweetPost,
+  createRetweet,
 } from './slice';
 
-const retweetPostSaga = createRequestSaga(retweetPost, retweetPost.requestAPI);
+const retweetPostSaga = createRequestSaga(createRetweet, createRetweet.requestAPI);
 const createPostSaga = createRequestSaga(createPost, createPost.requestAPI);
 const readPostSaga = createRequestSaga(readPost, readPost.requestAPI);
 const listReadPostSaga = createRequestSaga(listReadPost, listReadPost.requestAPI);
@@ -26,7 +26,7 @@ const likePostSaga = createRequestSaga(likePost, likePost.requestAPI);
 const createCommentSaga = createRequestSaga(createComment, createComment.requestAPI);
 
 function* watchRetweetPost() {
-  yield debounce(300, retweetPost.request, retweetPostSaga);
+  yield debounce(300, createRetweet.request, retweetPostSaga);
 }
 
 function* watchCreatePost() {
