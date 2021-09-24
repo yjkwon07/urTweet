@@ -57,9 +57,10 @@ const PostForm = () => {
       return;
     }
     try {
-      if (e.target.files) {
+      if (e.target.files && e.target.files.length) {
         const filePathList = await fileUpload(e.target.files);
         setImagePathList(filePathList);
+        if (imageInput.current) imageInput.current.value = '';
       }
     } catch (error) {
       if (isCustomAxiosError(error)) {
