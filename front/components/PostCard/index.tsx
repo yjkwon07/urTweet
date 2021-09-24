@@ -15,7 +15,7 @@ import classNames from 'classnames';
 import { useDispatch } from 'react-redux';
 
 import { useFetchStatus } from '@modules/fetchStatus';
-import { likePost, removePost, retweetPost, unlikePost } from '@modules/post';
+import { likePost, removePost, createRetweet, unlikePost } from '@modules/post';
 import { Post } from '@modules/post/@types/db';
 import { useMyUser } from '@modules/user';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
@@ -43,15 +43,15 @@ const PostCard = ({ data, collapse = false }: IProps) => {
   const [morePopOverOpen, setMorePopOverOpen] = useState(false);
   const [commentListOpen, setCommentListOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const isLike = useMemo(() => !!data.Likers.find((v) => v.id === myData?.id), [data.Likers, myData?.id]);
+  const isLike = useMemo(() => !!data.Likers.find((Liker) => Liker.id === myData?.id), [data.Likers, myData?.id]);
 
   const handleRetweet = useCallback(async () => {
     try {
       if (!requiredLogin()) return;
-      await dispatch(retweetPost.asyncThunk({ postId: data.id }));
+      await dispatch(createRetweet.asyncThunk({ postId: data.id }));
     } catch (error) {
       if (isCustomAxiosError(error)) {
-        message.error(JSON.stringify(error.response?.data));
+        message.error(JSON.stringify(error.response.data.resMsg));
       }
     }
   }, [data.id, dispatch]);
