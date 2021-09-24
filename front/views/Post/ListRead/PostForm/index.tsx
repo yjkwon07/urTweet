@@ -35,10 +35,9 @@ const PostForm = () => {
     async (formData) => {
       try {
         await dispatch(createPost.asyncThunk({ content: formData.content, image: imagePathList }));
-        message.success('게시글이 등록되었습니다.');
       } catch (error) {
         if (isCustomAxiosError(error)) {
-          message.error(JSON.stringify(error.response.data));
+          message.error(JSON.stringify(error.response.data.resMsg));
         }
       } finally {
         reset();
@@ -64,7 +63,7 @@ const PostForm = () => {
       }
     } catch (error) {
       if (isCustomAxiosError(error)) {
-        message.error(JSON.stringify(error.response.data));
+        message.error(JSON.stringify(error.response.data.resMsg));
       }
     }
   }, []);
