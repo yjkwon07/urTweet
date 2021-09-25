@@ -1,4 +1,4 @@
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import { createWrapper, MakeStore } from 'next-redux-wrapper';
 import createSagaMiddleware from 'redux-saga';
 
@@ -13,7 +13,10 @@ const makeStore: MakeStore = () => {
   const sagaMiddleware = createSagaMiddleware();
   const store = configureStore({
     reducer: rootReducer,
-    middleware: [...getDefaultMiddleware(), sagaMiddleware],
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: false,
+      }).concat(sagaMiddleware),
     devTools: devMode,
   });
   store.sagaTask = sagaMiddleware.run(rootSaga);
