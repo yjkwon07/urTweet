@@ -2,8 +2,8 @@ import { useEffect, useRef } from 'react';
 
 import { useDispatch } from 'react-redux';
 
+import { useAppSelector } from '@hooks/useAppRedux';
 import { useFetchStatus } from '@modules/fetchStatus';
-import { useAppSelector } from '@modules/store/rootReducer';
 
 import { ReadPostUrlQuery } from '../api';
 import { postSelector, readPost } from '../slice';

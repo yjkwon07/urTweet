@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef } from 'react';
 
 import { useDispatch } from 'react-redux';
 
+import { useAppSelector } from '@hooks/useAppRedux';
 import { useFetchStatus } from '@modules/fetchStatus';
-import { useAppSelector } from '@modules/store/rootReducer';
 
 import { ListReadPostUrlQuery } from '../api';
 import { listReadPost, postSelector } from '../slice';
@@ -19,8 +19,9 @@ export default function useListReadPost({ mode, filter }: IProps) {
   const data = useAppSelector(postSelector.listData);
 
   const isInitFetch = useRef(!!data.length);
-  const isMoreRead = useMemo(() => result?.resData.nextPage, [result?.resData.nextPage]);
-  const totalCount = useMemo(() => result?.resData.totalCount, [result?.resData.totalCount]);
+  const error = useMemo(() => (status === 'FAIL' ? result : null), [result, status]);
+  const isMoreRead = useMemo(() => result?.resData?.nextPage || false, [result?.resData?.nextPage]);
+  const totalCount = useMemo(() => result?.resData?.totalCount || 0, [result?.resData?.totalCount]);
 
   useEffect(() => {
     if (!isInitFetch.current) {
@@ -30,5 +31,5 @@ export default function useListReadPost({ mode, filter }: IProps) {
     }
   }, [dispatch, filter, mode]);
 
-  return { status, data, isMoreRead, totalCount };
+  return { status, data, error, isMoreRead, totalCount };
 }
