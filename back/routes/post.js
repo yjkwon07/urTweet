@@ -1,33 +1,29 @@
 const express = require('express');
 
+const { Post, Comment, Image, Hashtag } = require('../models');
 const { findPost, findRetweetPost, findPostWithoutUserPassword } = require('../query/post');
 const { findCommentWithoutUserPassword } = require('../query/comment');
-const { Post, Comment, Image, Hashtag } = require('../models');
 const { isLoggedIn } = require('./middlewares');
-const { SUCCESS, CLIENT_ERROR, PAGE_ERROR } = require('../constant');
 const { resDataFormat, resErrorDataFormat } = require('../utils/resFormat');
+const { SUCCESS, CLIENT_ERROR } = require('../constant');
 
 const router = express.Router();
 
 // POST /post (게시글 업로드)
 router.post('/', isLoggedIn, async (req, res, next) => {
   try {
-    const content = req.body.content;
     const myId = req.user.id;
+    const content = req.body.content;
     const image = req.body.image;
-    const hashtagList = content.match(/#[^\s#]+/g);
+    const hashtagList = Array.from(new Set(content.match(/#[^\s#]+/g)?.map((tag) => tag.slice(1).toLowerCase())));
 
     const post = await Post.create({
       UserId: myId,
       content,
     });
-    if (hashtagList) {
+    if (hashtagList.length) {
       const result = await Promise.all(
-        Array.from(new Set(hashtagList.map((tag) => tag.slice(1).toLowerCase()))).map((tag) =>
-          Hashtag.findOrCreate({
-            where: { name: tag },
-          }),
-        ),
+        hashtagList.map((hashtag) => Hashtag.findOrCreate({ where: { name: hashtag } })),
       );
       await post.addHashtags(result.map((hashtag) => hashtag[0]));
     }
@@ -46,8 +42,8 @@ router.post('/', isLoggedIn, async (req, res, next) => {
 // POST /post/:postId/retweet (리트윗)
 router.post('/:postId/retweet', isLoggedIn, async (req, res, next) => {
   try {
-    const postId = req.params.postId;
     const myId = req.user.id;
+    const postId = req.params.postId;
 
     const post = await findRetweetPost({ id: postId });
     if (!post) {
@@ -78,12 +74,13 @@ router.post('/:postId/retweet', isLoggedIn, async (req, res, next) => {
 router.get('/:postId', async (req, res, next) => {
   try {
     const postId = req.params.postId;
+
     const post = await findPost({ id: postId });
     if (!post) {
-      return res.status(PAGE_ERROR).send('존재하지 않는 게시글입니다.');
+      return res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '존재하지 않는 게시글입니다.'));
     }
     const postWithoutUserPassword = await findPostWithoutUserPassword({ id: postId });
-    res.status(SUCCESS).send(resDataFormat(postWithoutUserPassword));
+    res.status(SUCCESS).send(resDataFormat(SUCCESS, '', postWithoutUserPassword));
   } catch (error) {
     console.error(error);
     next(error);
@@ -93,11 +90,11 @@ router.get('/:postId', async (req, res, next) => {
 // PATCH /post/:postId (게시글 수정)
 router.patch('/:postId', isLoggedIn, async (req, res, next) => {
   try {
-    const postId = req.params.postId;
     const myId = req.user.id;
+    const postId = req.params.postId;
     const content = req.body.content;
     const image = req.body.image;
-    const hashtags = content.match(/#[^\s#]+/g);
+    const hashtagList = Array.from(new Set(content.match(/#[^\s#]+/g)?.map((tag) => tag.slice(1).toLowerCase())));
 
     await Post.update(
       { content },
@@ -109,15 +106,11 @@ router.patch('/:postId', isLoggedIn, async (req, res, next) => {
       },
     );
     const post = await findPost({ id: postId });
-    if (hashtags) {
+    if (hashtagList.length) {
       const result = await Promise.all(
-        Array.from(new Set(hashtags.map((tag) => tag.slice(1).toLowerCase()))).map((tag) =>
-          Hashtag.findOrCreate({
-            where: { name: tag },
-          }),
-        ),
+        hashtagList.map((hashtag) => Hashtag.findOrCreate({ where: { name: hashtag } })),
       );
-      await post.setHashtags(result.map((v) => v[0]));
+      await post.setHashtags(result.map((hashtag) => hashtag[0]));
     }
     if (image) {
       const images = await Promise.all(image.map((image) => Image.create({ src: image })));
@@ -133,8 +126,8 @@ router.patch('/:postId', isLoggedIn, async (req, res, next) => {
 // DELETE /post/:postId (게시글 삭제)
 router.delete('/:postId', isLoggedIn, async (req, res, next) => {
   try {
-    const postId = req.params.postId;
     const myId = req.user.id;
+    const postId = req.params.postId;
 
     const post = await findPost({ id: postId });
     if (!post) {
@@ -156,8 +149,8 @@ router.delete('/:postId', isLoggedIn, async (req, res, next) => {
 // POST /post/:postId/comment (댓글 작성)
 router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {
   try {
-    const postId = req.params.postId;
     const myId = req.user.id;
+    const postId = req.params.postId;
 
     const post = await findPost({ id: postId });
     if (!post) {
@@ -179,8 +172,8 @@ router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {
 // PATCH /post/:postId/like (좋아요)
 router.patch('/:postId/like', isLoggedIn, async (req, res, next) => {
   try {
-    const postId = parseInt(req.params.postId, 10);
-    const myId = parseInt(req.user.id, 10);
+    const myId = req.user.id;
+    const postId = req.params.postId;
 
     const post = await findPost({ id: postId });
     if (!post) {
@@ -197,15 +190,15 @@ router.patch('/:postId/like', isLoggedIn, async (req, res, next) => {
 // DELETE /post/:postId/like (좋아요 삭제)
 router.delete('/:postId/like', isLoggedIn, async (req, res, next) => {
   try {
-    const postId = parseInt(req.params.postId, 10);
-    const myId = parseInt(req.user.id, 10);
+    const myId = req.user.id;
+    const postId = req.params.postId;
 
     const post = await findPost({ id: postId });
     if (!post) {
       return res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '게시글이 존재하지 않습니다.'));
     }
     await post.removeLikers(myId);
-    res.status(SUCCESS).send(resDataFormat(SUCCESS, '등록완료', { PostId: postId, UserId: myId }));
+    res.status(SUCCESS).send(resDataFormat(SUCCESS, '취소완료', { PostId: postId, UserId: myId }));
   } catch (error) {
     console.error(error);
     next(error);
