@@ -6,7 +6,7 @@ import { useAppSelector } from '@hooks/useAppRedux';
 import { useFetchStatus } from '@modules/fetchStatus';
 
 import { ListReadPostUrlQuery } from '../api';
-import { listReadPost, postSelector } from '../slice';
+import { postAction, postSelector } from '../slice';
 
 interface IProps {
   mode?: 'infinite' | 'page';
@@ -15,7 +15,7 @@ interface IProps {
 
 export default function useListReadPost({ mode, filter }: IProps) {
   const dispatch = useDispatch();
-  const { status, data: result } = useFetchStatus(listReadPost.TYPE);
+  const { status, data: result } = useFetchStatus(postAction.listReadPost.TYPE);
   const data = useAppSelector(postSelector.listData);
 
   const isInitFetch = useRef(!!data.length);
@@ -25,7 +25,7 @@ export default function useListReadPost({ mode, filter }: IProps) {
 
   useEffect(() => {
     if (!isInitFetch.current) {
-      if (filter) dispatch(listReadPost.request(filter, { isLoadMore: mode === 'infinite' }));
+      if (filter) dispatch(postAction.listReadPost.request(filter, { isLoadMore: mode === 'infinite' }));
     } else {
       isInitFetch.current = false;
     }

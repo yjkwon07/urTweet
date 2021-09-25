@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux';
 import regexifyString from 'regexify-string';
 
 import { useFetchStatus } from '@modules/fetchStatus';
-import { updatePost } from '@modules/post';
+import { postAction } from '@modules/post';
 import { FormEditPost } from '@modules/post/@types';
 import { IMage } from '@modules/post/@types/db';
 import { EDIT_POST_SCHEMA } from '@modules/post/config';
@@ -28,7 +28,7 @@ export interface IProps {
 
 const PostCardContent = ({ postId, postContent, imageList, editMode = false, onCancelEditMode }: IProps) => {
   const dispatch = useDispatch();
-  const { status } = useFetchStatus(updatePost.TYPE, postId);
+  const { status } = useFetchStatus(postAction.updatePost.TYPE, postId);
 
   const {
     control,
@@ -64,7 +64,10 @@ const PostCardContent = ({ postId, postContent, imageList, editMode = false, onC
     async (formData) => {
       try {
         await dispatch(
-          updatePost.asyncThunk({ url: { postId }, body: { content: formData.content } }, { actionList: [postId] }),
+          postAction.updatePost.asyncThunk(
+            { url: { postId }, body: { content: formData.content } },
+            { actionList: [postId] },
+          ),
         );
         message.success('게시글이 수정 되었습니다.');
       } catch (error) {

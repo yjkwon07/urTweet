@@ -14,7 +14,7 @@ import { Popover, Button, Divider, message, Tooltip, Modal } from 'antd';
 import { useDispatch } from 'react-redux';
 
 import { useFetchStatus } from '@modules/fetchStatus';
-import { likePost, removePost, createRetweet, unlikePost } from '@modules/post';
+import { postAction } from '@modules/post';
 import { Post } from '@modules/post/@types/db';
 import { useMyUser } from '@modules/user';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
@@ -35,7 +35,7 @@ export interface IProps {
 
 const PostCard = ({ data }: IProps) => {
   const dispatch = useDispatch();
-  const { status: removePostStatus } = useFetchStatus(removePost.TYPE, data.id);
+  const { status: removePostStatus } = useFetchStatus(postAction.removePost.TYPE, data.id);
   const { data: myData } = useMyUser();
 
   const [morePopOverOpen, setMorePopOverOpen] = useState(false);
@@ -46,7 +46,7 @@ const PostCard = ({ data }: IProps) => {
   const handleRetweet = useCallback(async () => {
     try {
       if (!requiredLogin()) return;
-      await dispatch(createRetweet.asyncThunk({ postId: data.id }));
+      await dispatch(postAction.createRetweet.asyncThunk({ postId: data.id }));
     } catch (error) {
       if (isCustomAxiosError(error)) {
         message.error(JSON.stringify(error.response.data.resMsg));
@@ -56,8 +56,8 @@ const PostCard = ({ data }: IProps) => {
 
   const handleToggleLike = useCallback(() => {
     if (!requiredLogin()) return;
-    if (!isLike) dispatch(likePost.request({ postId: data.id }));
-    else dispatch(unlikePost.request({ postId: data.id }));
+    if (!isLike) dispatch(postAction.likePost.request({ postId: data.id }));
+    else dispatch(postAction.unlikePost.request({ postId: data.id }));
   }, [data.id, dispatch, isLike]);
 
   const handleToggleCommentList = useCallback(() => {
@@ -82,7 +82,7 @@ const PostCard = ({ data }: IProps) => {
       icon: <ExclamationCircleOutlined />,
       content: '삭제시 해당 컨텐츠는 복구 불가 합니다.',
       async onOk() {
-        dispatch(removePost.request({ postId: data.id }, { actionList: [data.id] }));
+        dispatch(postAction.removePost.request({ postId: data.id }, { actionList: [data.id] }));
       },
     });
   }, [data.id, dispatch]);

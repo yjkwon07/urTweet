@@ -7,7 +7,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 
 import { fileUpload } from '@modules/file';
-import { createPost, EDIT_POST_SCHEMA } from '@modules/post';
+import { postAction, EDIT_POST_SCHEMA } from '@modules/post';
 import { FormEditPost } from '@modules/post/@types';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
 import { GET_IMAGE_URL } from '@utils/urls';
@@ -34,7 +34,7 @@ const PostForm = () => {
   const handleSubmit = useCallback(
     async (formData) => {
       try {
-        await dispatch(createPost.asyncThunk({ content: formData.content, image: imagePathList }));
+        await dispatch(postAction.createPost.asyncThunk({ content: formData.content, image: imagePathList }));
       } catch (error) {
         if (isCustomAxiosError(error)) {
           message.error(JSON.stringify(error.response.data.resMsg));

@@ -3,37 +3,27 @@ import { all, fork, takeLatest, debounce, call, select, put } from 'redux-saga/e
 import { createRequestSaga } from '@modules/helper';
 import { addPostToMe, removePostToMe } from '@modules/user';
 
-import {
-  likePost,
-  unlikePost,
-  readPost,
-  listReadPost,
-  createPost,
-  updatePost,
-  removePost,
-  createComment,
-  createRetweet,
-} from './slice';
+import { postAction } from './slice';
 
-const retweetPostSaga = createRequestSaga(createRetweet, createRetweet.requestAPI);
-const createPostSaga = createRequestSaga(createPost, createPost.requestAPI);
-const readPostSaga = createRequestSaga(readPost, readPost.requestAPI);
-const listReadPostSaga = createRequestSaga(listReadPost, listReadPost.requestAPI);
-const updatePostSaga = createRequestSaga(updatePost, updatePost.requestAPI);
-const removePostSaga = createRequestSaga(removePost, removePost.requestAPI);
-const unlikePostSaga = createRequestSaga(unlikePost, unlikePost.requestAPI);
-const likePostSaga = createRequestSaga(likePost, likePost.requestAPI);
-const createCommentSaga = createRequestSaga(createComment, createComment.requestAPI);
+const retweetPostSaga = createRequestSaga(postAction.createRetweet, postAction.createRetweet.requestAPI);
+const createPostSaga = createRequestSaga(postAction.createPost, postAction.createPost.requestAPI);
+const readPostSaga = createRequestSaga(postAction.readPost, postAction.readPost.requestAPI);
+const listReadPostSaga = createRequestSaga(postAction.listReadPost, postAction.listReadPost.requestAPI);
+const updatePostSaga = createRequestSaga(postAction.updatePost, postAction.updatePost.requestAPI);
+const removePostSaga = createRequestSaga(postAction.removePost, postAction.removePost.requestAPI);
+const unlikePostSaga = createRequestSaga(postAction.unlikePost, postAction.unlikePost.requestAPI);
+const likePostSaga = createRequestSaga(postAction.likePost, postAction.likePost.requestAPI);
+const createCommentSaga = createRequestSaga(postAction.createComment, postAction.createComment.requestAPI);
 
 function* watchRetweetPost() {
-  yield debounce(300, createRetweet.request, retweetPostSaga);
+  yield debounce(300, postAction.createRetweet.request, retweetPostSaga);
 }
 
 function* watchCreatePost() {
-  yield debounce(300, createPost.request, function* (action) {
+  yield debounce(300, postAction.createPost.request, function* (action) {
     yield call(createPostSaga, action);
     const rootState: RootState = yield select();
-    const { status, data } = rootState.FETCH_STATUS[createPost.TYPE];
+    const { status, data } = rootState.FETCH_STATUS[postAction.createPost.TYPE];
     if (status === 'SUCCESS') {
       yield put(addPostToMe(data.id));
     }
@@ -41,22 +31,22 @@ function* watchCreatePost() {
 }
 
 function* watchReadPost() {
-  yield takeLatest(readPost.request, readPostSaga);
+  yield takeLatest(postAction.readPost.request, readPostSaga);
 }
 
 function* watchListRead() {
-  yield takeLatest(listReadPost.request, listReadPostSaga);
+  yield takeLatest(postAction.listReadPost.request, listReadPostSaga);
 }
 
 function* watchUpdatePost() {
-  yield takeLatest(updatePost.request, updatePostSaga);
+  yield takeLatest(postAction.updatePost.request, updatePostSaga);
 }
 
 function* watchRemovePost() {
-  yield takeLatest(removePost.request, function* (action) {
+  yield takeLatest(postAction.removePost.request, function* (action) {
     yield call(removePostSaga, action);
     const rootState: RootState = yield select();
-    const { status, data } = rootState.FETCH_STATUS[removePost.TYPE];
+    const { status, data } = rootState.FETCH_STATUS[postAction.removePost.TYPE];
     if (status === 'SUCCESS') {
       yield put(removePostToMe(data.PostId));
     }
@@ -64,15 +54,15 @@ function* watchRemovePost() {
 }
 
 function* watchLikePost() {
-  yield takeLatest(likePost.request, likePostSaga);
+  yield takeLatest(postAction.likePost.request, likePostSaga);
 }
 
 function* watchUnlikePost() {
-  yield takeLatest(unlikePost.request, unlikePostSaga);
+  yield takeLatest(postAction.unlikePost.request, unlikePostSaga);
 }
 
 function* watchCreateComment() {
-  yield debounce(300, createComment.request, createCommentSaga);
+  yield debounce(300, postAction.createComment.request, createCommentSaga);
 }
 
 export default function* postSaga() {

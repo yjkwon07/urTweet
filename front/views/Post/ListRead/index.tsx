@@ -2,9 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { InsertRowBelowOutlined, InsertRowRightOutlined, RedoOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Select, Space, Tooltip } from 'antd';
+import { useDispatch } from 'react-redux';
 
 import BaseLayout from '@layouts/BaseLayout';
-import { ListReadPostUrlQuery, useListReadPost } from '@modules/post';
+import { ListReadPostUrlQuery, postAction, useListReadPost } from '@modules/post';
 import { useSearchFilter } from '@modules/searchFilter';
 
 import InfiniteMode from './InfiniteListRead';
@@ -16,12 +17,20 @@ const DEFAULT_CUR_PAGE = 1;
 const DEFAULT_PER_PAGE = 10;
 
 const PostListReadView = () => {
+  const dispatch = useDispatch();
+
   const { filter, changeFilter } = useSearchFilter<ListReadPostUrlQuery>('LIST_READ_POST', {
     page: DEFAULT_CUR_PAGE,
     pageSize: DEFAULT_PER_PAGE,
   });
   const [mode, setMode] = useState<'infinite' | 'page'>('infinite');
-  const { status, data: postListData, isMoreRead, totalCount } = useListReadPost({ filter, mode });
+  const {
+    status,
+    data: postListData,
+    error: PostListError,
+    isMoreRead,
+    totalCount,
+  } = useListReadPost({ filter, mode });
 
   const handleRefreshPostListData = useCallback(() => {
     changeFilter({ page: DEFAULT_CUR_PAGE, pageSize: DEFAULT_PER_PAGE, hashtag: '', userId: undefined });
@@ -39,9 +48,10 @@ const PostListReadView = () => {
 
   useEffect(() => {
     if (mode === 'infinite') {
+      dispatch(postAction.listDataReset());
       handleRefreshPostListData();
     }
-  }, [handleRefreshPostListData, mode]);
+  }, [dispatch, handleRefreshPostListData, mode]);
 
   return (
     <BaseLayout
@@ -83,7 +93,14 @@ const PostListReadView = () => {
           errorMsg={status === 'FAIL' ? '정보를 불러오지 못했습니다.' : ''}
         />
       )}
-      {mode === 'page' && <PaginationMode status={status} postList={postListData} totalCount={totalCount} />}
+      {mode === 'page' && (
+        <PaginationMode
+          status={status}
+          postList={postListData}
+          totalCount={totalCount}
+          errorMsg={status === 'FAIL' && PostListError.resMsg}
+        />
+      )}
     </BaseLayout>
   );
 };

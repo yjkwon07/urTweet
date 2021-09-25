@@ -18,15 +18,15 @@ import {
 export const POST = 'POST';
 
 // Action - API
-export const createRetweet = createRequestAction(`${POST}/createRetweet`, requestCreateRetweet);
-export const createPost = createRequestAction(`${POST}/createPost`, requestCreatePost);
-export const listReadPost = createRequestAction(`${POST}listReadPost`, requestListReadPost);
-export const readPost = createRequestAction(`${POST}/readPost`, requestReadPost);
-export const updatePost = createRequestAction(`${POST}/updatePost`, requestUpdatePost);
-export const removePost = createRequestAction(`${POST}/removePost`, requestRemovePost);
-export const likePost = createRequestAction(`${POST}/likePost`, requestLikePost);
-export const unlikePost = createRequestAction(`${POST}/unlikePost`, requestUnlikePost);
-export const createComment = createRequestAction(`${POST}/createComment`, requestCreateComment);
+const createRetweet = createRequestAction(`${POST}/createRetweet`, requestCreateRetweet);
+const createPost = createRequestAction(`${POST}/createPost`, requestCreatePost);
+const listReadPost = createRequestAction(`${POST}listReadPost`, requestListReadPost);
+const readPost = createRequestAction(`${POST}/readPost`, requestReadPost);
+const updatePost = createRequestAction(`${POST}/updatePost`, requestUpdatePost);
+const removePost = createRequestAction(`${POST}/removePost`, requestRemovePost);
+const likePost = createRequestAction(`${POST}/likePost`, requestLikePost);
+const unlikePost = createRequestAction(`${POST}/unlikePost`, requestUnlikePost);
+const createComment = createRequestAction(`${POST}/createComment`, requestCreateComment);
 
 // Entity
 const postListDataAdapter = createEntityAdapter<Post>({
@@ -105,6 +105,17 @@ const slice = createSlice({
 
 const { selectAll: listData, selectIds: data } = postListDataAdapter.getSelectors((state: RootState) => state.POST);
 
-export const postSelector = { listData, data };
-export const postAction = slice.actions;
 export const postReducer = slice.reducer;
+export const postSelector = { listData, data };
+export const postAction = {
+  ...slice.actions,
+  createRetweet,
+  createPost,
+  listReadPost,
+  readPost,
+  updatePost,
+  removePost,
+  likePost,
+  unlikePost,
+  createComment,
+};
