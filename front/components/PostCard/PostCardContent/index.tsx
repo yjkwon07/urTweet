@@ -69,13 +69,12 @@ const PostCardContent = ({ postId, postContent, imageList, editMode = false, onC
             { actionList: [postId] },
           ),
         );
-        message.success('게시글이 수정 되었습니다.');
       } catch (error) {
         if (isCustomAxiosError(error)) {
-          message.error(JSON.stringify(error.response?.data));
+          message.error(JSON.stringify(error.response.data.resMsg));
         }
       } finally {
-        reset();
+        reset({});
         onCancelEditMode();
       }
     },
