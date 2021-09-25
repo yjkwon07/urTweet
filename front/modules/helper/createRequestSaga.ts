@@ -28,7 +28,7 @@ export const createRequestSaga = <R, S, M extends RequestCommonMeta>(
     try {
       yield put(fetchStatusAction.requestFetchStatus({ type: actionCreator.TYPE, actionList }));
       const { data }: AxiosResponse<S> = yield call(requestCall, action.payload);
-      yield put(actionCreator.success);
+      yield put(actionCreator.success(data, action.meta));
       yield put(fetchStatusAction.successFetchStatus({ type: actionCreator.TYPE, data, actionList }));
       if (action.resolve) {
         yield call(action.resolve, data);
