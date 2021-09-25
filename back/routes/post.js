@@ -74,6 +74,85 @@ router.post('/:postId/retweet', isLoggedIn, async (req, res, next) => {
   }
 });
 
+// GET /post/:postId (게시글 조회)
+router.get('/:postId', async (req, res, next) => {
+  try {
+    const postId = req.params.postId;
+    const post = await findPost({ id: postId });
+    if (!post) {
+      return res.status(PAGE_ERROR).send('존재하지 않는 게시글입니다.');
+    }
+    const postWithoutUserPassword = await findPostWithoutUserPassword({ id: postId });
+    res.status(SUCCESS).send(resDataFormat(postWithoutUserPassword));
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+// PATCH /post/:postId (게시글 수정)
+router.patch('/:postId', isLoggedIn, async (req, res, next) => {
+  try {
+    const postId = req.params.postId;
+    const myId = req.user.id;
+    const content = req.body.content;
+    const image = req.body.image;
+    const hashtags = content.match(/#[^\s#]+/g);
+
+    await Post.update(
+      { content },
+      {
+        where: {
+          id: postId,
+          UserId: myId,
+        },
+      },
+    );
+    const post = await findPost({ id: postId });
+    if (hashtags) {
+      const result = await Promise.all(
+        Array.from(new Set(hashtags.map((tag) => tag.slice(1).toLowerCase()))).map((tag) =>
+          Hashtag.findOrCreate({
+            where: { name: tag },
+          }),
+        ),
+      );
+      await post.setHashtags(result.map((v) => v[0]));
+    }
+    if (image) {
+      const images = await Promise.all(image.map((image) => Image.create({ src: image })));
+      await post.setImages(images);
+    }
+    res.status(SUCCESS).send(resDataFormat(SUCCESS, '수정완료', post));
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+// DELETE /post/:postId (게시글 삭제)
+router.delete('/:postId', isLoggedIn, async (req, res, next) => {
+  try {
+    const postId = parseInt(req.params.postId, 10);
+    const myId = parseInt(req.user.id, 10);
+
+    const post = await findPost({ id: postId });
+    if (!post) {
+      return res.status(CLIENT_ERROR).send('게시글이 존재하지 않습니다.');
+    }
+    await Post.destroy({
+      where: {
+        id: postId,
+        UserId: myId,
+      },
+    });
+    res.status(SUCCESS).send({ PostId: postId });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
 // POST /post/:postId/comment (댓글 작성)
 router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {
   try {
@@ -127,85 +206,6 @@ router.delete('/:postId/like', isLoggedIn, async (req, res, next) => {
     }
     await post.removeLikers(myId);
     res.status(SUCCESS).send({ PostId: postId, UserId: myId });
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-});
-
-// GET /post/:postId (게시글 조회)
-router.get('/:postId', async (req, res, next) => {
-  try {
-    const postId = req.params.postId;
-    const post = await findPost({ id: postId });
-    if (!post) {
-      return res.status(PAGE_ERROR).send('존재하지 않는 게시글입니다.');
-    }
-    const postWithoutUserPassword = await findPostWithoutUserPassword({ id: postId });
-    res.status(SUCCESS).send(resDataFormat(postWithoutUserPassword));
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-});
-
-// PATCH /post/:postId (게시글 수정)
-router.patch('/:postId', isLoggedIn, async (req, res, next) => {
-  try {
-    const postId = parseInt(req.params.postId, 10);
-    const myId = parseInt(req.user.id, 10);
-    const content = req.body.content;
-    const image = req.body.image;
-    const hashtags = content.match(/#[^\s#]+/g);
-
-    await Post.update(
-      { content },
-      {
-        where: {
-          id: postId,
-          UserId: myId,
-        },
-      },
-    );
-    const post = await findPost({ id: postId });
-    if (hashtags) {
-      const result = await Promise.all(
-        Array.from(new Set(hashtags.map((tag) => tag.slice(1).toLowerCase()))).map((tag) =>
-          Hashtag.findOrCreate({
-            where: { name: tag },
-          }),
-        ),
-      );
-      await post.setHashtags(result.map((v) => v[0]));
-    }
-    if (image) {
-      const images = await Promise.all(image.map((image) => Image.create({ src: image })));
-      await post.setImages(images);
-    }
-    res.status(SUCCESS).send(post);
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-});
-
-// DELETE /post/:postId (게시글 삭제)
-router.delete('/:postId', isLoggedIn, async (req, res, next) => {
-  try {
-    const postId = parseInt(req.params.postId, 10);
-    const myId = parseInt(req.user.id, 10);
-
-    const post = await findPost({ id: postId });
-    if (!post) {
-      return res.status(CLIENT_ERROR).send('게시글이 존재하지 않습니다.');
-    }
-    await Post.destroy({
-      where: {
-        id: postId,
-        UserId: myId,
-      },
-    });
-    res.status(SUCCESS).send({ PostId: postId });
   } catch (error) {
     console.error(error);
     next(error);
