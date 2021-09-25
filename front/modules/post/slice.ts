@@ -1,4 +1,4 @@
-import { createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit';
+import { createAction, createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit';
 
 import { createRequestAction } from '@modules/helper';
 
@@ -28,6 +28,9 @@ const likePost = createRequestAction(`${POST}/likePost`, requestLikePost);
 const unlikePost = createRequestAction(`${POST}/unlikePost`, requestUnlikePost);
 const createComment = createRequestAction(`${POST}/createComment`, requestCreateComment);
 
+// Action
+const listDataReset = createAction(`${POST}/listDataReset`);
+
 // Entity
 const postListDataAdapter = createEntityAdapter<Post>({
   selectId: (data) => data.id,
@@ -42,13 +45,12 @@ const initialState: PostState = postListDataAdapter.getInitialState();
 const slice = createSlice({
   name: POST,
   initialState,
-  reducers: {
-    listDataReset: (state) => {
-      postListDataAdapter.removeAll(state);
-    },
-  },
+  reducers: {},
   extraReducers: (builder) =>
     builder
+      .addCase(listDataReset, (state) => {
+        postListDataAdapter.removeAll(state);
+      })
       .addCase(createRetweet.success, (state, { payload: { resData } }) => {
         const list = postListDataAdapter.getSelectors().selectAll(state);
         postListDataAdapter.setAll(state, [resData].concat(list));
@@ -118,4 +120,5 @@ export const postAction = {
   likePost,
   unlikePost,
   createComment,
+  listDataReset,
 };
