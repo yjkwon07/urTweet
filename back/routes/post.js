@@ -5,7 +5,7 @@ const { findCommentWithoutUserPassword } = require('../query/comment');
 const { Post, Comment, Image, Hashtag } = require('../models');
 const { isLoggedIn } = require('./middlewares');
 const { SUCCESS, CLIENT_ERROR, PAGE_ERROR } = require('../constant');
-const { resDataFormat } = require('../utils/resFormat');
+const { resDataFormat, resErrorDataFormat } = require('../utils/resFormat');
 
 const router = express.Router();
 
@@ -43,22 +43,6 @@ router.post('/', isLoggedIn, async (req, res, next) => {
   }
 });
 
-// GET /post/:postId (게시글 조회)
-router.get('/:postId', async (req, res, next) => {
-  try {
-    const postId = req.params.postId;
-    const post = await findPost({ id: postId });
-    if (!post) {
-      return res.status(PAGE_ERROR).send('존재하지 않는 게시글입니다.');
-    }
-    const postWithoutUserPassword = await findPostWithoutUserPassword({ id: postId });
-    res.status(SUCCESS).send(resDataFormat(postWithoutUserPassword));
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-});
-
 // POST /post/:postId/retweet (리트윗)
 router.post('/:postId/retweet', isLoggedIn, async (req, res, next) => {
   try {
@@ -67,15 +51,15 @@ router.post('/:postId/retweet', isLoggedIn, async (req, res, next) => {
 
     const post = await findRetweetPost({ id: postId });
     if (!post) {
-      return res.status(CLIENT_ERROR).send('존재하지 않는 게시글입니다.');
+      return res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '존재하지 않는 게시글입니다.'));
     }
     if (myId === post.UserId || post.Retweet?.UserId === myId) {
-      return res.status(CLIENT_ERROR).send('자신의 글은 리트윗할 수 없습니다.');
+      return res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '자신의 글은 리트윗할 수 없습니다.'));
     }
     const retweetTargetId = post.RetweetId || post.id;
     const exPost = await findPost({ UserId: myId, RetweetId: retweetTargetId });
     if (exPost) {
-      return res.status(CLIENT_ERROR).send('이미 리트윗했습니다.');
+      return res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '이미 리트윗했습니다.'));
     }
     const retweetPost = await Post.create({
       UserId: myId,
@@ -83,7 +67,7 @@ router.post('/:postId/retweet', isLoggedIn, async (req, res, next) => {
       content: 'retweet',
     });
     const postWithoutUserPassword = await findPostWithoutUserPassword({ id: retweetPost.id });
-    res.status(SUCCESS).send(postWithoutUserPassword);
+    res.status(SUCCESS).send(resDataFormat(SUCCESS, '등록완료', postWithoutUserPassword));
   } catch (error) {
     console.error(error);
     next(error);
@@ -93,8 +77,8 @@ router.post('/:postId/retweet', isLoggedIn, async (req, res, next) => {
 // POST /post/:postId/comment (댓글 작성)
 router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {
   try {
-    const postId = parseInt(req.params.postId, 10);
-    const myId = parseInt(req.user.id, 10);
+    const postId = req.params.postId;
+    const myId = req.user.id;
 
     const post = await findPost({ id: postId });
     if (!post) {
@@ -105,8 +89,8 @@ router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {
       PostId: postId,
       UserId: myId,
     });
-    const fullComment = await findCommentWithoutUserPassword({ id: comment.id });
-    res.status(SUCCESS).send(fullComment);
+    const result = await findCommentWithoutUserPassword({ id: comment.id });
+    res.status(SUCCESS).send(resDataFormat(SUCCESS, '등록완료', result));
   } catch (error) {
     console.error(error);
     next(error);
@@ -143,6 +127,22 @@ router.delete('/:postId/like', isLoggedIn, async (req, res, next) => {
     }
     await post.removeLikers(myId);
     res.status(SUCCESS).send({ PostId: postId, UserId: myId });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+// GET /post/:postId (게시글 조회)
+router.get('/:postId', async (req, res, next) => {
+  try {
+    const postId = req.params.postId;
+    const post = await findPost({ id: postId });
+    if (!post) {
+      return res.status(PAGE_ERROR).send('존재하지 않는 게시글입니다.');
+    }
+    const postWithoutUserPassword = await findPostWithoutUserPassword({ id: postId });
+    res.status(SUCCESS).send(resDataFormat(postWithoutUserPassword));
   } catch (error) {
     console.error(error);
     next(error);
