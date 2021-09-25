@@ -46,7 +46,7 @@ const CommentForm = ({ userId, postId }: IProps) => {
         );
       } catch (error) {
         if (isCustomAxiosError(error)) {
-          message.error(JSON.stringify(error.response?.data));
+          message.error(JSON.stringify(error.response.data.resMsg));
         }
       } finally {
         reset();
