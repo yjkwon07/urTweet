@@ -2,8 +2,8 @@ import { useEffect, useRef } from 'react';
 
 import { useDispatch } from 'react-redux';
 
+import { useAppSelector } from '@hooks/useAppRedux';
 import { useFetchStatus } from '@modules/fetchStatus';
-import { useAppSelector } from '@modules/store/rootReducer';
 
 import { readMyUser, userSelector } from '../slice';
 
@@ -15,10 +15,10 @@ export default function useMyUser() {
   const isInitFetch = useRef(!!data);
 
   useEffect(() => {
-    if (!isInitFetch.current) {
+    if (!isInitFetch.current && status === 'INIT') {
       dispatch(readMyUser.request({}));
     }
-  }, [dispatch]);
+  }, [dispatch, status]);
 
   return { status, data };
 }
