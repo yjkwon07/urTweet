@@ -44,7 +44,6 @@ const CommentForm = ({ userId, postId }: IProps) => {
             { actionList: [postId] },
           ),
         );
-        message.success('댓글이 등록되었습니다.');
       } catch (error) {
         if (isCustomAxiosError(error)) {
           message.error(JSON.stringify(error.response?.data));

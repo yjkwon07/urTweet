@@ -2,7 +2,7 @@ import { IUserInfo } from '@modules/user/@types/db';
 
 export type Post = {
   Comments: Comment[];
-  Images: IMage[];
+  Images: Image[];
   Likers: Liker[];
   Retweet: Post | null;
   RetweetId: number | null;
@@ -28,7 +28,7 @@ export type Comment = {
   User: { id: number; nickname: string };
 };
 
-export type IMage = {
+export type Image = {
   PostId: number;
   createdAt: string;
   id: number;

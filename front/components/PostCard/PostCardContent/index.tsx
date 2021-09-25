@@ -9,8 +9,7 @@ import regexifyString from 'regexify-string';
 
 import { useFetchStatus } from '@modules/fetchStatus';
 import { postAction } from '@modules/post';
-import { FormEditPost } from '@modules/post/@types';
-import { IMage } from '@modules/post/@types/db';
+import { FormEditPost, Image } from '@modules/post/@types';
 import { EDIT_POST_SCHEMA } from '@modules/post/config';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
 import { GET_HASHTAG_URL, PASS_HREF } from '@utils/urls';
@@ -21,7 +20,7 @@ import { StyledForm } from './styles';
 export interface IProps {
   postId: number;
   postContent: string;
-  imageList: IMage[];
+  imageList: Image[];
   editMode?: boolean;
   onCancelEditMode: () => void;
 }

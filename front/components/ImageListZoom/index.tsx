@@ -4,13 +4,13 @@ import { Global } from '@emotion/react';
 import Slick from 'react-slick';
 
 import usePreventBodyScroll from '@hooks/usePreventBodyScroll';
-import { IMage } from '@modules/post/@types/db';
+import { Image } from '@modules/post/@types/db';
 import { GET_IMAGE_URL } from '@utils/urls';
 
 import { Overlay, Header, CloseBtn, ImgWrapper, Indicator, SlickWrapper, globalStyles } from './styles';
 
 export interface IProps {
-  imageList: IMage[];
+  imageList: Image[];
   onClose: () => void;
 }
 
