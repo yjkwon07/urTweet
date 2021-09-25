@@ -3,6 +3,45 @@ import { axios } from '@modules/client';
 import { Comment, Post } from '../@types';
 
 /**
+ * * 해당 게시글 리트윗 POST
+ * * url: /post/:postId/retweet
+ * * body: empty
+ * * res: CreateRetweetRes
+ */
+export type CreateRetweetUrlQuery = {
+  postId: number;
+};
+export interface CreateRetweetRes extends CommonRes {
+  resData: Post;
+}
+export function GET_CREATE_RETWEET_API(url: CreateRetweetUrlQuery) {
+  return `/post/${url.postId}/retweet`;
+}
+export const requestCreateRetweet = (url: CreateRetweetUrlQuery) => {
+  return axios.post<CreateRetweetRes>(GET_CREATE_RETWEET_API(url));
+};
+
+/**
+ * * 게시글 등록 POST
+ * * url: /post
+ * * body: CreatePostBodyQuery
+ * * res: CreatePostRes
+ */
+export type CreatePostBodyQuery = {
+  content: string;
+  image?: string[];
+};
+export interface CreatePostRes extends CommonRes {
+  resData: Post;
+}
+export function GET_CREATE_POST_API() {
+  return `/post`;
+}
+export const requestCreatePost = (body: CreatePostBodyQuery) => {
+  return axios.post<CreatePostRes>(GET_CREATE_POST_API(), body);
+};
+
+/**
  * * 게시글 정보 조회 GET
  * * url: /post/:postId
  * * body: empty
@@ -47,45 +86,6 @@ export function GET_LIST_READ_POST_API(url: ListReadPostUrlQuery) {
 }
 export const requestListReadPost = (url: ListReadPostUrlQuery) => {
   return axios.get<ListReadPostRes>(GET_LIST_READ_POST_API(url));
-};
-
-/**
- * * 해당 게시글 리트윗 POST
- * * url: /post/:postId/retweet
- * * body: empty
- * * res: CreatePostRetweetRes
- */
-export type CreatePostRetweetUrlQuery = {
-  postId: number;
-};
-export interface CreatePostRetweetRes extends CommonRes {
-  resData: Post;
-}
-export function GET_CREATE_POST_RETWEET_API(url: CreatePostRetweetUrlQuery) {
-  return `/post/${url.postId}/retweet`;
-}
-export const requestCreatePostRetweet = (url: CreatePostRetweetUrlQuery) => {
-  return axios.post<CreatePostRetweetRes>(GET_CREATE_POST_RETWEET_API(url));
-};
-
-/**
- * * 게시글 등록 POST
- * * url: /post
- * * body: CreatePostBodyQuery
- * * res: CreatePostRes
- */
-export type CreatePostBodyQuery = {
-  content: string;
-  image?: string[];
-};
-export interface CreatePostRes extends CommonRes {
-  resData: Post;
-}
-export function GET_CREATE_POST_API() {
-  return `/post`;
-}
-export const requestCreatePost = (body: CreatePostBodyQuery) => {
-  return axios.post<CreatePostRes>(GET_CREATE_POST_API(), body);
 };
 
 /**

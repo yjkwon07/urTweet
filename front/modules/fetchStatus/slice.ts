@@ -1,7 +1,7 @@
 import { createAction, createSlice } from '@reduxjs/toolkit';
 
 // Type
-export interface IFetchStatusActionPayload {
+export interface FetchStatusActionPayload {
   type: string;
   actionList?: any[];
   data?: any;
@@ -9,7 +9,7 @@ export interface IFetchStatusActionPayload {
 
 export type FetchStatus = 'INIT' | 'LOADING' | 'SUCCESS' | 'FAIL';
 
-export interface IFetchStatusState {
+export interface FetchStatusState {
   [type: string]: {
     status: FetchStatus;
     actionList: any[];
@@ -21,13 +21,13 @@ export interface IFetchStatusState {
 export const FETCH_STATUS = 'FETCH_STATUS';
 
 // Action
-export const initFetchStatus = createAction<Pick<IFetchStatusActionPayload, 'type'>>(`${FETCH_STATUS}/init`);
-export const requestFetchStatus = createAction<IFetchStatusActionPayload>(`${FETCH_STATUS}/request`);
-export const successFetchStatus = createAction<IFetchStatusActionPayload>(`${FETCH_STATUS}/success`);
-export const failureFetchStatus = createAction<IFetchStatusActionPayload>(`${FETCH_STATUS}/fail`);
+const initFetchStatus = createAction<Pick<FetchStatusActionPayload, 'type'>>(`${FETCH_STATUS}/init`);
+const requestFetchStatus = createAction<FetchStatusActionPayload>(`${FETCH_STATUS}/request`);
+const successFetchStatus = createAction<FetchStatusActionPayload>(`${FETCH_STATUS}/success`);
+const failureFetchStatus = createAction<FetchStatusActionPayload>(`${FETCH_STATUS}/fail`);
 
 // Reducer
-const initialState: IFetchStatusState = {};
+const initialState: FetchStatusState = {};
 const slice = createSlice({
   name: FETCH_STATUS,
   initialState,
@@ -66,4 +66,10 @@ const slice = createSlice({
 });
 
 export const fetchStatusReducer = slice.reducer;
-export const fetchStatusAction = slice.actions;
+export const fetchStatusAction = {
+  ...slice.actions,
+  initFetchStatus,
+  requestFetchStatus,
+  successFetchStatus,
+  failureFetchStatus,
+};

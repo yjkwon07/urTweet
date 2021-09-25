@@ -7,7 +7,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 
 import { fileUpload } from '@modules/file';
-import { createPost, EDIT_POST_SCHEMA } from '@modules/post';
+import { postAction, EDIT_POST_SCHEMA } from '@modules/post';
 import { FormEditPost } from '@modules/post/@types';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
 import { GET_IMAGE_URL } from '@utils/urls';
@@ -28,24 +28,23 @@ const PostForm = () => {
     defaultValues: { content: '' },
   });
 
-  const [imageListPath, setImageListPath] = useState<string[]>([]);
+  const [imagePathList, setImagePathList] = useState<string[]>([]);
   const imageInput = useRef<HTMLInputElement>(null);
 
   const handleSubmit = useCallback(
     async (formData) => {
       try {
-        await dispatch(createPost.asyncThunk({ content: formData.content, image: imageListPath }));
-        message.success('게시글이 등록되었습니다.');
+        await dispatch(postAction.createPost.asyncThunk({ content: formData.content, image: imagePathList }));
       } catch (error) {
         if (isCustomAxiosError(error)) {
-          message.error(JSON.stringify(error.response.data));
+          message.error(JSON.stringify(error.response.data.resMsg));
         }
       } finally {
         reset();
-        setImageListPath([]);
+        setImagePathList([]);
       }
     },
-    [dispatch, imageListPath, reset],
+    [dispatch, imagePathList, reset],
   );
 
   const handleClickImageUpload = useCallback(() => {
@@ -58,20 +57,21 @@ const PostForm = () => {
       return;
     }
     try {
-      if (e.target.files) {
-        const listPath = await fileUpload(e.target.files);
-        setImageListPath(listPath);
+      if (e.target.files && e.target.files.length) {
+        const filePathList = await fileUpload(e.target.files);
+        setImagePathList(filePathList);
+        if (imageInput.current) imageInput.current.value = '';
       }
     } catch (error) {
       if (isCustomAxiosError(error)) {
-        message.error(JSON.stringify(error.response.data));
+        message.error(JSON.stringify(error.response.data.resMsg));
       }
     }
   }, []);
 
   const handleRemoveImage = useCallback(
     (filePath) => () => {
-      setImageListPath((data) => data.filter((name) => name !== filePath));
+      setImagePathList((data) => data.filter((name) => name !== filePath));
     },
     [],
   );
@@ -107,9 +107,9 @@ const PostForm = () => {
 
         <div className="image_preview">
           <Image.PreviewGroup>
-            {imageListPath.map((filePath) => (
+            {imagePathList.map((filePath) => (
               <div key={filePath} className="wrapper">
-                <Image width={150} height={150} src={GET_IMAGE_URL(filePath, true)} alt={filePath} />
+                <Image width={150} height={150} src={GET_IMAGE_URL(filePath, true)} alt="" />
                 <div className="button_wrapper">
                   <Button type="primary" danger onClick={handleRemoveImage(filePath)}>
                     제거

@@ -2,11 +2,11 @@ import { IUserInfo } from '@modules/user/@types/db';
 
 export type Post = {
   Comments: Comment[];
-  Images: IMage[];
+  Images: Image[];
   Likers: Liker[];
   Retweet: Post | null;
   RetweetId: number | null;
-  User: Pick<IUserInfo, 'id' | 'nickname'>;
+  User: { id: number; nickname: string };
   UserId: number;
   content: string;
   createdAt: string;
@@ -18,13 +18,6 @@ export type Liker = {
   id: number;
 };
 
-export type Like = {
-  createdAt: string;
-  updatedAt: string;
-  PostId: number;
-  UserId: number;
-};
-
 export type Comment = {
   id: number;
   content: string;
@@ -32,10 +25,10 @@ export type Comment = {
   updatedAt: string;
   UserId: number;
   PostId: number;
-  User: Pick<IUserInfo, 'id' | 'nickname'>;
+  User: { id: number; nickname: string };
 };
 
-export type IMage = {
+export type Image = {
   PostId: number;
   createdAt: string;
   id: number;

@@ -2,9 +2,6 @@ import styled from '@emotion/styled';
 import { Card } from 'antd';
 
 export const StyledCard = styled(Card)`
-  &.collapse {
-    border-bottom: 0px;
-  }
   & {
     border-radius: 8px;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);

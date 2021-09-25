@@ -1,7 +1,7 @@
 import { axios } from '@modules/client';
 
 /**
- * * 해당 게시글 이미지 업로드 POST
+ * * 파일 업로드 POST
  * * url: /file/upload
  * * body: UploadFileBody
  * * res: UploadFileRes

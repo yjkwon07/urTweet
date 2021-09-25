@@ -6,7 +6,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 
 import { useFetchStatus } from '@modules/fetchStatus';
-import { createComment } from '@modules/post';
+import { postAction } from '@modules/post';
 import { FormCreateComment } from '@modules/post/@types';
 import { CREATE_COMMENT_SCHEMA } from '@modules/post/config';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
@@ -20,7 +20,7 @@ interface IProps {
 
 const CommentForm = ({ userId, postId }: IProps) => {
   const dispatch = useDispatch();
-  const { status } = useFetchStatus(createComment.TYPE, postId);
+  const { status } = useFetchStatus(postAction.createComment.TYPE, postId);
 
   const {
     control,
@@ -36,7 +36,7 @@ const CommentForm = ({ userId, postId }: IProps) => {
     async (formData) => {
       try {
         await dispatch(
-          createComment.asyncThunk(
+          postAction.createComment.asyncThunk(
             {
               url: { postId },
               body: { content: formData.content, userId },
@@ -44,10 +44,9 @@ const CommentForm = ({ userId, postId }: IProps) => {
             { actionList: [postId] },
           ),
         );
-        message.success('댓글이 등록되었습니다.');
       } catch (error) {
         if (isCustomAxiosError(error)) {
-          message.error(JSON.stringify(error.response?.data));
+          message.error(JSON.stringify(error.response.data.resMsg));
         }
       } finally {
         reset();

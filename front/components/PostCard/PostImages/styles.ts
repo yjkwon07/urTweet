@@ -20,7 +20,7 @@ export const StyledImage = styled.div`
       transform: translate(-50%, -50%);
       background-color: rgba(0, 0, 0, 50%);
       border-radius: 0.5em;
-      padding: 10;
+      padding: 10px;
       text-align: center;
       color: #fff;
       line-height: 30px;

@@ -2,8 +2,8 @@ import { useEffect, useMemo } from 'react';
 
 import { useDispatch } from 'react-redux';
 
+import { useAppSelector } from '@hooks/useAppRedux';
 import { useFetchStatus } from '@modules/fetchStatus';
-import { useAppSelector } from '@modules/store/rootReducer';
 
 import { ListReadFollowURL } from '../api';
 import { listReadFollow, userSelector } from '../slice';

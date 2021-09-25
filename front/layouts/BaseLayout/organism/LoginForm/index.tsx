@@ -36,7 +36,7 @@ const LoginForm = () => {
         setUserId(user.id.toString());
       } catch (error) {
         if (isCustomAxiosError(error)) {
-          message.error(JSON.stringify(error.response.data));
+          message.error(JSON.stringify(error.response.data.resMsg));
         }
       }
     },

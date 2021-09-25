@@ -3,13 +3,13 @@ import { useCallback, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 
 import ImageListZoom from '@components/ImageListZoom';
-import { IMage } from '@modules/post/@types/db';
+import { Image } from '@modules/post/@types/db';
 import { GET_IMAGE_URL } from '@utils/urls';
 
 import { StyledImage } from './styles';
 
 interface IProps {
-  imageList: IMage[];
+  imageList: Image[];
 }
 
 const PostImages = ({ imageList }: IProps) => {

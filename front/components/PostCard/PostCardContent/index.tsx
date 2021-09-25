@@ -8,9 +8,8 @@ import { useDispatch } from 'react-redux';
 import regexifyString from 'regexify-string';
 
 import { useFetchStatus } from '@modules/fetchStatus';
-import { updatePost } from '@modules/post';
-import { FormEditPost } from '@modules/post/@types';
-import { IMage } from '@modules/post/@types/db';
+import { postAction } from '@modules/post';
+import { FormEditPost, Image } from '@modules/post/@types';
 import { EDIT_POST_SCHEMA } from '@modules/post/config';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
 import { GET_HASHTAG_URL, PASS_HREF } from '@utils/urls';
@@ -21,14 +20,14 @@ import { StyledForm } from './styles';
 export interface IProps {
   postId: number;
   postContent: string;
-  imageList: IMage[];
+  imageList: Image[];
   editMode?: boolean;
   onCancelEditMode: () => void;
 }
 
 const PostCardContent = ({ postId, postContent, imageList, editMode = false, onCancelEditMode }: IProps) => {
   const dispatch = useDispatch();
-  const { status } = useFetchStatus(updatePost.TYPE, postId);
+  const { status } = useFetchStatus(postAction.updatePost.TYPE, postId);
 
   const {
     control,
@@ -64,15 +63,17 @@ const PostCardContent = ({ postId, postContent, imageList, editMode = false, onC
     async (formData) => {
       try {
         await dispatch(
-          updatePost.asyncThunk({ url: { postId }, body: { content: formData.content } }, { actionList: [postId] }),
+          postAction.updatePost.asyncThunk(
+            { url: { postId }, body: { content: formData.content } },
+            { actionList: [postId] },
+          ),
         );
-        message.success('게시글이 수정 되었습니다.');
       } catch (error) {
         if (isCustomAxiosError(error)) {
-          message.error(JSON.stringify(error.response?.data));
+          message.error(JSON.stringify(error.response.data.resMsg));
         }
       } finally {
-        reset();
+        reset({});
         onCancelEditMode();
       }
     },
