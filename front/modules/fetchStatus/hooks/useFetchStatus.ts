@@ -1,6 +1,6 @@
-import { useAppSelector } from '@modules/store/rootReducer';
+import { useAppSelector } from '@hooks/useAppRedux';
 
-import { FetchStatus } from '..';
+import { FetchStatus } from '../slice';
 
 export default function useFetchStatus(type: string, actionId?: any): { status: FetchStatus; data: any } {
   const { status, data, actionList } = useAppSelector(
