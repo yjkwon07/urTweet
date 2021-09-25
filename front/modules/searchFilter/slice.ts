@@ -8,8 +8,8 @@ export interface ISearchFilterState {
 export const SEARCH_FILTER = 'SEARCH_FILTER';
 
 // Action
-export const changeSearchFilter = createAction<{ key: string; filter: any }>(`${SEARCH_FILTER}/changeSearchFilter`);
-export const resetSearchFilter = createAction<string>(`${SEARCH_FILTER}/resetSearchFilter`);
+const changeSearchFilter = createAction<{ key: string; filter: any }>(`${SEARCH_FILTER}/changeSearchFilter`);
+const resetSearchFilter = createAction<string>(`${SEARCH_FILTER}/resetSearchFilter`);
 
 // Reducer
 const initialState: ISearchFilterState = {};
@@ -33,4 +33,8 @@ export const searchFilterSelector = {
 };
 
 export const searchFilterReducer = slice.reducer;
-export const searchFilterAction = slice.actions;
+export const searchFilterAction = {
+  ...slice.actions,
+  changeSearchFilter,
+  resetSearchFilter,
+};
