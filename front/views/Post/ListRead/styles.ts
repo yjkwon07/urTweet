@@ -1,5 +1,17 @@
 import styled from '@emotion/styled';
 
+export const StyledFilter = styled.div`
+  .wrapper {
+    width: 100%;
+    .select {
+      width: 120px;
+    }
+    .search {
+      border-radius: 17px;
+    }
+  }
+`;
+
 export const StyledCenter = styled.div`
   margin: 20px 0;
   margin-bottom: 20px;

@@ -10,20 +10,20 @@ import { useSearchFilter } from '@modules/searchFilter';
 
 import InfiniteMode from './InfiniteListRead';
 import PaginationMode from './PaginationRead';
+import { StyledFilter } from './styles';
 
 const { Option } = Select;
 
 const DEFAULT_CUR_PAGE = 1;
 const DEFAULT_PER_PAGE = 10;
 
+type ViewMode = 'infinite' | 'page';
+
 const PostListReadView = () => {
   const dispatch = useDispatch();
 
-  const { filter, changeFilter } = useSearchFilter<ListReadPostUrlQuery>('LIST_READ_POST', {
-    page: DEFAULT_CUR_PAGE,
-    pageSize: DEFAULT_PER_PAGE,
-  });
-  const [mode, setMode] = useState<'infinite' | 'page'>('infinite');
+  const { filter, changeFilter } = useSearchFilter<ListReadPostUrlQuery>('LIST_READ_POST');
+  const [mode, setMode] = useState<ViewMode>('infinite');
   const {
     status,
     data: postListData,
@@ -46,43 +46,54 @@ const PostListReadView = () => {
     [changeFilter],
   );
 
+  const handleChangeMode = useCallback(
+    (mode: ViewMode) => () => {
+      setMode(mode);
+    },
+    [],
+  );
+
   useEffect(() => {
     if (mode === 'infinite') {
-      dispatch(postAction.listDataReset());
-      handleRefreshPostListData();
+      if (filter?.page !== DEFAULT_CUR_PAGE) {
+        dispatch(postAction.listDataReset());
+        handleRefreshPostListData();
+      }
     }
-  }, [dispatch, handleRefreshPostListData, mode]);
+  }, [dispatch, filter?.page, handleRefreshPostListData, mode]);
 
   return (
     <BaseLayout
       filterGroup={
-        <Space size={10} direction="vertical" style={{ width: '100%' }}>
-          <div>
-            <Space size={5}>
-              <Tooltip title="스크롤">
-                <Button shape="circle" icon={<InsertRowRightOutlined />} onClick={() => setMode('infinite')} />
-              </Tooltip>
-              <Tooltip title="페이지네이션">
-                <Button shape="circle" icon={<InsertRowBelowOutlined />} onClick={() => setMode('page')} />
-              </Tooltip>
-            </Space>
-          </div>
-          <div>
-            <Space size={5}>
-              <Tooltip title="새로고침">
-                <Button shape="circle" icon={<RedoOutlined />} onClick={handleRefreshPostListData} />
-              </Tooltip>
-              <Select value={filter?.pageSize} style={{ width: 120 }} onChange={handleChangePageSize}>
-                <Option value={10}>10개씩 보기</Option>
-                <Option value={20}>20개씩 보기</Option>
-                <Option value={30}>30개씩 보기</Option>
-              </Select>
-            </Space>
-          </div>
-          <div>
-            <Input size="large" prefix={<SearchOutlined />} style={{ borderRadius: 17 }} />
-          </div>
-        </Space>
+        <StyledFilter>
+          <Space className="wrapper" size={10} direction="vertical">
+            <div>
+              <Space size={5}>
+                <Tooltip title="스크롤">
+                  <Button shape="circle" icon={<InsertRowRightOutlined />} onClick={handleChangeMode('infinite')} />
+                </Tooltip>
+                <Tooltip title="페이지네이션">
+                  <Button shape="circle" icon={<InsertRowBelowOutlined />} onClick={handleChangeMode('page')} />
+                </Tooltip>
+              </Space>
+            </div>
+            <div>
+              <Space size={5}>
+                <Tooltip title="새로고침">
+                  <Button shape="circle" icon={<RedoOutlined />} onClick={handleRefreshPostListData} />
+                </Tooltip>
+                <Select className="select" value={filter?.pageSize} onChange={handleChangePageSize}>
+                  <Option value={10}>10개씩 보기</Option>
+                  <Option value={20}>20개씩 보기</Option>
+                  <Option value={30}>30개씩 보기</Option>
+                </Select>
+              </Space>
+            </div>
+            <div>
+              <Input className="search" size="large" prefix={<SearchOutlined />} />
+            </div>
+          </Space>
+        </StyledFilter>
       }
     >
       {mode === 'infinite' && (
@@ -90,7 +101,7 @@ const PostListReadView = () => {
           status={status}
           postList={postListData}
           isMoreRead={isMoreRead}
-          errorMsg={status === 'FAIL' ? '정보를 불러오지 못했습니다.' : ''}
+          errorMsg={status === 'FAIL' && PostListError.resMsg}
         />
       )}
       {mode === 'page' && (
