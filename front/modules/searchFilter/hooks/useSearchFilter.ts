@@ -6,7 +6,11 @@ import { useAppSelector } from '@hooks/useAppRedux';
 
 import { searchFilterAction, searchFilterSelector } from '../slice';
 
-export default function useSearchFilter<T>(key: string, query?: T) {
+/**
+ * @param key api 키 이름
+ * @param initQuery 초기값으로 세팅 => filter 값이 있으면 initQuery로 바뀌지 않음
+ */
+export default function useSearchFilter<T>(key: string, initQuery?: T) {
   const dispatch = useDispatch();
   const filter: T | undefined = useAppSelector(searchFilterSelector.searchFilter)[key];
 
@@ -22,8 +26,8 @@ export default function useSearchFilter<T>(key: string, query?: T) {
   );
 
   useEffect(() => {
-    if (!filter && query) changeFilter(query);
-  }, [changeFilter, filter, query]);
+    if (!filter && initQuery) changeFilter(initQuery);
+  }, [changeFilter, filter, initQuery]);
 
   return { filter, changeFilter, resetFilter };
 }
