@@ -8,7 +8,7 @@ import { ListReadPostUrlQuery } from '@modules/post';
 import { Post } from '@modules/post/@types';
 import { useSearchFilter } from '@modules/searchFilter';
 
-import { StyledCenter, StyledFormEmptyBlock } from '../styles';
+import { StyledCenter, StyledViewWrapper } from './styles';
 
 export interface IProps {
   status: FetchStatus;
@@ -28,9 +28,8 @@ const PaginationMode = ({ status, postList, totalCount, errorMsg }: IProps) => {
   );
 
   return (
-    <>
-      <Space direction="vertical" size={10} style={{ width: '100%' }}>
-        <StyledFormEmptyBlock />
+    <StyledViewWrapper>
+      <Space className="wrapper" direction="vertical" size={10}>
         {status === 'SUCCESS' && postList?.map((data) => <PostCard key={data.id} data={data} />)}
         {status === 'LOADING' && (
           <StyledCenter>
@@ -52,7 +51,7 @@ const PaginationMode = ({ status, postList, totalCount, errorMsg }: IProps) => {
           showSizeChanger={false}
         />
       </StyledCenter>
-    </>
+    </StyledViewWrapper>
   );
 };
 
