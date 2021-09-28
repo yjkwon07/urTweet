@@ -7,10 +7,10 @@ import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 
 import { fileUpload } from '@modules/file';
+import imageDownloadLink from '@modules/file/utils/imageDownloadLink';
 import { postAction, EDIT_POST_SCHEMA } from '@modules/post';
 import { FormEditPost } from '@modules/post/@types';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
-import { GET_IMAGE_URL } from '@utils/urls';
 
 import { StyledCard, StyledForm } from './styles';
 
@@ -109,7 +109,7 @@ const PostForm = () => {
           <Image.PreviewGroup>
             {imagePathList.map((filePath) => (
               <div key={filePath} className="wrapper">
-                <Image width={150} height={150} src={GET_IMAGE_URL(filePath, true)} alt="" />
+                <Image width={150} height={150} src={imageDownloadLink(filePath, true)} alt="" />
                 <div className="button_wrapper">
                   <Button type="primary" danger onClick={handleRemoveImage(filePath)}>
                     제거

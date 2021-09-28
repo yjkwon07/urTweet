@@ -4,8 +4,8 @@ import { Global } from '@emotion/react';
 import Slick from 'react-slick';
 
 import usePreventBodyScroll from '@hooks/usePreventBodyScroll';
+import imageDownloadLink from '@modules/file/utils/imageDownloadLink';
 import { Image } from '@modules/post/@types/db';
-import { GET_IMAGE_URL } from '@utils/urls';
 
 import { Overlay, Header, CloseBtn, ImgWrapper, Indicator, SlickWrapper, globalStyles } from './styles';
 
@@ -37,7 +37,7 @@ const ImageListZoom = ({ imageList, onClose }: IProps) => {
           >
             {imageList.map((image) => (
               <ImgWrapper key={image.src}>
-                <img src={GET_IMAGE_URL(image.src, true)} alt={image.src} />
+                <img src={imageDownloadLink(image.src, true)} alt={image.src} />
               </ImgWrapper>
             ))}
           </Slick>
