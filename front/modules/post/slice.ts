@@ -101,8 +101,7 @@ const slice = createSlice({
           id: resData.PostId,
           changes: { Comments: state.entities[resData.PostId]?.Comments.concat(resData) },
         });
-      })
-      .addDefaultCase((state) => state),
+      }),
 });
 
 const { selectAll: listData, selectIds: data } = postListDataAdapter.getSelectors((state: RootState) => state.POST);
