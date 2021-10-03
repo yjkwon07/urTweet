@@ -4,18 +4,11 @@ export const HOME_URL = '/';
 export const POST_URL = '/post/[id]';
 export const PROFILE_URL = '/profile';
 export const SIGNUP_URL = '/signup';
-export const HASNTAG_URL = '/hashtag/:hashtag';
+export const HASHTAG_URL = '/hashtag/:hashtag';
 export const USER_URL = '/user/[id]';
 
 export const GET_HASHTAG_URL = (hashtag: string) => {
-  return HASNTAG_URL.replace(':hashtag', hashtag);
-};
-
-export const GET_IMAGE_URL = (src: string, isOriginal = false) => {
-  if (isOriginal) {
-    return src.replace(/\/thumb\//, '/original/');
-  }
-  return src;
+  return HASHTAG_URL.replace(':hashtag', hashtag);
 };
 
 export const GET_USER_URL = (id: string) => {

@@ -9,6 +9,7 @@ import { searchFilterAction } from '@modules/searchFilter';
 import wrapper from '@modules/store/configStore';
 import { HOME_URL } from '@utils/urls';
 import ListReadView from '@views/Post/ListRead';
+import { ViewMode } from '@views/Post/ListRead/filterSearch';
 
 const HomePage = () => {
   return (
@@ -23,17 +24,19 @@ const HomePage = () => {
 };
 
 // SSR
-export const getServerSideProps = wrapper.getServerSideProps(async ({ store }) => {
-  store.dispatch(
-    searchFilterAction.changeSearchFilter({
-      key: 'LIST_READ_POST',
-      filter: {
-        page: 1,
-        pageSize: 10,
-      },
-    }),
-  );
-  await store.dispatch(postAction.listReadPost.asyncThunk({ page: 1, pageSize: 10 }));
+export const getServerSideProps = wrapper.getServerSideProps(async ({ store, query }) => {
+  const mode = (query.mode as ViewMode) || 'infinite';
+  const page = Number(query.page) && mode !== 'infinite' ? Number(query.page) : 1;
+  const pageSize = Number(query.pageSize) || 10;
+  const hashtag = (query.hashtag as string) || '';
+  const filter = {
+    page,
+    pageSize,
+    hashtag,
+  };
+
+  store.dispatch(searchFilterAction.changeSearchFilter({ key: 'LIST_READ_POST', filter }));
+  await store.dispatch(postAction.listReadPost.asyncThunk(filter));
   store.dispatch(END);
 });
 

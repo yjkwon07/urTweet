@@ -3,8 +3,8 @@ import { useCallback, useState } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 
 import ImageListZoom from '@components/ImageListZoom';
+import imageDownloadLink from '@modules/file/utils/imageDownloadLink';
 import { Image } from '@modules/post/@types/db';
-import { GET_IMAGE_URL } from '@utils/urls';
 
 import { StyledImage } from './styles';
 
@@ -29,7 +29,7 @@ const PostImages = ({ imageList }: IProps) => {
         <img
           className="one-image"
           role="presentation"
-          src={GET_IMAGE_URL(imageList[0].src)}
+          src={imageDownloadLink(imageList[0].src)}
           alt={imageList[0].src}
           onClick={handleZoom}
         />
@@ -43,14 +43,14 @@ const PostImages = ({ imageList }: IProps) => {
         <img
           className="two-image"
           role="presentation"
-          src={GET_IMAGE_URL(imageList[0].src)}
+          src={imageDownloadLink(imageList[0].src)}
           alt={imageList[0].src}
           onClick={handleZoom}
         />
         <img
           className="two-image"
           role="presentation"
-          src={GET_IMAGE_URL(imageList[1].src)}
+          src={imageDownloadLink(imageList[1].src)}
           alt={imageList[1].src}
           onClick={handleZoom}
         />
@@ -64,14 +64,14 @@ const PostImages = ({ imageList }: IProps) => {
         <img
           className="two-image"
           role="presentation"
-          src={GET_IMAGE_URL(imageList[0].src)}
+          src={imageDownloadLink(imageList[0].src)}
           alt={imageList[0].src}
           onClick={handleZoom}
         />
         <img
           className="two-image"
           role="presentation"
-          src={GET_IMAGE_URL(imageList[1].src)}
+          src={imageDownloadLink(imageList[1].src)}
           alt={imageList[0].src}
           onClick={handleZoom}
         />

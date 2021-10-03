@@ -11,7 +11,7 @@ import { useSearchFilter } from '@modules/searchFilter';
 import { useMyUser } from '@modules/user';
 
 import PostForm from '../PostForm';
-import { StyledCenter, StyledFormBlock, StyledFormEmptyBlock } from '../styles';
+import { StyledCenter, StyledFormBlock, StyledFormEmptyBlock, StyledViewWrapper } from './styles';
 
 export interface IProps {
   status: FetchStatus;
@@ -35,27 +35,29 @@ const InfiniteListRead = ({ status, postList, isMoreRead, errorMsg }: IProps) =>
   useEndReachScroll({ callback: handleNextPage });
 
   return (
-    <Space direction="vertical" size={10} style={{ width: '100%' }}>
-      {myData ? (
-        <>
-          <PostForm />
-          <StyledFormBlock />
-        </>
-      ) : (
-        <StyledFormEmptyBlock />
-      )}
-      {status !== 'FAIL' && postList?.map((data) => <PostCard key={data.id} data={data} />)}
-      {status === 'LOADING' && (
-        <StyledCenter>
-          <Spin />
-        </StyledCenter>
-      )}
-      {status === 'FAIL' && (
-        <StyledCenter>
-          <Empty description={errorMsg} />
-        </StyledCenter>
-      )}
-    </Space>
+    <StyledViewWrapper>
+      <Space className="wrapper" direction="vertical" size={10}>
+        {myData ? (
+          <>
+            <PostForm />
+            <StyledFormBlock />
+          </>
+        ) : (
+          <StyledFormEmptyBlock />
+        )}
+        {status !== 'FAIL' && postList.map((data) => <PostCard key={data.id} data={data} />)}
+        {status === 'LOADING' && (
+          <StyledCenter>
+            <Spin />
+          </StyledCenter>
+        )}
+        {status === 'FAIL' && (
+          <StyledCenter>
+            <Empty description={errorMsg} />
+          </StyledCenter>
+        )}
+      </Space>
+    </StyledViewWrapper>
   );
 };
 
