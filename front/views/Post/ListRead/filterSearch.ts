@@ -13,7 +13,7 @@ export default function filterSearch(router: NextRouter, { page, pageSize, hasht
   const { pathname, query } = router;
   if (page) query.page = page.toString();
   if (pageSize) query.pageSize = pageSize.toString();
-  if (hashtag) query.hashtag = hashtag;
+  if (hashtag !== undefined) query.hashtag = hashtag;
   if (mode) query.mode = mode;
 
   router.push({
