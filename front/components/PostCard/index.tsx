@@ -31,15 +31,16 @@ const { confirm } = Modal;
 
 export interface IProps {
   data: Post;
+  initCommentListOpen?: boolean;
 }
 
-const PostCard = ({ data }: IProps) => {
+const PostCard = ({ data, initCommentListOpen = false }: IProps) => {
   const dispatch = useDispatch();
   const { status: removePostStatus } = useFetchStatus(postAction.removePost.TYPE, data.id);
   const { data: myData } = useMyUser();
 
   const [morePopOverOpen, setMorePopOverOpen] = useState(false);
-  const [commentListOpen, setCommentListOpen] = useState(false);
+  const [commentListOpen, setCommentListOpen] = useState(initCommentListOpen);
   const [editMode, setEditMode] = useState(false);
   const isLike = useMemo(() => !!data.Likers.find((Liker) => Liker.id === myData?.id), [data.Likers, myData?.id]);
 

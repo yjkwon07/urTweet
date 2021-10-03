@@ -4,40 +4,47 @@ import Head from 'next/head';
 import { END } from 'redux-saga';
 
 import SEO, { IProps as ISEOProps } from '@components/SEO';
-import BaseLayout from '@layouts/BaseLayout';
-import { readPost } from '@modules/post';
+import { postAction } from '@modules/post';
+import { searchFilterAction } from '@modules/searchFilter';
 import wrapper from '@modules/store/configStore';
 import { GET_POST_URL } from '@utils/urls';
-import PostRead from '@views/Post/Read';
+import PostReadView from '@views/Post/Read';
 
 export interface IProps {
   title: string;
   seo: ISEOProps;
 }
-const PostPage = ({ title, seo }: IProps) => {
+
+const PostReadPage = ({ title, seo }: IProps) => {
   return (
-    <BaseLayout>
+    <>
       <Head>
         <title>{title}</title>
         <SEO title={seo.title} url={seo.url} description={seo.description} name={seo.name} keywords={seo.keywords} />
       </Head>
-      <PostRead isSSR />
-    </BaseLayout>
+      <PostReadView />
+    </>
   );
 };
 
-export const getServerSideProps = wrapper.getServerSideProps(async (context) => {
-  const postId = context.params?.id as string;
+// SSR
+export const getServerSideProps = wrapper.getServerSideProps(async ({ store, params }) => {
+  const postId = Number(params?.id) || 0;
+  const filter = { postId };
+
   if (postId) {
-    const postData = await context.store.dispatch(readPost.asyncThunk({ postId: Number(postId) }));
-    context.store.dispatch(END);
-    await context.store.sagaTask.toPromise();
+    store.dispatch(searchFilterAction.changeSearchFilter({ key: 'READ_POST', filter }));
+    const {
+      resData: { item: postData },
+    } = await store.dispatch(postAction.readPost.asyncThunk({ postId }));
+    store.dispatch(END);
+
     return {
       props: {
         title: `${postData.User.nickname}님의 글 | urTweet`,
         seo: {
           title: `${postData.User.nickname}님의 게시글`,
-          url: GET_POST_URL(postId),
+          url: GET_POST_URL(postId.toString()),
           description: `${postData.content}님의 게시글`,
           name: `${postData.User.nickname}님의 게시글`,
           keywords: `${postData.User.nickname}`,
@@ -48,4 +55,4 @@ export const getServerSideProps = wrapper.getServerSideProps(async (context) => 
   return {};
 });
 
-export default PostPage;
+export default PostReadPage;

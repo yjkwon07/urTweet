@@ -1,21 +1,24 @@
-import React from 'react';
-
-import { useRouter } from 'next/router';
+import { Empty } from 'antd';
 
 import PostCard from '@components/PostCard';
-import usePost from '@modules/post/hooks/usePost';
+import BaseLayout from '@layouts/BaseLayout';
+import { ReadPostUrlQuery, useReadPost } from '@modules/post';
+import { useSearchFilter } from '@modules/searchFilter';
 
-export interface IProps {
-  isSSR: boolean;
-}
+import { StyledViewWrapper } from './styles';
 
-const Read = ({ isSSR }: IProps) => {
-  const router = useRouter();
-  const postId = Number(router.query.id as string);
-  const { data: postData } = usePost({ isInitFetch: !isSSR, postId });
+const PostReadView = () => {
+  const { filter } = useSearchFilter<ReadPostUrlQuery>('READ_POST');
+  const { status, data: postData, error: postError } = useReadPost(filter);
 
-  if (!postData) return null;
-  return <PostCard data={postData} />;
+  return (
+    <BaseLayout>
+      <StyledViewWrapper>
+        {status === 'SUCCESS' && postData && <PostCard data={postData} initCommentListOpen />}
+        {status === 'FAIL' && <Empty description={postError.resMsg} />}
+      </StyledViewWrapper>
+    </BaseLayout>
+  );
 };
 
-export default Read;
+export default PostReadView;
