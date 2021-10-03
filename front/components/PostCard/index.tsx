@@ -22,8 +22,8 @@ import requiredLogin from '@utils/requiredLogin';
 
 import CommentForm from './CommentForm';
 import CommentList from './CommentList';
+import EditStatusPostCardContent from './EditStatusPostCardContent';
 import FollowButton from './FollowButton';
-import PostCardContent from './PostCardContent';
 import PostCardMeta from './PostCardMeta';
 import { StyledCard, StyledRetweetCard } from './styles';
 
@@ -161,7 +161,7 @@ const PostCard = ({ data }: IProps) => {
                     myData?.id && data.Retweet.UserId !== myData?.id && <FollowButton userId={data.Retweet.UserId} />
                   }
                   description={
-                    <PostCardContent
+                    <EditStatusPostCardContent
                       editMode={editMode}
                       postId={data.id}
                       postContent={data.content}
@@ -173,7 +173,7 @@ const PostCard = ({ data }: IProps) => {
               </StyledRetweetCard>
             </>
           ) : (
-            <PostCardContent
+            <EditStatusPostCardContent
               editMode={editMode}
               postId={data.id}
               postContent={data.content}
