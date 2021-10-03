@@ -11,9 +11,28 @@ export const StyledForm = styled(Form)`
         padding: 10px;
       }
     }
+
     .ant-form-item-with-help {
       margin-bottom: inherit;
     }
+
+    .image_preview {
+      margin-top: 10px !important;
+      margin: auto;
+      text-align: center;
+      width: 400px;
+
+      .wrapper {
+        display: inline-block;
+        margin: 0 15px 15px 0;
+
+        .button_wrapper {
+          margin-top: 5px;
+          text-align: center;
+        }
+      }
+    }
+
     .btn-group {
       display: flex;
       justify-content: right;

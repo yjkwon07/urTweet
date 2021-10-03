@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import { PlusOutlined } from '@ant-design/icons';
+import { SearchOutlined } from '@ant-design/icons';
 
 import ImageListZoom from '@components/ImageListZoom';
 import imageDownloadLink from '@modules/file/utils/imageDownloadLink';
@@ -14,6 +14,15 @@ interface IProps {
 
 const PostImages = ({ imageList }: IProps) => {
   const [showImageListZoom, setShowImageListZoom] = useState(false);
+  const [isShowDetailImageBtn, setIsShowDetailImageBtn] = useState(false);
+
+  const handleShowDetailImageBtn = useCallback(() => {
+    setIsShowDetailImageBtn(true);
+  }, []);
+
+  const handleCloseDetailImageBtn = useCallback(() => {
+    setIsShowDetailImageBtn(false);
+  }, []);
 
   const handleZoom = useCallback(() => {
     setShowImageListZoom(true);
@@ -25,63 +34,42 @@ const PostImages = ({ imageList }: IProps) => {
 
   if (imageList.length === 1) {
     return (
-      <StyledImage>
-        <img
-          className="one-image"
-          role="presentation"
-          src={imageDownloadLink(imageList[0].src)}
-          alt={imageList[0].src}
-          onClick={handleZoom}
-        />
+      <StyledImage onMouseEnter={handleShowDetailImageBtn} onMouseLeave={handleCloseDetailImageBtn}>
+        <img className="one-image" src={imageDownloadLink(imageList[0].src)} alt="" />
+        {isShowDetailImageBtn && (
+          <div className="detail-image" role="presentation" onClick={handleZoom}>
+            <SearchOutlined /> 자세히 보기
+          </div>
+        )}
         {showImageListZoom && <ImageListZoom imageList={imageList} onClose={handleClose} />}
       </StyledImage>
     );
   }
   if (imageList.length === 2) {
     return (
-      <StyledImage>
-        <img
-          className="two-image"
-          role="presentation"
-          src={imageDownloadLink(imageList[0].src)}
-          alt={imageList[0].src}
-          onClick={handleZoom}
-        />
-        <img
-          className="two-image"
-          role="presentation"
-          src={imageDownloadLink(imageList[1].src)}
-          alt={imageList[1].src}
-          onClick={handleZoom}
-        />
+      <StyledImage onMouseEnter={handleShowDetailImageBtn} onMouseLeave={handleCloseDetailImageBtn}>
+        <img className="two-image-l" src={imageDownloadLink(imageList[0].src)} alt="" />
+        <img className="two-image-r" src={imageDownloadLink(imageList[1].src)} alt={imageList[1].src} />
+        {isShowDetailImageBtn && (
+          <div className="detail-image" role="presentation" onClick={handleZoom}>
+            <SearchOutlined /> 자세히 보기
+          </div>
+        )}
         {showImageListZoom && <ImageListZoom imageList={imageList} onClose={handleClose} />}
       </StyledImage>
     );
   }
   return (
-    <StyledImage className="more-view">
-      <div>
-        <img
-          className="two-image"
-          role="presentation"
-          src={imageDownloadLink(imageList[0].src)}
-          alt={imageList[0].src}
-          onClick={handleZoom}
-        />
-        <img
-          className="two-image"
-          role="presentation"
-          src={imageDownloadLink(imageList[1].src)}
-          alt={imageList[0].src}
-          onClick={handleZoom}
-        />
-        <div className="more-image" role="presentation" onClick={handleZoom}>
-          <PlusOutlined />
-          <br />
-          {imageList.length - 2}
-          개의 사진 더보기
+    <StyledImage onMouseEnter={handleShowDetailImageBtn} onMouseLeave={handleCloseDetailImageBtn}>
+      <img className="four-image-l-t" src={imageDownloadLink(imageList[0].src)} alt="" />
+      <img className="four-image-r-t" src={imageDownloadLink(imageList[1].src)} alt="" />
+      <img className="four-image-l-d" src={imageDownloadLink(imageList[2].src)} alt="" />
+      <img className="four-image-r-d" src={imageDownloadLink(imageList[3].src)} alt="" />
+      {isShowDetailImageBtn && (
+        <div className="detail-image" role="presentation" onClick={handleZoom}>
+          <SearchOutlined /> 자세히 보기
         </div>
-      </div>
+      )}
       {showImageListZoom && <ImageListZoom imageList={imageList} onClose={handleClose} />}
     </StyledImage>
   );
