@@ -4,7 +4,7 @@ const { Post, Comment, Image, Hashtag } = require('../models');
 const { findPost, findRetweetPost, findPostWithoutUserPassword } = require('../query/post');
 const { findCommentWithoutUserPassword } = require('../query/comment');
 const { isLoggedIn } = require('./middlewares');
-const { resDataFormat, resErrorDataFormat } = require('../utils/resFormat');
+const { resDataFormat, resErrorDataFormat, resItemDataFormat } = require('../utils/resFormat');
 const { SUCCESS, CLIENT_ERROR } = require('../constant');
 
 const router = express.Router();
@@ -80,7 +80,7 @@ router.get('/:postId', async (req, res, next) => {
       return res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '존재하지 않는 게시글입니다.'));
     }
     const postWithoutUserPassword = await findPostWithoutUserPassword({ id: postId });
-    res.status(SUCCESS).send(resDataFormat(SUCCESS, '', postWithoutUserPassword));
+    res.status(SUCCESS).send(resItemDataFormat(SUCCESS, '', postWithoutUserPassword));
   } catch (error) {
     console.error(error);
     next(error);
@@ -116,7 +116,8 @@ router.patch('/:postId', isLoggedIn, async (req, res, next) => {
       const images = await Promise.all(image.map((image) => Image.create({ src: image })));
       await post.setImages(images);
     }
-    res.status(SUCCESS).send(resDataFormat(SUCCESS, '수정완료', post));
+    const postWithoutUserPassword = await findPostWithoutUserPassword({ id: post.id });
+    res.status(SUCCESS).send(resDataFormat(SUCCESS, '수정완료', postWithoutUserPassword));
   } catch (error) {
     console.error(error);
     next(error);
