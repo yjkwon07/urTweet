@@ -45,7 +45,7 @@ const InfiniteListRead = ({ status, postList, isMoreRead, errorMsg }: IProps) =>
         ) : (
           <StyledFormEmptyBlock />
         )}
-        {status !== 'FAIL' && postList?.map((data) => <PostCard key={data.id} data={data} />)}
+        {status !== 'FAIL' && postList.map((data) => <PostCard key={data.id} data={data} />)}
         {status === 'LOADING' && (
           <StyledCenter>
             <Spin />

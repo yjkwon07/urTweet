@@ -1,13 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { InsertRowBelowOutlined, InsertRowRightOutlined, RedoOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Input, Select, Space, Tooltip } from 'antd';
-import { useDispatch } from 'react-redux';
+import { useRouter } from 'next/router';
 
 import BaseLayout from '@layouts/BaseLayout';
-import { ListReadPostUrlQuery, postAction, useListReadPost } from '@modules/post';
+import { ListReadPostUrlQuery, useListReadPost } from '@modules/post';
 import { useSearchFilter } from '@modules/searchFilter';
 
+import filterSearch, { ViewMode } from './filterSearch';
 import InfiniteMode from './InfiniteListRead';
 import PaginationMode from './PaginationRead';
 import { StyledFilter } from './styles';
@@ -17,13 +18,11 @@ const { Option } = Select;
 const DEFAULT_CUR_PAGE = 1;
 const DEFAULT_PER_PAGE = 10;
 
-type ViewMode = 'infinite' | 'page';
-
 const PostListReadView = () => {
-  const dispatch = useDispatch();
+  const router = useRouter();
 
-  const { filter, changeFilter } = useSearchFilter<ListReadPostUrlQuery>('LIST_READ_POST');
-  const [mode, setMode] = useState<ViewMode>('infinite');
+  const { filter } = useSearchFilter<ListReadPostUrlQuery>('LIST_READ_POST');
+  const mode = useMemo<ViewMode>(() => (router.query.mode as ViewMode) || 'infinite', [router.query.mode]);
   const {
     status,
     data: postListData,
@@ -33,34 +32,39 @@ const PostListReadView = () => {
   } = useListReadPost({ filter, mode });
 
   const handleRefreshPostListData = useCallback(() => {
-    changeFilter({ page: DEFAULT_CUR_PAGE, pageSize: DEFAULT_PER_PAGE, hashtag: '', userId: undefined });
-  }, [changeFilter]);
+    filterSearch(router, {
+      page: DEFAULT_CUR_PAGE,
+      pageSize: DEFAULT_PER_PAGE,
+      hashtag: '',
+    });
+  }, [router]);
 
   const handleChangePageSize = useCallback(
-    (value) => {
-      changeFilter({
-        page: 1,
-        pageSize: value,
+    (pageSize: number) => {
+      filterSearch(router, {
+        page: DEFAULT_CUR_PAGE,
+        pageSize,
       });
     },
-    [changeFilter],
+    [router],
   );
 
   const handleChangeMode = useCallback(
     (mode: ViewMode) => () => {
-      setMode(mode);
-    },
-    [],
-  );
-
-  useEffect(() => {
-    if (mode === 'infinite') {
-      if (filter?.page !== DEFAULT_CUR_PAGE) {
-        dispatch(postAction.listDataReset());
-        handleRefreshPostListData();
+      if (mode === 'infinite') {
+        filterSearch(router, {
+          page: DEFAULT_CUR_PAGE,
+          mode,
+        });
+      } else {
+        filterSearch(router, {
+          page: filter?.page,
+          mode,
+        });
       }
-    }
-  }, [dispatch, filter?.page, handleRefreshPostListData, mode]);
+    },
+    [filter?.page, router],
+  );
 
   return (
     <BaseLayout
