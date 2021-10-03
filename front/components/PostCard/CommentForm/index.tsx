@@ -25,7 +25,7 @@ const CommentForm = ({ userId, postId }: IProps) => {
   const {
     control,
     handleSubmit: checkSubmit,
-    errors,
+    formState: { errors },
     reset,
   } = useForm<FormCreateComment>({
     mode: 'onSubmit',
@@ -33,7 +33,7 @@ const CommentForm = ({ userId, postId }: IProps) => {
   });
 
   const handleSubmit = useCallback(
-    async (formData) => {
+    async (formData: FormCreateComment) => {
       try {
         await dispatch(
           postAction.createComment.asyncThunk(
@@ -58,17 +58,24 @@ const CommentForm = ({ userId, postId }: IProps) => {
   return (
     <StyledForm onSubmitCapture={checkSubmit(handleSubmit)}>
       <Form.Item
+        htmlFor="content"
         validateStatus={errors.content ? 'error' : 'success'}
         help={errors.content ? errors.content?.message : ''}
         rules={[{ message: errors?.content?.message }]}
       >
         <Controller
           control={control}
-          as={<Input.TextArea maxLength={50} autoSize={{ minRows: 2, maxRows: 4 }} />}
           name="content"
-          id="content"
-          placeholder="댓글을 입력해 주세요."
-          defaultValue=""
+          render={({ field: { value, onChange } }) => (
+            <Input.TextArea
+              id="content"
+              value={value}
+              onChange={onChange}
+              maxLength={50}
+              autoSize={{ minRows: 2, maxRows: 4 }}
+              placeholder="댓글을 입력해 주세요."
+            />
+          )}
         />
       </Form.Item>
       <div className="btn-group">

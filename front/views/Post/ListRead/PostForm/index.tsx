@@ -43,7 +43,7 @@ const PostForm = () => {
           message.error(JSON.stringify(error.response.data.resMsg));
         }
       } finally {
-        reset();
+        reset({});
       }
     },
     [dispatch, reset],
@@ -91,7 +91,7 @@ const PostForm = () => {
         <div className="content">
           <Form.Item
             className="form"
-            name="content"
+            htmlFor="content"
             validateStatus={errors.content ? 'error' : 'success'}
             help={errors.content ? errors.content?.message : ''}
             rules={[{ message: errors?.content?.message }]}
