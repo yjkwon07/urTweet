@@ -104,10 +104,10 @@ const slice = createSlice({
       }),
 });
 
-const { selectAll: listData, selectIds: data } = postListDataAdapter.getSelectors((state: RootState) => state.POST);
+const { selectAll: listData, selectById } = postListDataAdapter.getSelectors((state: RootState) => state.POST);
 
 export const postReducer = slice.reducer;
-export const postSelector = { listData, data };
+export const postSelector = { listData, selectById };
 export const postAction = {
   ...slice.actions,
   createRetweet,

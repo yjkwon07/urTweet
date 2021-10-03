@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 import { useDispatch } from 'react-redux';
 
@@ -8,20 +8,21 @@ import { useFetchStatus } from '@modules/fetchStatus';
 import { ReadPostUrlQuery } from '../api';
 import { postSelector, postAction } from '../slice';
 
-export default function useReadPost(query: ReadPostUrlQuery) {
+export default function useReadPost(filter?: ReadPostUrlQuery) {
   const dispatch = useDispatch();
-  const { status } = useFetchStatus(postAction.readPost.TYPE);
-  const data = useAppSelector(postSelector.data);
+  const { status, data: result } = useFetchStatus(postAction.readPost.TYPE);
+  const data = useAppSelector((state) => filter && postSelector.selectById(state, filter.postId));
 
-  const isInitFetch = useRef(!!data.length);
+  const isInitFetch = useRef(!!data);
+  const error = useMemo(() => (status === 'FAIL' ? result : null), [result, status]);
 
   useEffect(() => {
     if (!isInitFetch.current) {
-      dispatch(postAction.readPost.request({ postId: query.postId }));
+      if (filter) dispatch(postAction.readPost.request({ postId: filter.postId }));
     } else {
       isInitFetch.current = false;
     }
-  }, [dispatch, query.postId, status]);
+  }, [dispatch, filter]);
 
-  return { status, data };
+  return { status, data, error };
 }

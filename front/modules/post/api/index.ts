@@ -50,7 +50,7 @@ export const requestCreatePost = (body: CreatePostBodyQuery) => {
 export type ReadPostUrlQuery = {
   postId: number;
 };
-export interface ReadPostResData extends ListReadCommonRes {
+export interface ReadPostResData {
   item: Post;
 }
 export interface ReadPostRes extends CommonRes {
