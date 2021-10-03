@@ -14,6 +14,7 @@ const passportConfig = require('./passport');
 const fileRouter = require('./routes/file');
 const postRouter = require('./routes/post');
 const postsRouter = require('./routes/posts');
+const hashtagsRouter = require('./routes/hashtags');
 const userRouter = require('./routes/user');
 
 // config & init
@@ -72,6 +73,7 @@ app.use(passport.session()); // express session이 session을 만들고 난 후,
 app.use('/file', fileRouter);
 app.use('/posts', postsRouter);
 app.use('/post', postRouter);
+app.use('/hashtags', hashtagsRouter);
 app.use('/user', userRouter);
 // End-Router
 
