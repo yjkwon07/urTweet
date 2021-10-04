@@ -5,12 +5,12 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@hooks/useAppRedux';
 import { useFetchStatus } from '@modules/fetchStatus';
 
-import { ListReadFollowUrlQuery } from '../api';
+import { ListReadFollowRes, ListReadFollowUrlQuery } from '../api';
 import { userAction, userSelector } from '../slice';
 
 export default function useListReadFollow(filter?: ListReadFollowUrlQuery) {
   const dispatch = useDispatch();
-  const { status, data: result } = useFetchStatus(userAction.listReadFollow.TYPE);
+  const { status, data: result } = useFetchStatus<ListReadFollowRes>(userAction.listReadFollow.TYPE);
   const data = useAppSelector(userSelector.followListData);
 
   const isInitFetch = useRef(!!data.length);

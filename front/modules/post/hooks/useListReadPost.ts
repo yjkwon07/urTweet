@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@hooks/useAppRedux';
 import { useFetchStatus } from '@modules/fetchStatus';
 
-import { ListReadPostUrlQuery } from '../api';
+import { ListReadPostRes, ListReadPostUrlQuery } from '../api';
 import { postAction, postSelector } from '../slice';
 
 interface IProps {
@@ -15,7 +15,7 @@ interface IProps {
 
 export default function useListReadPost({ mode, filter }: IProps) {
   const dispatch = useDispatch();
-  const { status, data: result } = useFetchStatus(postAction.listReadPost.TYPE);
+  const { status, data: result } = useFetchStatus<ListReadPostRes>(postAction.listReadPost.TYPE);
   const data = useAppSelector(postSelector.listData);
 
   const isInitFetch = useRef(!!data.length);

@@ -5,12 +5,12 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@hooks/useAppRedux';
 import { useFetchStatus } from '@modules/fetchStatus';
 
-import { ReadUserUrlQuery } from '../api';
+import { ReadUserRes, ReadUserUrlQuery } from '../api';
 import { userAction, userSelector } from '../slice';
 
 export default function useReadUser(filter?: ReadUserUrlQuery) {
   const dispatch = useDispatch();
-  const { status, data: result } = useFetchStatus(userAction.readUser.TYPE);
+  const { status, data: result } = useFetchStatus<ReadUserRes>(userAction.readUser.TYPE);
   const data = useAppSelector(userSelector.userData);
 
   const isInitFetch = useRef(!!data);
