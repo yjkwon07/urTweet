@@ -40,6 +40,22 @@ export const globalStyles = css`
     overflow-y: hidden;
   }
 
+  body::-webkit-scrollbar {
+    width: 16px;
+  }
+
+  body::-webkit-scrollbar-track {
+    background-color: #f0f2f5;
+  }
+
+  body::-webkit-scrollbar-thumb {
+    height: 56px;
+    border-radius: 8px;
+    border: 4px solid transparent;
+    background-clip: content-box;
+    background-color: #606060;
+  }
+
   .mt-45 {
     margin-top: 45px !important;
   }
