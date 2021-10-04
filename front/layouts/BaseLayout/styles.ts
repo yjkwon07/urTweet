@@ -63,4 +63,14 @@ export const StyledLayout = styled(Layout)`
       }
     }
   }
+
+  .scroll-up {
+    line-height: 40px;
+    border-radius: 20px;
+    background-color: #1088e9;
+    color: #fff;
+    text-align: center;
+    font-size: 25px;
+    font-weight: bold;
+  }
 `;

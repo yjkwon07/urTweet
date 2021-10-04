@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 
-import { ExperimentTwoTone, HomeOutlined, UserOutlined } from '@ant-design/icons';
-import { Menu, Col, Layout, Row } from 'antd';
+import { ArrowUpOutlined, ExperimentTwoTone, HomeOutlined, UserOutlined } from '@ant-design/icons';
+import { Menu, Col, Layout, Row, BackTop } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
@@ -55,11 +55,18 @@ const BaseLayout: FC<IProps> = ({ filterGroup, children }) => {
                 {children}
               </Col>
               <Col className="filter" xs={24} sm={24} md={24} lg={7}>
-                <div className="content">{filterGroup}</div>
+                <div className="content">
+                  <BackTop>
+                    <div className="scroll-up">
+                      <ArrowUpOutlined />
+                    </div>
+                  </BackTop>
+                  {filterGroup}
+                </div>
               </Col>
             </>
           ) : (
-            <Col xs={24} sm={24} md={24} lg={16}>
+            <Col xs={24} sm={24} md={24} lg={14}>
               {children}
             </Col>
           )}
