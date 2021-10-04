@@ -19,7 +19,7 @@ export interface IProps {
   errorMsg?: string;
 }
 
-const PaginationMode = ({ status, postList, totalCount, errorMsg }: IProps) => {
+const PaginationRead = ({ status, postList, totalCount, errorMsg }: IProps) => {
   const router = useRouter();
 
   const { filter } = useSearchFilter<ListReadPostUrlQuery>('LIST_READ_POST');
@@ -59,4 +59,4 @@ const PaginationMode = ({ status, postList, totalCount, errorMsg }: IProps) => {
   );
 };
 
-export default PaginationMode;
+export default PaginationRead;
