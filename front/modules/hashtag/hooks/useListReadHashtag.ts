@@ -8,11 +8,7 @@ import { useFetchStatus } from '@modules/fetchStatus';
 import { ListReadHashtagUrlQuery } from '../api';
 import { hashtagAction, hashtagSelector } from '../slice';
 
-interface IProps {
-  filter?: ListReadHashtagUrlQuery;
-}
-
-export default function useListReadHashtag({ filter }: IProps) {
+export default function useListReadHashtag(filter?: ListReadHashtagUrlQuery) {
   const dispatch = useDispatch();
   const { status, data: result } = useFetchStatus(hashtagAction.listReadHashtag.TYPE);
   const data = useAppSelector(hashtagSelector.listData);

@@ -37,7 +37,7 @@ const PostListReadView = () => {
   const { filter: listReadHashtagFilter, changeFilter: changeListReadHashtagFilter } =
     useSearchFilter<ListReadHashtagUrlQuery>('LIST_READ_HASHTAG');
   const [hashtagKeyword, setHashtagKeyword] = useState('');
-  const { data: hashtagListData, error: hashtagListError } = useListReadHashtag({ filter: listReadHashtagFilter });
+  const { data: hashtagListData, error: hashtagListError } = useListReadHashtag(listReadHashtagFilter);
 
   const hashTagOptions = useMemo(() => {
     if (!hashtagListError) {
