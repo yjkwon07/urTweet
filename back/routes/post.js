@@ -9,7 +9,7 @@ const { SUCCESS, CLIENT_ERROR } = require('../constant');
 
 const router = express.Router();
 
-// POST /post (게시글 업로드)
+// POST /post (게시글 등록)
 router.post('/', isLoggedIn, async (req, res, next) => {
   try {
     const myId = req.user.id;
@@ -31,7 +31,9 @@ router.post('/', isLoggedIn, async (req, res, next) => {
       const images = await Promise.all(image.map((image) => Image.create({ src: image })));
       await post.addImages(images);
     }
+
     const postWithoutUserPassword = await findPostWithoutUserPassword({ id: post.id });
+
     res.status(SUCCESS).send(resDataFormat(SUCCESS, '등록완료', postWithoutUserPassword));
   } catch (error) {
     console.error(error);
@@ -62,7 +64,9 @@ router.post('/:postId/retweet', isLoggedIn, async (req, res, next) => {
       RetweetId: retweetTargetId,
       content: 'retweet',
     });
+
     const postWithoutUserPassword = await findPostWithoutUserPassword({ id: retweetPost.id });
+
     res.status(SUCCESS).send(resDataFormat(SUCCESS, '등록완료', postWithoutUserPassword));
   } catch (error) {
     console.error(error);
@@ -79,7 +83,9 @@ router.get('/:postId', async (req, res, next) => {
     if (!post) {
       return res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '존재하지 않는 게시글입니다.'));
     }
+
     const postWithoutUserPassword = await findPostWithoutUserPassword({ id: postId });
+
     res.status(SUCCESS).send(resItemDataFormat(SUCCESS, '', postWithoutUserPassword));
   } catch (error) {
     console.error(error);
@@ -116,7 +122,9 @@ router.patch('/:postId', isLoggedIn, async (req, res, next) => {
       const images = await Promise.all(image.map((image) => Image.create({ src: image })));
       await post.setImages(images);
     }
+
     const postWithoutUserPassword = await findPostWithoutUserPassword({ id: post.id });
+
     res.status(SUCCESS).send(resDataFormat(SUCCESS, '수정완료', postWithoutUserPassword));
   } catch (error) {
     console.error(error);
@@ -140,6 +148,7 @@ router.delete('/:postId', isLoggedIn, async (req, res, next) => {
         UserId: myId,
       },
     });
+
     res.status(SUCCESS).send(resDataFormat(SUCCESS, '삭제완료', { PostId: postId }));
   } catch (error) {
     console.error(error);
@@ -162,7 +171,9 @@ router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {
       PostId: postId,
       UserId: myId,
     });
+
     const result = await findCommentWithoutUserPassword({ id: comment.id });
+
     res.status(SUCCESS).send(resDataFormat(SUCCESS, '등록완료', result));
   } catch (error) {
     console.error(error);
@@ -181,6 +192,7 @@ router.patch('/:postId/like', isLoggedIn, async (req, res, next) => {
       return res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '게시글이 존재하지 않습니다.'));
     }
     await post.addLikers(myId);
+
     res.status(SUCCESS).send(resDataFormat(SUCCESS, '등록완료', { PostId: postId, UserId: myId }));
   } catch (error) {
     console.error(error);
@@ -199,6 +211,7 @@ router.delete('/:postId/like', isLoggedIn, async (req, res, next) => {
       return res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '게시글이 존재하지 않습니다.'));
     }
     await post.removeLikers(myId);
+
     res.status(SUCCESS).send(resDataFormat(SUCCESS, '취소완료', { PostId: postId, UserId: myId }));
   } catch (error) {
     console.error(error);
