@@ -41,7 +41,7 @@ function* watchSignup() {
 }
 
 function* watchReadMyUser() {
-  yield takeLatest(readMyUser.request, readMyUserSaga);
+  yield debounce(300, readMyUser.request, readMyUserSaga);
 }
 
 function* watchReadUser() {

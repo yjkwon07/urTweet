@@ -1,16 +1,16 @@
-export interface IUser extends IUserInfo {
-  Followers: number; // 개수
+export interface User extends UserInfo {
+  Followers: number;
   Followings: number;
   Posts: number;
 }
 
-export interface IMyUser extends IUserInfo {
-  Followers: { id: number }[]; // PostId
+export interface MyUser extends UserInfo {
+  Followers: { id: number }[];
   Followings: { id: number }[];
   Posts: { id: number }[];
 }
 
-export interface IUserInfo {
+export interface UserInfo {
   createdAt: number;
   email: string;
   id: number;

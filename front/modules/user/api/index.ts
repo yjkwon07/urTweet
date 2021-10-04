@@ -1,60 +1,77 @@
 import { axios } from '@modules/client';
 
-import { IMyUser, IUser } from '../@types/db';
+import { MyUser, User } from '../@types/db';
 
 /**
  * * 로그인 유저 정보 조회 GET
  * * url: /user
  * * body: empty
- * * res: IMyUser
+ * * res: MyUser
  */
+export interface ReadMyUserResData {
+  item: MyUser;
+}
+export interface ReadMyUserRes extends CommonRes {
+  resData: ReadMyUserResData;
+}
 export const GET_READ_MY_USER_API = () => {
   return `/user`;
 };
 export const requestReadMyUser = () => {
-  return axios.get<IMyUser>(GET_READ_MY_USER_API());
+  return axios.get<ReadMyUserRes>(GET_READ_MY_USER_API());
 };
 
 /**
  * * 유저 정보 조회 GET
  * * url: /user/:userId
  * * body: empty
- * * res: IUser
+ * * res: User
  */
-export type ReadUserURL = {
+export type ReadUserUrlQuery = {
   userId: number;
 };
-export const GET_READ_USER_API = (url: ReadUserURL) => {
+export interface ReadUserResData {
+  item: User;
+}
+export interface ReadUserRes extends CommonRes {
+  resData: ReadUserResData;
+}
+export const GET_READ_USER_API = (url: ReadUserUrlQuery) => {
   return `/user/${url.userId}`;
 };
-export const requestReadUser = (url: ReadUserURL) => {
-  return axios.get<IUser>(GET_READ_USER_API(url));
+export const requestReadUser = (url: ReadUserUrlQuery) => {
+  return axios.get<ReadUserRes>(GET_READ_USER_API(url));
 };
 
 /**
  * * 로그인 POST
  * * url: /user/login
  * * body: LoginBodyQuery
- * * res: IMyUser
+ * * res: MyUser
  */
 export type LoginBodyQuery = {
   email: string;
   password: string;
 };
+export interface LoginRes extends CommonRes {
+  resData: MyUser;
+}
 export const GET_LOGIN_API = () => {
   return `/user/login`;
 };
 export const requestLogin = (body: LoginBodyQuery) => {
-  return axios.post<IMyUser>(GET_LOGIN_API(), body);
+  return axios.post<LoginRes>(GET_LOGIN_API(), body);
 };
 
 /**
  * * 로그아웃 POST
  * * url: /user/logout
  * * body: empty
- * * res: 'ok'
+ * * res: LogoutRes
  */
-export type LogoutRes = 'ok';
+export interface LogoutRes extends CommonRes {
+  resData: null;
+}
 export const GET_LOGOUT_API = () => {
   return `/user/logout`;
 };
@@ -73,7 +90,9 @@ export type SignupBodyQuery = {
   nickname: string;
   password: string;
 };
-export type SignupRes = 'ok';
+export interface SignupRes extends CommonRes {
+  resData: User;
+}
 export const GET_SIGNUP_API = () => {
   return `/user`;
 };
@@ -84,52 +103,69 @@ export const requestSignup = (body: SignupBodyQuery) => {
 /**
  * * 닉네임 수정 PATCH
  * * url: /user/nickname
- * * body: ModifyNickNameBodyQuery
- * * res: ModifyNickNameRes
+ * * body: UpdateNickNameBodyQuery
+ * * res: UpdateNickNameRes
  */
-export type ModifyNickNameBodyQuery = {
+export type UpdateNickNameBodyQuery = {
   nickname: string;
 };
-export type ModifyNickNameRes = {
+export interface UpdateNickNameResData {
   nickname: string;
-};
+}
+export interface UpdateNickNameRes extends CommonRes {
+  resData: UpdateNickNameResData;
+}
 export const GET_MODIFY_NICKNAME_API = () => {
   return `/user/nickname`;
 };
-export const requestModifyNickname = (body: ModifyNickNameBodyQuery) => {
-  return axios.patch<ModifyNickNameRes>(GET_MODIFY_NICKNAME_API(), body);
+export const requestUpdateNickname = (body: UpdateNickNameBodyQuery) => {
+  return axios.patch<UpdateNickNameRes>(GET_MODIFY_NICKNAME_API(), body);
 };
 
 /**
  * * 내가 팔로우 하는 유저 목록 조회 GET
- * * url: /user/followings?pageSize=number
+ * * url: /user/followings?page=:page&pageSize=:pageSize
  * * body: empty
- * * res: IUser[]
+ * * res: ListReadFollowingRes
  */
-export type ListReadFollowingURL = {
-  pageSize?: number;
+export type ListReadFollowingUrlQuery = {
+  page: number;
+  pageSize: number;
 };
-export const GET_LIST_READ_FOLLOWING_API = (url: ListReadFollowingURL) => {
-  return `/user/followings?pageSize=${url.pageSize || 0}`;
+export interface ListReadFollowingResData extends ListReadCommonRes {
+  list: User[];
+}
+export interface ListReadFollowingRes extends CommonRes {
+  resData: ListReadFollowingResData;
+}
+export const GET_LIST_READ_FOLLOWING_API = (url: ListReadFollowingUrlQuery) => {
+  return `/user/followings?page=${url.page}&pageSize=${url.pageSize}`;
 };
-export const requestListReadFollowing = (url: ListReadFollowingURL) => {
-  return axios.get<IUser[]>(GET_LIST_READ_FOLLOWING_API(url));
+export const requestListReadFollowing = (url: ListReadFollowingUrlQuery) => {
+  return axios.get<ListReadFollowingRes>(GET_LIST_READ_FOLLOWING_API(url));
 };
 
 /**
  * * 나를 팔로워 하는 유저 목록 조회 GET
- * * url: /user/followers?pageSize=number
+ * * url: /user/followers?pageSize=:pageSize
  * * body: empty
- * * res: IUser[]
+ * * res: ListReadFollowRes
  */
-export type ListReadFollowURL = {
-  pageSize?: number;
+export type ListReadFollowUrlQuery = {
+  page: number;
+  pageSize: number;
 };
-export const GET_LIST_READ_FOLLOW_API = (url: ListReadFollowURL) => {
-  return `/user/followers?pageSize=${url.pageSize || 0}`;
+export interface ListReadFollowResData extends ListReadCommonRes {
+  list: User[];
+}
+export interface ListReadFollowRes extends CommonRes {
+  resData: ListReadFollowResData;
+}
+export const GET_LIST_READ_FOLLOW_API = (url: ListReadFollowUrlQuery) => {
+  return `/user/followers?page=${url.page}&pageSize=${url.pageSize}`;
 };
-export const requestListReadFollow = (url: ListReadFollowURL) => {
-  return axios.get<IUser[]>(GET_LIST_READ_FOLLOW_API(url));
+export const requestListReadFollow = (url: ListReadFollowUrlQuery) => {
+  return axios.get<ListReadFollowRes>(GET_LIST_READ_FOLLOW_API(url));
 };
 
 /**
@@ -138,16 +174,19 @@ export const requestListReadFollow = (url: ListReadFollowURL) => {
  * * body: empty
  * * res: FollowRes
  */
-export type FollowURL = {
+export type FollowUrlQuery = {
   userId: number;
 };
-export type FollowRes = {
-  UserId: number;
+export type FollowResData = {
+  userId: number;
 };
-export const GET_FOLLOW_API = (url: FollowURL) => {
+export interface FollowRes extends CommonRes {
+  resData: FollowResData;
+}
+export const GET_FOLLOW_API = (url: FollowUrlQuery) => {
   return `/user/${url.userId}/follow`;
 };
-export const requestFollow = (url: FollowURL) => {
+export const requestFollow = (url: FollowUrlQuery) => {
   return axios.patch<FollowRes>(GET_FOLLOW_API(url));
 };
 
@@ -157,16 +196,19 @@ export const requestFollow = (url: FollowURL) => {
  * * body: empty
  * * res: UnFollowRes
  */
-export type UnFollowURL = {
+export type UnFollowUrlQuery = {
   userId: number;
 };
-export type UnFollowRes = {
-  UserId: number;
+export type UnFollowResData = {
+  userId: number;
 };
-export const GET_UNFOLLOW_API = (url: UnFollowURL) => {
+export interface UnFollowRes extends CommonRes {
+  resData: UnFollowResData;
+}
+export const GET_UNFOLLOW_API = (url: UnFollowUrlQuery) => {
   return `/user/${url.userId}/follow`;
 };
-export const requestUnfollow = (url: UnFollowURL) => {
+export const requestUnfollow = (url: UnFollowUrlQuery) => {
   return axios.delete<UnFollowRes>(GET_UNFOLLOW_API(url));
 };
 
@@ -176,15 +218,18 @@ export const requestUnfollow = (url: UnFollowURL) => {
  * * body: empty
  * * res: RemoveFollowerMeRes
  */
-export type ReomoveFollowerMeURL = {
+export type RemoveFollowerMeUrlQuery = {
   userId: number;
 };
-export type RemoveFollowerMeRes = {
-  UserId: number;
+export type RemoveFollowerMeResData = {
+  userId: number;
 };
-export const GET_REMOVE_FOLLOWER_ME_API = (url: ReomoveFollowerMeURL) => {
+export interface RemoveFollowerMeRes extends CommonRes {
+  resData: RemoveFollowerMeResData;
+}
+export const GET_REMOVE_FOLLOWER_ME_API = (url: RemoveFollowerMeUrlQuery) => {
   return `/user/follower/${url.userId}`;
 };
-export const requestRemoveFollowerMe = (url: ReomoveFollowerMeURL) => {
+export const requestRemoveFollowerMe = (url: RemoveFollowerMeUrlQuery) => {
   return axios.delete<RemoveFollowerMeRes>(GET_REMOVE_FOLLOWER_ME_API(url));
 };
