@@ -11,7 +11,7 @@ import { useSearchFilter } from '@modules/searchFilter';
 import { useMyUser } from '@modules/user';
 
 import PostForm from '../PostForm';
-import { StyledCenter, StyledFormBlock, StyledFormEmptyBlock, StyledViewWrapper } from './styles';
+import { StyledCenter, StyledFormBlock, StyledViewWrapper } from './styles';
 
 export interface IProps {
   status: FetchStatus;
@@ -37,13 +37,11 @@ const InfiniteListRead = ({ status, postList, isMoreRead, errorMsg }: IProps) =>
   return (
     <StyledViewWrapper>
       <Space className="wrapper" direction="vertical" size={10}>
-        {myData ? (
+        {myData && (
           <>
             <PostForm />
             <StyledFormBlock />
           </>
-        ) : (
-          <StyledFormEmptyBlock />
         )}
         {status !== 'FAIL' && postList.map((data) => <PostCard key={data.id} data={data} />)}
         {status === 'LOADING' && (
