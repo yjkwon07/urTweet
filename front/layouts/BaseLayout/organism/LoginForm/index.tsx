@@ -23,7 +23,7 @@ const LoginForm = () => {
   const {
     control,
     handleSubmit: checkSubmit,
-    errors,
+    formState: { errors },
   } = useForm<FormLogin>({
     mode: 'onSubmit',
     resolver: yupResolver(LOGIN_SCHEMA),
@@ -32,8 +32,8 @@ const LoginForm = () => {
   const handleSubmit = useCallback(
     async (formData) => {
       try {
-        const user = await dispatch(login.asyncThunk(formData));
-        setUserId(user.id.toString());
+        const { resData } = await dispatch(login.asyncThunk(formData));
+        setUserId(resData.id.toString());
       } catch (error) {
         if (isCustomAxiosError(error)) {
           message.error(JSON.stringify(error.response.data.resMsg));
@@ -53,13 +53,19 @@ const LoginForm = () => {
       >
         <Controller
           control={control}
-          as={<Input prefix={<MailOutlined />} size="large" />}
           name="email"
-          id="user_email"
-          type="email"
-          placeholder="이메일"
-          autoComplete="email"
-          defaultValue=""
+          render={({ field: { value, onChange } }) => (
+            <Input
+              id="user_email"
+              type="email"
+              placeholder="이메일"
+              autoComplete="email"
+              size="large"
+              value={value}
+              onChange={onChange}
+              prefix={<MailOutlined />}
+            />
+          )}
         />
       </Form.Item>
       <Form.Item
@@ -70,13 +76,19 @@ const LoginForm = () => {
       >
         <Controller
           control={control}
-          as={<Input.Password prefix={<LockOutlined />} size="large" />}
           name="password"
-          id="user_password"
-          type="password"
-          placeholder="비밀번호"
-          autoComplete="current-password"
-          defaultValue=""
+          render={({ field: { value, onChange } }) => (
+            <Input.Password
+              id="user_password"
+              type="password"
+              placeholder="비밀번호"
+              autoComplete="current-password"
+              size="large"
+              value={value}
+              onChange={onChange}
+              prefix={<LockOutlined />}
+            />
+          )}
         />
       </Form.Item>
       <Form.Item>

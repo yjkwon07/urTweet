@@ -3,7 +3,7 @@ import { Layout } from 'antd';
 
 export const StyledLayout = styled(Layout)`
   background-color: #f0f2f5;
-  height: 100vh;
+  min-height: 100vh;
 
   .header {
     height: 45px;
