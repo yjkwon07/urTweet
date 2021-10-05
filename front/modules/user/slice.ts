@@ -10,7 +10,7 @@ import {
   requestListReadFollowing,
   requestLogin,
   requestLogout,
-  requestUpdateNickname,
+  requestUpdateMyUser,
   requestReadMyUser,
   requestReadUser,
   requestRemoveFollowerMe,
@@ -26,7 +26,7 @@ export const logout = createRequestAction(`${USER}/logout`, requestLogout);
 export const signup = createRequestAction(`${USER}/signup`, requestSignup);
 export const readMyUser = createRequestAction(`${USER}/readMyUser`, requestReadMyUser);
 export const readUser = createRequestAction(`${USER}/readUser`, requestReadUser);
-export const updateNickname = createRequestAction(`${USER}/updateNickname`, requestUpdateNickname);
+export const updateMyUser = createRequestAction(`${USER}/updateMyUser`, requestUpdateMyUser);
 export const listReadFollow = createRequestAction(`${USER}/listReadFollow`, requestListReadFollow);
 export const listReadFollowing = createRequestAction(`${USER}/listReadFollowing`, requestListReadFollowing);
 export const follow = createRequestAction(`${USER}/follow`, requestFollow);
@@ -78,9 +78,12 @@ const slice = createSlice({
         const { item } = resData;
         state.user = item;
       })
-      .addCase(updateNickname.success, (state, { payload: { resData } }) => {
-        const { nickname } = resData;
-        if (state.myInfo) state.myInfo.nickname = nickname;
+      .addCase(updateMyUser.success, (state, { payload: { resData } }) => {
+        const { email, nickname } = resData;
+        if (state.myInfo) {
+          state.myInfo.email = email;
+          state.myInfo.nickname = nickname;
+        }
       })
       .addCase(listReadFollow.success, (state, { payload: { resData } }) => {
         const { list } = resData;
@@ -134,7 +137,7 @@ export const userAction = {
   ...slice.actions,
   readMyUser,
   readUser,
-  updateNickname,
+  updateMyUser,
   listReadFollow,
   listReadFollowing,
   follow,

@@ -101,25 +101,27 @@ export const requestSignup = (body: SignupBodyQuery) => {
 };
 
 /**
- * * 닉네임 수정 PATCH
- * * url: /user/nickname
- * * body: UpdateNickNameBodyQuery
- * * res: UpdateNickNameRes
+ * * 내 정보 수정 PATCH
+ * * url: /user
+ * * body: UpdateMyUserBodyQuery
+ * * res: UpdateMyUserRes
  */
-export type UpdateNickNameBodyQuery = {
+export type UpdateMyUserBodyQuery = {
+  email: string;
   nickname: string;
 };
-export interface UpdateNickNameResData {
+export interface UpdateMyUserResData {
+  email: string;
   nickname: string;
 }
-export interface UpdateNickNameRes extends CommonRes {
-  resData: UpdateNickNameResData;
+export interface UpdateMyUserRes extends CommonRes {
+  resData: UpdateMyUserResData;
 }
-export const GET_MODIFY_NICKNAME_API = () => {
-  return `/user/nickname`;
+export const GET_UPDATE_MY_USER_API = () => {
+  return `/user`;
 };
-export const requestUpdateNickname = (body: UpdateNickNameBodyQuery) => {
-  return axios.patch<UpdateNickNameRes>(GET_MODIFY_NICKNAME_API(), body);
+export const requestUpdateMyUser = (body: UpdateMyUserBodyQuery) => {
+  return axios.patch<UpdateMyUserRes>(GET_UPDATE_MY_USER_API(), body);
 };
 
 /**

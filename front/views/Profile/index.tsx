@@ -14,7 +14,7 @@ import {
   useReadMyUser,
 } from '@modules/user';
 
-import EditNickNameForm from './EditNickNameForm';
+import EditMyDataForm from './EditMyUserForm';
 import FollowUserCard from './FollowUserCard';
 import { StyledButton, StyledCenter } from './styles';
 
@@ -87,7 +87,7 @@ const ProfileView = () => {
 
   return (
     <BaseLayout>
-      <EditNickNameForm />
+      <EditMyDataForm />
       <List
         className="mb-20"
         grid={{ gutter: 4, xs: 2, md: 2, xl: 2 }}
