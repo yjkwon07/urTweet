@@ -5,21 +5,21 @@ const passport = require('passport');
 const { findUserWithoutPassword, findUser } = require('../query/user');
 const { User } = require('../models');
 const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
-const { SUCCESS, CLIENT_ERROR, USER_ERROR, DEFAULT_SUCCESS_MESSAGE } = require('../constant');
+const { SUCCESS, CLIENT_ERROR, USER_ERROR } = require('../constant');
+const { resErrorDataFormat, resDataFormat, resListDataFormat, resItemDataFormat } = require('../utils/resFormat');
 
 const router = express.Router();
 
 // GET /user (나의 정보 가져오기)
 router.get('/', async (req, res, next) => {
   try {
-    const user = req.user;
-    const myId = parseInt(user?.id, 10);
+    const myId = req.user?.id;
 
-    if (user) {
+    if (myId) {
       const fullUserWithoutPassword = await findUserWithoutPassword({ id: myId });
-      res.status(SUCCESS).send(fullUserWithoutPassword);
+      res.status(SUCCESS).send(resItemDataFormat(SUCCESS, '', fullUserWithoutPassword));
     } else {
-      res.status(SUCCESS).send(null);
+      return res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '존재하지 않는 사용자입니다.'));
     }
   } catch (error) {
     console.error(error);
@@ -32,15 +32,30 @@ router.get('/followers', isLoggedIn, async (req, res, next) => {
   try {
     const user = req.user;
     const limit = parseInt(req.query.pageSize, 10) || 10;
+    const page = parseInt(req.query.page, 10);
+    const offset = page === 1 ? 0 : (page - 1) * limit;
 
     const followers = await user.getFollowers({
+      offset,
       limit,
       attributes: {
         exclude: ['password'],
       },
       joinTableAttributes: [],
     });
-    res.status(SUCCESS).send(followers);
+    const totalCount = await user.countFollowers();
+    const list = followers;
+    const totalPage = totalCount / limit;
+
+    const result = {
+      list,
+      curPage: page,
+      nextPage: totalPage >= page + 1 ? page + 1 : 0,
+      rowsPerPage: limit,
+      totalCount,
+    };
+
+    res.status(SUCCESS).send(resListDataFormat(SUCCESS, '', result));
   } catch (error) {
     console.error(error);
     next(error);
@@ -52,15 +67,30 @@ router.get('/followings', isLoggedIn, async (req, res, next) => {
   try {
     const user = req.user;
     const limit = parseInt(req.query.pageSize, 10) || 10;
+    const page = parseInt(req.query.page, 10);
+    const offset = page === 1 ? 0 : (page - 1) * limit;
 
     const followings = await user.getFollowings({
+      offset,
       limit,
       attributes: {
         exclude: ['password'],
       },
       joinTableAttributes: [],
     });
-    res.status(SUCCESS).send(followings);
+    const totalCount = await user.countFollowings();
+    const list = followings;
+    const totalPage = totalCount / limit;
+
+    const result = {
+      list,
+      curPage: page,
+      nextPage: totalPage >= page + 1 ? page + 1 : 0,
+      rowsPerPage: limit,
+      totalCount,
+    };
+
+    res.status(SUCCESS).send(resListDataFormat(SUCCESS, '', result));
   } catch (error) {
     console.error(error);
     next(error);
@@ -70,17 +100,18 @@ router.get('/followings', isLoggedIn, async (req, res, next) => {
 // GET /user/:userId (유저정보 조회)
 router.get('/:userId', async (req, res, next) => {
   try {
-    const UserId = parseInt(req.params.userId, 10);
+    const userId = req.params.userId;
 
-    const fullUserWithoutPassword = await findUserWithoutPassword({ id: UserId });
+    const fullUserWithoutPassword = await findUserWithoutPassword({ id: userId });
+
     if (fullUserWithoutPassword) {
       const data = fullUserWithoutPassword.toJSON();
       data.Posts = data.Posts.length;
       data.Followers = data.Followers.length;
       data.Followings = data.Followings.length;
-      res.status(SUCCESS).send(data);
+      res.status(SUCCESS).send(resItemDataFormat(SUCCESS, '', data));
     } else {
-      res.status(CLIENT_ERROR).send('존재하지 않는 사용자입니다.');
+      return res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '존재하지 않는 사용자입니다.'));
     }
   } catch (error) {
     console.error(error);
@@ -97,15 +128,17 @@ router.post('/', async (req, res, next) => {
 
     const exUser = await findUser({ email });
     if (exUser) {
-      return res.status(CLIENT_ERROR).send('이미 사용 중인 아이디입니다.');
+      return res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '이미 사용 중인 아이디입니다.'));
     }
     const hashedPassword = await bcrypt.hash(password, 12);
-    await User.create({
+    const user = await User.create({
       email,
       nickname,
       password: hashedPassword,
     });
-    res.status(SUCCESS).send(DEFAULT_SUCCESS_MESSAGE);
+    const fullUserWithoutPassword = await findUserWithoutPassword({ id: user.id });
+
+    res.status(SUCCESS).send(resDataFormat(SUCCESS, '등록완료', fullUserWithoutPassword));
   } catch (error) {
     console.error(error);
     next(error);
@@ -116,7 +149,6 @@ router.post('/', async (req, res, next) => {
 router.post('/login', isNotLoggedIn, (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) {
-      console.error(err);
       return next(err);
     }
     if (info) {
@@ -125,11 +157,11 @@ router.post('/login', isNotLoggedIn, (req, res, next) => {
     // req.login()시에 serializeUser 호출
     return req.login(user, async (loginErr) => {
       if (loginErr) {
-        console.error(loginErr);
         return next(loginErr);
       }
       const fullUserWithoutPassword = await findUserWithoutPassword({ id: user.id });
-      res.status(SUCCESS).send(fullUserWithoutPassword);
+
+      res.status(SUCCESS).send(resDataFormat(SUCCESS, '로그인 완료', fullUserWithoutPassword));
     });
   })(req, res, next); // 미들웨어 확장
 });
@@ -138,7 +170,7 @@ router.post('/login', isNotLoggedIn, (req, res, next) => {
 router.post('/logout', (req, res) => {
   req.logout();
   req.session.destroy();
-  res.status(SUCCESS).send(DEFAULT_SUCCESS_MESSAGE);
+  res.status(SUCCESS).send(resDataFormat(SUCCESS, '로그아웃 완료', null));
 });
 
 // POST /user/nickname (닉네임 수정)
@@ -153,43 +185,46 @@ router.patch('/nickname', isLoggedIn, async (req, res, next) => {
         where: { id: myId },
       },
     );
-    res.status(SUCCESS).send({ nickname });
+
+    res.status(SUCCESS).send(resDataFormat(SUCCESS, '수정 완료', nickname));
   } catch (error) {
     console.error(error);
     next(error);
   }
 });
 
-// PATCH /user/:userId/follow (팔로우)
-router.patch('/:userId/follow', isLoggedIn, async (req, res, next) => {
+// PATCH /user/follow/:userIdx (팔로우)
+router.patch('/follow/:userIdx', isLoggedIn, async (req, res, next) => {
   try {
-    const UserId = parseInt(req.params.userId, 10);
-    const myId = parseInt(req.user.id, 10);
+    const myId = req.user.id;
+    const userId = req.params.userId;
 
-    const user = await User.findOne({ where: { id: UserId } });
+    const user = await User.findOne({ where: { id: userId } });
     if (!user) {
-      res.status(CLIENT_ERROR).send('존재하지 않는 유저입니다.');
+      res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '존재하지 않는 사용자입니다.'));
     }
     await user.addFollowers(myId);
-    res.status(SUCCESS).send({ UserId });
+
+    res.status(SUCCESS).send(resDataFormat(SUCCESS, '팔로우 완료', { userId }));
   } catch (error) {
     console.error(error);
     next(error);
   }
 });
 
-// DELETE /user/:userId/follow (팔로우 삭제)
-router.delete('/:userId/follow', isLoggedIn, async (req, res, next) => {
+// DELETE /user/follow/:userId (팔로우 삭제)
+router.delete('/follow/:userId', isLoggedIn, async (req, res, next) => {
   try {
-    const UserId = parseInt(req.params.userId, 10);
-    const myId = parseInt(req.user.id, 10);
+    const myId = req.user.id;
+    const userId = req.params.userId;
 
-    const user = await User.findOne({ where: { id: UserId } });
+    const user = await User.findOne({ where: { id: userId } });
     if (!user) {
-      res.status(CLIENT_ERROR).send('존재하지 않는 유저입니다.');
+      res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '존재하지 않는 사용자입니다.'));
     }
     await user.removeFollowers(myId);
-    res.status(SUCCESS).send({ UserId });
+
+    res.status(SUCCESS).send(resDataFormat(SUCCESS, '팔로우 삭제 완료', { userId }));
   } catch (error) {
     console.error(error);
     next(error);
@@ -199,15 +234,16 @@ router.delete('/:userId/follow', isLoggedIn, async (req, res, next) => {
 // DELETE /user/follower/:userId (팔로워 삭제)
 router.delete('/follower/:userId', isLoggedIn, async (req, res, next) => {
   try {
-    const UserId = parseInt(req.params.userId, 10);
-    const myId = parseInt(req.user.id, 10);
+    const myId = req.user.id;
+    const userId = req.params.userId;
 
-    const user = await User.findOne({ where: { id: UserId } });
+    const user = await User.findOne({ where: { id: userId } });
     if (!user) {
-      res.status(CLIENT_ERROR).send('존재하지 않는 유저입니다.');
+      res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '존재하지 않는 사용자입니다.'));
     }
     await user.removeFollowings(myId);
-    res.status(SUCCESS).send({ UserId });
+
+    res.status(SUCCESS).send(resDataFormat(SUCCESS, '팔로워 삭제 완료', { userId }));
   } catch (error) {
     console.error(error);
     next(error);
