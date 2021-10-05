@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { useDispatch } from 'react-redux';
 
@@ -10,15 +10,14 @@ import { userAction, userSelector } from '../slice';
 
 export default function useReadUser(filter?: ReadUserUrlQuery) {
   const dispatch = useDispatch();
-  const { status, data: result } = useFetchStatus<ReadUserRes>(userAction.readUser.TYPE);
+  const { status, error } = useFetchStatus<ReadUserRes>(userAction.readUser.TYPE);
   const data = useAppSelector(userSelector.userData);
 
   const isInitFetch = useRef(!!data);
-  const error = useMemo(() => (status === 'FAIL' ? result : null), [result, status]);
 
   useEffect(() => {
     if (!isInitFetch.current) {
-      if (filter) dispatch(userAction.readUser.request({ userId: filter.userId }));
+      if (filter) dispatch(userAction.readUser.request(filter));
     } else {
       isInitFetch.current = false;
     }
