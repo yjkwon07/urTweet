@@ -26,7 +26,7 @@ export const logout = createRequestAction(`${USER}/logout`, requestLogout);
 export const signup = createRequestAction(`${USER}/signup`, requestSignup);
 export const readMyUser = createRequestAction(`${USER}/readMyUser`, requestReadMyUser);
 export const readUser = createRequestAction(`${USER}/readUser`, requestReadUser);
-export const modifyNickname = createRequestAction(`${USER}/modifyNickname`, requestUpdateNickname);
+export const updateNickname = createRequestAction(`${USER}/updateNickname`, requestUpdateNickname);
 export const listReadFollow = createRequestAction(`${USER}/listReadFollow`, requestListReadFollow);
 export const listReadFollowing = createRequestAction(`${USER}/listReadFollowing`, requestListReadFollowing);
 export const follow = createRequestAction(`${USER}/follow`, requestFollow);
@@ -78,7 +78,7 @@ const slice = createSlice({
         const { item } = resData;
         state.user = item;
       })
-      .addCase(modifyNickname.success, (state, { payload: { resData } }) => {
+      .addCase(updateNickname.success, (state, { payload: { resData } }) => {
         const { nickname } = resData;
         if (state.myInfo) state.myInfo.nickname = nickname;
       })
@@ -134,7 +134,7 @@ export const userAction = {
   ...slice.actions,
   readMyUser,
   readUser,
-  modifyNickname,
+  updateNickname,
   listReadFollow,
   listReadFollowing,
   follow,

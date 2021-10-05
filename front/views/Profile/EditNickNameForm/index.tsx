@@ -1,54 +1,58 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Form, Input, message } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
-import * as yup from 'yup';
+import { useDispatch } from 'react-redux';
 
 import { useFetchStatus } from '@modules/fetchStatus';
-import { modifyNickname, userSelector } from '@modules/user';
+import { updateNickname, NICKNAME_SCHEMA, useReadMyUser } from '@modules/user';
+import { FormNickname } from '@modules/user/@types';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
 
 import { FormWrapper } from './styles';
 
-const NICKNAME_SCHEMA = yup.object({
-  nickname: yup.string().required('닉네임은 필수 입력 항목 입니다.'),
-});
-
-type FormData = yup.InferType<typeof NICKNAME_SCHEMA>;
-
-const NicknameEditForm = () => {
+const EditNickNameForm = () => {
   const dispatch = useDispatch();
-  const { status } = useFetchStatus(modifyNickname.TYPE);
-  const myData = useSelector(userSelector.myData);
+  const { status } = useFetchStatus(updateNickname.TYPE);
+  const { data: myData } = useReadMyUser();
+
   const {
     control,
     handleSubmit: checkSubmit,
     formState: { errors },
     reset,
-  } = useForm<FormData>({
-    mode: 'onBlur',
+  } = useForm<FormNickname>({
+    mode: 'onSubmit',
     resolver: yupResolver(NICKNAME_SCHEMA),
   });
 
-  const handleSubmit = useCallback(() => {
-    checkSubmit(async (formData) => {
+  useEffect(() => {
+    if (myData) {
+      reset({
+        nickname: myData.nickname,
+      });
+    }
+  }, [myData, reset]);
+
+  const handleSubmitUpdateNickname = useCallback(
+    async (formData: FormNickname) => {
       if (!myData?.id) return;
       try {
-        reset();
-        await dispatch(modifyNickname.asyncThunk({ nickname: formData.nickname }));
+        await dispatch(updateNickname.asyncThunk({ nickname: formData.nickname }));
       } catch (error) {
         if (isCustomAxiosError(error)) {
           message.error(JSON.stringify(error.response.data));
         }
       }
-    })();
-  }, [checkSubmit, myData?.id, reset, dispatch]);
+    },
+    [myData?.id, dispatch],
+  );
 
   return (
     <FormWrapper>
       <Form.Item
+        htmlFor="nickname"
         validateStatus={errors.nickname ? 'error' : 'success'}
         help={errors.nickname ? errors.nickname?.message : ''}
         rules={[{ message: errors?.nickname?.message }]}
@@ -56,13 +60,15 @@ const NicknameEditForm = () => {
         <Controller
           control={control}
           name="nickname"
-          render={() => (
+          render={({ field: { value, onChange } }) => (
             <Input.Search
               id="nickname"
+              value={value}
+              onChange={onChange}
               addonBefore="닉네임"
               enterButton="수정"
-              onSearch={handleSubmit}
-              placeholder={myData?.nickname}
+              onSearch={() => checkSubmit(handleSubmitUpdateNickname)()}
+              placeholder="닉네임을 입력해 주세요."
               loading={status === 'LOADING'}
             />
           )}
@@ -72,4 +78,4 @@ const NicknameEditForm = () => {
   );
 };
 
-export default NicknameEditForm;
+export default EditNickNameForm;

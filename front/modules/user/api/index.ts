@@ -170,7 +170,7 @@ export const requestListReadFollow = (url: ListReadFollowUrlQuery) => {
 
 /**
  * * 유저 팔로우 PATCH
- * * url: /user/:userId/follow
+ * * url: /user/follow/:userId
  * * body: empty
  * * res: FollowRes
  */
@@ -184,7 +184,7 @@ export interface FollowRes extends CommonRes {
   resData: FollowResData;
 }
 export const GET_FOLLOW_API = (url: FollowUrlQuery) => {
-  return `/user/${url.userId}/follow`;
+  return `/user/follow/${url.userId}`;
 };
 export const requestFollow = (url: FollowUrlQuery) => {
   return axios.patch<FollowRes>(GET_FOLLOW_API(url));
@@ -192,7 +192,7 @@ export const requestFollow = (url: FollowUrlQuery) => {
 
 /**
  * * 유저 팔로우 삭제 DELETE
- * * url: /user/:userId/follow
+ * * url: /user/follow/:userId
  * * body: empty
  * * res: UnFollowRes
  */
@@ -206,7 +206,7 @@ export interface UnFollowRes extends CommonRes {
   resData: UnFollowResData;
 }
 export const GET_UNFOLLOW_API = (url: UnFollowUrlQuery) => {
-  return `/user/${url.userId}/follow`;
+  return `/user/follow/${url.userId}`;
 };
 export const requestUnfollow = (url: UnFollowUrlQuery) => {
   return axios.delete<UnFollowRes>(GET_UNFOLLOW_API(url));

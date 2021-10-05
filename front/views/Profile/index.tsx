@@ -14,8 +14,8 @@ import {
   useReadMyUser,
 } from '@modules/user';
 
-import FollowUserCard from './organism/FollowUserCard';
-import NicknameEditForm from './organism/NickNameEditForm';
+import EditNickNameForm from './EditNickNameForm';
+import FollowUserCard from './FollowUserCard';
 import { StyledButton, StyledCenter } from './styles';
 
 const DEFAULT_CUR_PAGE = 1;
@@ -87,7 +87,7 @@ const ProfileView = () => {
 
   return (
     <BaseLayout>
-      <NicknameEditForm />
+      <EditNickNameForm />
       <List
         className="mb-20"
         grid={{ gutter: 4, xs: 2, md: 2, xl: 2 }}
