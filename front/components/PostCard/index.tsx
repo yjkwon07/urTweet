@@ -16,7 +16,7 @@ import { useDispatch } from 'react-redux';
 import { useFetchStatus } from '@modules/fetchStatus';
 import { postAction } from '@modules/post';
 import { Post } from '@modules/post/@types/db';
-import { useMyUser } from '@modules/user';
+import { useReadMyUser } from '@modules/user';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
 import requiredLogin from '@utils/requiredLogin';
 
@@ -37,7 +37,7 @@ export interface IProps {
 const PostCard = ({ data, initCommentListOpen = false }: IProps) => {
   const dispatch = useDispatch();
   const { status: removePostStatus } = useFetchStatus(postAction.removePost.TYPE, data.id);
-  const { data: myData } = useMyUser();
+  const { data: myData } = useReadMyUser();
 
   const [morePopOverOpen, setMorePopOverOpen] = useState(false);
   const [commentListOpen, setCommentListOpen] = useState(initCommentListOpen);

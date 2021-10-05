@@ -5,7 +5,7 @@ import { Modal } from 'antd';
 import { useDispatch } from 'react-redux';
 
 import { useFetchStatus } from '@modules/fetchStatus';
-import { follow, unFollow, useMyUser } from '@modules/user';
+import { follow, unFollow, useReadMyUser } from '@modules/user';
 
 import { StyledButton } from './styles';
 
@@ -19,7 +19,7 @@ const FollowButton = ({ userId }: IProps) => {
   const dispatch = useDispatch();
   const { status: followStatus } = useFetchStatus(follow.TYPE, userId);
   const { status: unfollowStatus } = useFetchStatus(unFollow.TYPE, userId);
-  const { data: myData } = useMyUser();
+  const { data: myData } = useReadMyUser();
 
   const isFollowing = useMemo(
     () => !!myData?.Followings.find((Following) => Following.id === userId),
