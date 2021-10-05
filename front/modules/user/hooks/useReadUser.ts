@@ -5,20 +5,20 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@hooks/useAppRedux';
 import { useFetchStatus } from '@modules/fetchStatus';
 
-import { ReadPostRes, ReadPostUrlQuery } from '../api';
-import { postSelector, postAction } from '../slice';
+import { ReadUserRes, ReadUserUrlQuery } from '../api';
+import { userAction, userSelector } from '../slice';
 
-export default function useReadPost(filter?: ReadPostUrlQuery) {
+export default function useReadUser(filter?: ReadUserUrlQuery) {
   const dispatch = useDispatch();
-  const { status, data: result } = useFetchStatus<ReadPostRes>(postAction.readPost.TYPE);
-  const data = useAppSelector((state) => filter && postSelector.selectById(state, filter.postId));
+  const { status, data: result } = useFetchStatus<ReadUserRes>(userAction.readUser.TYPE);
+  const data = useAppSelector(userSelector.userData);
 
   const isInitFetch = useRef(!!data);
   const error = useMemo(() => (status === 'FAIL' ? result : null), [result, status]);
 
   useEffect(() => {
     if (!isInitFetch.current) {
-      if (filter) dispatch(postAction.readPost.request({ postId: filter.postId }));
+      if (filter) dispatch(userAction.readUser.request({ userId: filter.userId }));
     } else {
       isInitFetch.current = false;
     }

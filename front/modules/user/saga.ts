@@ -7,7 +7,7 @@ import {
   signup,
   logout,
   readMyUser,
-  modifyNickname,
+  updateMyUser,
   follow,
   unFollow,
   listReadFollow,
@@ -21,7 +21,7 @@ const logoutSaga = createRequestSaga(logout, logout.requestAPI);
 const signupSaga = createRequestSaga(signup, signup.requestAPI);
 const readMyUserSaga = createRequestSaga(readMyUser, readMyUser.requestAPI);
 const readUserSaga = createRequestSaga(readUser, readUser.requestAPI);
-const modifyNicknameSaga = createRequestSaga(modifyNickname, modifyNickname.requestAPI);
+const updateMyUserSaga = createRequestSaga(updateMyUser, updateMyUser.requestAPI);
 const listReadFollowSaga = createRequestSaga(listReadFollow, listReadFollow.requestAPI);
 const listReadFollowingSaga = createRequestSaga(listReadFollowing, listReadFollowing.requestAPI);
 const followSaga = createRequestSaga(follow, follow.requestAPI);
@@ -41,7 +41,7 @@ function* watchSignup() {
 }
 
 function* watchReadMyUser() {
-  yield takeLatest(readMyUser.request, readMyUserSaga);
+  yield debounce(300, readMyUser.request, readMyUserSaga);
 }
 
 function* watchReadUser() {
@@ -49,7 +49,7 @@ function* watchReadUser() {
 }
 
 function* watchModifyNickname() {
-  yield takeLatest(modifyNickname.request, modifyNicknameSaga);
+  yield takeLatest(updateMyUser.request, updateMyUserSaga);
 }
 
 function* watchListReadFollow() {

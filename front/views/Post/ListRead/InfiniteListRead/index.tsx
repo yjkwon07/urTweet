@@ -8,7 +8,7 @@ import { FetchStatus } from '@modules/fetchStatus';
 import { ListReadPostUrlQuery } from '@modules/post';
 import { Post } from '@modules/post/@types';
 import { useSearchFilter } from '@modules/searchFilter';
-import { useMyUser } from '@modules/user';
+import { useReadMyUser } from '@modules/user';
 
 import PostForm from '../PostForm';
 import { StyledCenter, StyledFormBlock, StyledViewWrapper } from './styles';
@@ -22,7 +22,7 @@ export interface IProps {
 
 const InfiniteListRead = ({ status, postList, isMoreRead, errorMsg }: IProps) => {
   const { filter, changeFilter } = useSearchFilter<ListReadPostUrlQuery>('LIST_READ_POST');
-  const { data: myData } = useMyUser();
+  const { data: myData } = useReadMyUser();
 
   const handleNextPage = useCallback(() => {
     if (filter?.page && isMoreRead) {

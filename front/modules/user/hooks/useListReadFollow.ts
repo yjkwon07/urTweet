@@ -5,18 +5,13 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@hooks/useAppRedux';
 import { useFetchStatus } from '@modules/fetchStatus';
 
-import { ListReadPostRes, ListReadPostUrlQuery } from '../api';
-import { postAction, postSelector } from '../slice';
+import { ListReadFollowRes, ListReadFollowUrlQuery } from '../api';
+import { userAction, userSelector } from '../slice';
 
-interface IProps {
-  mode?: 'infinite' | 'page';
-  filter?: ListReadPostUrlQuery;
-}
-
-export default function useListReadPost({ mode, filter }: IProps) {
+export default function useListReadFollow(filter?: ListReadFollowUrlQuery) {
   const dispatch = useDispatch();
-  const { status, data: result } = useFetchStatus<ListReadPostRes>(postAction.listReadPost.TYPE);
-  const data = useAppSelector(postSelector.listData);
+  const { status, data: result } = useFetchStatus<ListReadFollowRes>(userAction.listReadFollow.TYPE);
+  const data = useAppSelector(userSelector.followListData);
 
   const isInitFetch = useRef(!!data.length);
   const error = useMemo(() => (status === 'FAIL' ? result : null), [result, status]);
@@ -25,11 +20,11 @@ export default function useListReadPost({ mode, filter }: IProps) {
 
   useEffect(() => {
     if (!isInitFetch.current) {
-      if (filter) dispatch(postAction.listReadPost.request(filter, { isLoadMore: mode === 'infinite' }));
+      if (filter) dispatch(userAction.listReadFollow.request(filter));
     } else {
       isInitFetch.current = false;
     }
-  }, [dispatch, filter, mode]);
+  }, [dispatch, filter]);
 
   return { status, data, error, isMoreRead, totalCount };
 }
