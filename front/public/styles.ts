@@ -65,6 +65,9 @@ export const globalStyles = css`
   .mb-10 {
     margin-bottom: 10px !important;
   }
+  .mb-20 {
+    margin-bottom: 20px !important;
+  }
   .mb-50 {
     margin-bottom: 50px !important;
   }

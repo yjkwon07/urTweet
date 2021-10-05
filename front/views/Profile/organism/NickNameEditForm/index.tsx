@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Form, Input, message } from 'antd';
@@ -8,6 +8,7 @@ import * as yup from 'yup';
 
 import { useFetchStatus } from '@modules/fetchStatus';
 import { modifyNickname, userSelector } from '@modules/user';
+import isCustomAxiosError from '@utils/isCustomAxiosError';
 
 import { FormWrapper } from './styles';
 
@@ -21,7 +22,12 @@ const NicknameEditForm = () => {
   const dispatch = useDispatch();
   const { status } = useFetchStatus(modifyNickname.TYPE);
   const myData = useSelector(userSelector.myData);
-  const { control, handleSubmit: checkSubmit, errors, reset } = useForm<FormData>({
+  const {
+    control,
+    handleSubmit: checkSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<FormData>({
     mode: 'onBlur',
     resolver: yupResolver(NICKNAME_SCHEMA),
   });
@@ -32,9 +38,10 @@ const NicknameEditForm = () => {
       try {
         reset();
         await dispatch(modifyNickname.asyncThunk({ nickname: formData.nickname }));
-        message.success('닉네임이 변경 되었습니다.');
       } catch (error) {
-        message.error(JSON.stringify(error.response.data));
+        if (isCustomAxiosError(error)) {
+          message.error(JSON.stringify(error.response.data));
+        }
       }
     })();
   }, [checkSubmit, myData?.id, reset, dispatch]);
@@ -48,18 +55,17 @@ const NicknameEditForm = () => {
       >
         <Controller
           control={control}
-          as={
+          name="nickname"
+          render={() => (
             <Input.Search
+              id="nickname"
               addonBefore="닉네임"
               enterButton="수정"
               onSearch={handleSubmit}
+              placeholder={myData?.nickname}
               loading={status === 'LOADING'}
             />
-          }
-          name="nickname"
-          id="nickname"
-          placeholder={myData?.nickname}
-          defaultValue=""
+          )}
         />
       </Form.Item>
     </FormWrapper>
