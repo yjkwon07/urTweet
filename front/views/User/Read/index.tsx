@@ -1,64 +1,63 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 
-import { useRouter } from 'next/router';
-import { useDispatch } from 'react-redux';
+import { Empty, Space, Spin } from 'antd';
 
 import PostCard from '@components/PostCard';
-import { listReadUserPost } from '@modules/post';
-import useInfiniteUserPost from '@modules/post/hooks/useInfiniteUserPost';
-import { useMyUser } from '@modules/user';
-import useUser from '@modules/user/hooks/useUser';
+import useEndReachScroll from '@hooks/useEndReachScroll';
+import BaseLayout from '@layouts/BaseLayout';
+import { ListReadPostUrlQuery, useListReadPost } from '@modules/post';
+import { useSearchFilter } from '@modules/searchFilter';
+import { ReadUserUrlQuery } from '@modules/user';
+import useUser from '@modules/user/hooks/useReadUser';
 
-import UserInfo from './Organism/UserInfo';
+import { StyledCenter, StyledViewWrapper } from './styles';
+import UserInfo from './UserInfo';
 
-const DEAFULT_PAGE_SIZE = 10;
+const UserRead = () => {
+  const { filter: readUserFilter } = useSearchFilter<ReadUserUrlQuery>('READ_USER');
+  const { filter: listReadPostFilter, changeFilter } = useSearchFilter<ListReadPostUrlQuery>('LIST_READ_POST');
+  const { data: userData } = useUser(readUserFilter);
+  const {
+    status,
+    data: postListData,
+    error: PostListError,
+    isMoreRead,
+  } = useListReadPost({ filter: listReadPostFilter, mode: 'infinite' });
 
-export interface IProps {
-  isSSR: boolean;
-}
-
-const Read = ({ isSSR }: IProps) => {
-  const dispatch = useDispatch();
-  const router = useRouter();
-  const userId = Number(router.query.id as string);
-  const { data: myData } = useMyUser({});
-  const { data: userData } = useUser({ isInitFetch: !isSSR, userId });
-  const [pageSize] = useState(DEAFULT_PAGE_SIZE);
-  const { data: postListData, status, hasMoreRead } = useInfiniteUserPost({
-    isInitFetch: !isSSR,
-    userId,
-    pageSize,
-  });
-
-  useEffect(() => {
-    function onScroll() {
-      if (postListData && hasMoreRead && status !== 'LOADING') {
-        if (window.scrollY + document.documentElement.clientHeight > document.documentElement.scrollHeight - 300) {
-          if (hasMoreRead) {
-            const lastId = postListData[postListData.length - 1].id;
-            dispatch(listReadUserPost.request({ userId, lastId, pageSize }));
-          }
-        }
-      }
+  const handleNextPage = useCallback(() => {
+    if (listReadPostFilter?.page && isMoreRead) {
+      changeFilter({
+        page: listReadPostFilter.page + 1,
+      });
     }
-    window.addEventListener('scroll', onScroll);
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-    };
-  }, [status, postListData, hasMoreRead, dispatch, pageSize, userId]);
+  }, [changeFilter, listReadPostFilter?.page, isMoreRead]);
+
+  useEndReachScroll({ callback: handleNextPage });
 
   return (
-    <>
-      {userData && (
-        <>
-          {myData?.id !== userId && <UserInfo data={userData} />}
-          {postListData.map((post) => (
-            <PostCard key={post.id} data={post} />
-          ))}
-        </>
-      )}
-    </>
+    <BaseLayout>
+      <StyledViewWrapper>
+        <Space className="wrapper" direction="vertical" size={10}>
+          {userData && (
+            <>
+              <UserInfo data={userData} />
+              {status !== 'FAIL' && postListData.map((data) => <PostCard key={data.id} data={data} />)}
+              {status === 'LOADING' && (
+                <StyledCenter>
+                  <Spin />
+                </StyledCenter>
+              )}
+              {status === 'FAIL' && (
+                <StyledCenter>
+                  <Empty description={PostListError.resMsg} />
+                </StyledCenter>
+              )}
+            </>
+          )}
+        </Space>
+      </StyledViewWrapper>
+    </BaseLayout>
   );
 };
 
-export default Read;
+export default UserRead;
