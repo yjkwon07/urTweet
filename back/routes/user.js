@@ -27,6 +27,27 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+// POST /user (나의 정보 수정)
+router.patch('/', isLoggedIn, async (req, res, next) => {
+  try {
+    const email = req.body.email;
+    const nickname = req.body.nickname;
+    const myId = req.user.id;
+
+    await User.update(
+      { email, nickname },
+      {
+        where: { id: myId },
+      },
+    );
+
+    res.status(SUCCESS).send(resDataFormat(SUCCESS, '수정 완료', { email, nickname }));
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
 // GET /user/followers (내가 팔로우 하는 유저 목록 가져오기)
 router.get('/followers', isLoggedIn, async (req, res, next) => {
   try {
@@ -171,26 +192,6 @@ router.post('/logout', (req, res) => {
   req.logout();
   req.session.destroy();
   res.status(SUCCESS).send(resDataFormat(SUCCESS, '로그아웃 완료', null));
-});
-
-// POST /user/nickname (닉네임 수정)
-router.patch('/nickname', isLoggedIn, async (req, res, next) => {
-  try {
-    const nickname = req.body.nickname;
-    const myId = req.user.id;
-
-    await User.update(
-      { nickname },
-      {
-        where: { id: myId },
-      },
-    );
-
-    res.status(SUCCESS).send(resDataFormat(SUCCESS, '수정 완료', nickname));
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
 });
 
 // PATCH /user/follow/:userIdx (팔로우)
