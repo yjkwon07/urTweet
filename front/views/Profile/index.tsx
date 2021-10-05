@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from 'react';
 
-import { List, message } from 'antd';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { List, message, Modal } from 'antd';
 import Router from 'next/router';
 import { useDispatch } from 'react-redux';
 
@@ -17,6 +18,8 @@ import {
 import EditMyDataForm from './EditMyUserForm';
 import FollowUserCard from './FollowUserCard';
 import { StyledButton, StyledCenter } from './styles';
+
+const { confirm } = Modal;
 
 const DEFAULT_CUR_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 10;
@@ -57,8 +60,15 @@ const ProfileView = () => {
   }, [isMoreReadFollowingList, listReadFollowingChangeFilter, listReadFollowingFilter?.page]);
 
   const handleCancelFollowing = useCallback(
-    (userId) => () => {
-      dispatch(userAction.unFollow.request({ userId }));
+    (userId) => {
+      confirm({
+        title: '정말로 언팔로우 하시겠습니까?',
+        icon: <ExclamationCircleOutlined />,
+        content: '언팔로우시 해당 멤버의 활동을 자세히 알 수 없게 됩니다.',
+        onOk() {
+          dispatch(userAction.removeFollowerMe.request({ userId }));
+        },
+      });
     },
     [dispatch],
   );
@@ -72,14 +82,21 @@ const ProfileView = () => {
   }, [isMoreReadFollowList, listReadFollowChangeFilter, listReadFollowingFilter?.page]);
 
   const handleCancelFollower = useCallback(
-    (userId) => () => {
-      dispatch(userAction.removeFollowerMe.request({ userId }));
+    (userId) => {
+      confirm({
+        title: '정말로 언팔로우 하시겠습니까?',
+        icon: <ExclamationCircleOutlined />,
+        content: '언팔로우시 해당 멤버가 나의 활동을 자세히 알 수 없게 됩니다.',
+        onOk() {
+          dispatch(userAction.removeFollowerMe.request({ userId }));
+        },
+      });
     },
     [dispatch],
   );
 
   useEffect(() => {
-    if (myDataStatus === 'SUCCESS' && !myData) {
+    if (myDataStatus === 'FAIL' && !myData) {
       message.warn('로그인 후 이용해 주시길 바랍니다.');
       Router.push('/');
     }
