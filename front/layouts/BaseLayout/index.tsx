@@ -55,14 +55,7 @@ const BaseLayout: FC<IProps> = ({ filterGroup, children }) => {
                 {children}
               </Col>
               <Col className="filter" xs={24} sm={24} md={24} lg={7}>
-                <div className="content">
-                  <BackTop>
-                    <div className="scroll-up">
-                      <ArrowUpOutlined />
-                    </div>
-                  </BackTop>
-                  {filterGroup}
-                </div>
+                <div className="content">{filterGroup}</div>
               </Col>
             </>
           ) : (
@@ -71,6 +64,11 @@ const BaseLayout: FC<IProps> = ({ filterGroup, children }) => {
             </Col>
           )}
         </Row>
+        <BackTop>
+          <div className="scroll-up">
+            <ArrowUpOutlined />
+          </div>
+        </BackTop>
       </Content>
     </StyledLayout>
   );
