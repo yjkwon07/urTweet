@@ -1,9 +1,8 @@
 import { useAppSelector } from '@hooks/useAppRedux';
-import { CustomAxiosError } from '@typings/type';
 
 import { FetchStatus } from '../slice';
 
-export default function useFetchStatus<T = any, E = CustomAxiosError>(
+export default function useFetchStatus<T = any, E = any>(
   type: string,
   actionId?: any,
 ): { status: FetchStatus; data: T | null; error: E | null } {

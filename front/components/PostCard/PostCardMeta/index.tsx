@@ -7,7 +7,7 @@ import Link from 'next/link';
 
 import { GET_USER_URL, PASS_HREF } from '@utils/urls';
 
-import { StyledCardMeta, Title } from './styles';
+import { StyledCardMeta, StyledTitle } from './styles';
 
 export interface IProps {
   userId: string;
@@ -28,7 +28,7 @@ const PostCardMeta = ({ userId, nickname, createdAt, actions, description }: IPr
         </Link>
       }
       title={
-        <Title>
+        <StyledTitle>
           <div>
             {nickname}
             <Tooltip title={dayjs(createdAt).format('YYYY-MM-DD HH:mm:ss')}>
@@ -36,7 +36,7 @@ const PostCardMeta = ({ userId, nickname, createdAt, actions, description }: IPr
             </Tooltip>
           </div>
           {actions && <div>{actions}</div>}
-        </Title>
+        </StyledTitle>
       }
       description={description}
     />

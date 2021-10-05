@@ -1,13 +1,13 @@
 import React from 'react';
 
-import { useMyUser } from '@modules/user';
+import { useReadMyUser } from '@modules/user';
 
 import LoginForm from '../LoginForm';
 import UserProfile from '../UserProfile';
 import UserSkeleton from '../UserSkeleton';
 
 const UserStatusView = () => {
-  const { status: myDataStatus, data: myData } = useMyUser();
+  const { status: myDataStatus, data: myData } = useReadMyUser();
 
   if (myDataStatus === 'SUCCESS' || myData) return <UserProfile />;
   if (myDataStatus === 'LOADING') return <UserSkeleton />;
