@@ -10,7 +10,7 @@ export const StyledCardMeta = styled(Card.Meta)`
   }
 `;
 
-export const Title = styled.div`
+export const StyledTitle = styled.div`
   display: flex;
   justify-content: space-between;
   & span.time-text {
