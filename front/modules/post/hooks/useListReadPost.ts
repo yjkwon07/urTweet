@@ -15,12 +15,11 @@ interface IProps {
 
 export default function useListReadPost({ mode, filter }: IProps) {
   const dispatch = useDispatch();
-  const { status, data: result } = useFetchStatus<ListReadPostRes>(postAction.listReadPost.TYPE);
+  const { status, data: result, error } = useFetchStatus<ListReadPostRes>(postAction.listReadPost.TYPE);
   const data = useAppSelector(postSelector.listData);
 
   const isInitFetch = useRef(!!data.length);
-  const error = useMemo(() => (status === 'FAIL' ? result : null), [result, status]);
-  const isMoreRead = useMemo(() => result?.resData?.nextPage || false, [result?.resData?.nextPage]);
+  const isMoreRead = useMemo(() => !!result?.resData?.nextPage || false, [result?.resData?.nextPage]);
   const totalCount = useMemo(() => result?.resData?.totalCount || 0, [result?.resData?.totalCount]);
 
   useEffect(() => {

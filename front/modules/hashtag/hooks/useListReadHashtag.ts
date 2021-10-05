@@ -10,12 +10,11 @@ import { hashtagAction, hashtagSelector } from '../slice';
 
 export default function useListReadHashtag(filter?: ListReadHashtagUrlQuery) {
   const dispatch = useDispatch();
-  const { status, data: result } = useFetchStatus(hashtagAction.listReadHashtag.TYPE);
+  const { status, data: result, error } = useFetchStatus(hashtagAction.listReadHashtag.TYPE);
   const data = useAppSelector(hashtagSelector.listData);
 
   const isInitFetch = useRef(!!data.length);
-  const error = useMemo(() => (status === 'FAIL' ? result : null), [result, status]);
-  const isMoreRead = useMemo(() => result?.resData?.nextPage || false, [result?.resData?.nextPage]);
+  const isMoreRead = useMemo(() => !!result?.resData?.nextPage || false, [result?.resData?.nextPage]);
   const totalCount = useMemo(() => result?.resData?.totalCount || 0, [result?.resData?.totalCount]);
 
   useEffect(() => {

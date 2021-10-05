@@ -1,8 +1,12 @@
 import { useAppSelector } from '@hooks/useAppRedux';
+import { CustomAxiosError } from '@typings/type';
 
 import { FetchStatus } from '../slice';
 
-export default function useFetchStatus<T = any>(type: string, actionId?: any): { status: FetchStatus; data: T } {
+export default function useFetchStatus<T = any, E = CustomAxiosError>(
+  type: string,
+  actionId?: any,
+): { status: FetchStatus; data: T | null; error: E | null } {
   const { status, data, actionList } = useAppSelector(
     (state) =>
       state.FETCH_STATUS[type] || {
@@ -13,7 +17,13 @@ export default function useFetchStatus<T = any>(type: string, actionId?: any): {
   );
 
   if (actionId && actionList && !actionList.includes(actionId)) {
-    return { status: 'INIT', data };
+    return { status: 'INIT', data, error: null };
   }
-  return { status, data };
+  if (status === 'SUCCESS') {
+    return { status, data, error: null };
+  }
+  if (status === 'FAIL') {
+    return { status, data, error: data };
+  }
+  return { status, data, error: null };
 }
