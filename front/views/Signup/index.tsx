@@ -6,36 +6,25 @@ import { Form, Input, Checkbox, Button, Typography, message } from 'antd';
 import Router from 'next/router';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import * as yup from 'yup';
 
 import { useFetchStatus } from '@modules/fetchStatus';
-import { signup, userSelector } from '@modules/user';
+import { signup, SIGNUP_SCHEMA, userSelector } from '@modules/user';
+import { FormSignup } from '@modules/user/@types';
+import isCustomAxiosError from '@utils/isCustomAxiosError';
 import { HOME_URL } from '@utils/urls';
 
 import { FormWrapper } from './styles';
-
-const SIGNUP_SCHEMA = yup.object({
-  email: yup.string().email('올바르지 않은 이메일 양식입니다.').required('이메일은 필수 입력입니다.'),
-  nickname: yup.string().required('닉네임은 필수 입력입니다.'),
-  password: yup
-    .string()
-    .required('비밀번호는 필수 입력입니다.')
-    .matches(/[a-zA-Z]/gi, { message: '영문,숫자를 혼합하여 입력해야 합니다.' })
-    .matches(/[0-9]/g, { message: '영문,숫자를 혼합하여 입력해야 합니다.' }),
-  'password-check': yup
-    .string()
-    .oneOf([yup.ref('password')], '비밀번호가 일치하지 않습니다.')
-    .required('비밀번호 확인은 필수 입력입니다.'),
-  'user-term': yup.boolean().oneOf([true], '약관에 동의가 필요 합니다.'),
-});
-
-type FormData = yup.InferType<typeof SIGNUP_SCHEMA>;
 
 const Signup = () => {
   const dispatch = useDispatch();
   const { status } = useFetchStatus(signup.TYPE);
   const myData = useSelector(userSelector.myData);
-  const { control, handleSubmit: checkSubmit, errors } = useForm<FormData>({
+
+  const {
+    control,
+    handleSubmit: checkSubmit,
+    formState: { errors },
+  } = useForm<FormSignup>({
     mode: 'onChange',
     resolver: yupResolver(SIGNUP_SCHEMA),
   });
@@ -44,10 +33,12 @@ const Signup = () => {
     return checkSubmit(async (formData) => {
       try {
         await dispatch(signup.asyncThunk(formData));
-        message.success('회원가입에 성공하셨습니다.');
+        message.success('회원가입을 완료했습니다.');
         Router.push(HOME_URL);
       } catch (error) {
-        message.error(JSON.stringify(error.response.data));
+        if (isCustomAxiosError(error)) {
+          message.error(JSON.stringify(error.response.data.resMsg));
+        }
       }
     });
   }, [checkSubmit, dispatch]);
@@ -71,12 +62,8 @@ const Signup = () => {
       >
         <Controller
           control={control}
-          as={<Input prefix={<MailOutlined />} />}
+          render={() => <Input id="email" type="email" placeholder="User Email" prefix={<MailOutlined />} />}
           name="email"
-          id="email"
-          type="email"
-          placeholder="User Email"
-          defaultValue=""
         />
       </Form.Item>
       <Form.Item
@@ -88,11 +75,8 @@ const Signup = () => {
       >
         <Controller
           control={control}
-          as={<Input prefix={<UserOutlined />} />}
+          render={() => <Input id="nickname" placeholder="Nickname" prefix={<UserOutlined />} />}
           name="nickname"
-          id="nickname"
-          placeholder="Nickname"
-          defaultValue=""
         />
       </Form.Item>
       <Form.Item
@@ -104,12 +88,8 @@ const Signup = () => {
       >
         <Controller
           control={control}
-          as={<Input prefix={<LockOutlined />} />}
+          render={() => <Input id="password" type="password" placeholder="Password Check" prefix={<LockOutlined />} />}
           name="password"
-          type="password"
-          id="password"
-          placeholder="Password Check"
-          defaultValue=""
         />
       </Form.Item>
       <Form.Item
@@ -121,12 +101,10 @@ const Signup = () => {
       >
         <Controller
           control={control}
-          as={<Input prefix={<LockOutlined />} />}
+          render={() => (
+            <Input id="password-check" type="password" placeholder="Password Check" prefix={<LockOutlined />} />
+          )}
           name="password-check"
-          type="password"
-          id="password-check"
-          placeholder="Password Check"
-          defaultValue=""
         />
       </Form.Item>
       <Form.Item
@@ -138,13 +116,12 @@ const Signup = () => {
       >
         <Controller
           control={control}
-          render={({ value, onChange }) => (
-            <Checkbox onChange={() => onChange(!value)} checked={value} value={value}>
+          name="user-term"
+          render={({ field: { value, onChange } }) => (
+            <Checkbox id="user-term" onChange={() => onChange(!value)} checked={value} value={value}>
               약관에 동의 합니다.
             </Checkbox>
           )}
-          name="user-term"
-          id="user-term"
           defaultValue={false}
         />
       </Form.Item>
