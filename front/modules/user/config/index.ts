@@ -22,5 +22,5 @@ export const SIGNUP_SCHEMA = yup.object({
     .string()
     .oneOf([yup.ref('password')], '비밀번호가 일치하지 않습니다.')
     .required('비밀번호 확인은 필수 입력입니다.'),
-  'user-term': yup.boolean().oneOf([true], '약관에 동의가 필요 합니다.'),
+  'user-term': yup.boolean().oneOf([true], '약관에 동의가 필요 합니다.').required('약관에 동의가 필요 합니다.'),
 });
