@@ -9,6 +9,9 @@ export const StyledCard = styled(Card)`
 `;
 
 export const StyledButton = styled(Button)`
+  min-width: 122px;
+  height: 36px;
+  font-size: 15px;
   font-weight: bold;
 `;
 
