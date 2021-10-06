@@ -7,8 +7,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 
 import { useFetchStatus } from '@modules/fetchStatus';
-import { NICKNAME_SCHEMA, useReadMyUser, userAction } from '@modules/user';
-import { FormNickname } from '@modules/user/@types';
+import { UPDATE_MY_USER_SCHEMA, useReadMyUser, userAction } from '@modules/user';
+import { FormUpdateMyUser } from '@modules/user/@types';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
 
 import { StyledForm } from './styles';
@@ -23,9 +23,9 @@ const EditMyUserForm = () => {
     handleSubmit: checkSubmit,
     formState: { errors },
     reset,
-  } = useForm<FormNickname>({
+  } = useForm<FormUpdateMyUser>({
     mode: 'onSubmit',
-    resolver: yupResolver(NICKNAME_SCHEMA),
+    resolver: yupResolver(UPDATE_MY_USER_SCHEMA),
   });
 
   useEffect(() => {
@@ -38,7 +38,7 @@ const EditMyUserForm = () => {
   }, [myData, reset]);
 
   const handleSubmitUpdateNickname = useCallback(
-    async (formData: FormNickname) => {
+    async (formData: FormUpdateMyUser) => {
       if (!myData?.id) return;
       try {
         await dispatch(userAction.updateMyUser.asyncThunk(formData));
