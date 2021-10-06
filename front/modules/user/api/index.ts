@@ -91,7 +91,7 @@ export type SignupBodyQuery = {
   password: string;
 };
 export interface SignupRes extends CommonRes {
-  resData: User;
+  resData: MyUser;
 }
 export const GET_SIGNUP_API = () => {
   return `/user`;
