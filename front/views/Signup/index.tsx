@@ -1,36 +1,36 @@
-import React, { useEffect, useMemo } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Form, Input, Checkbox, Button, Typography, message } from 'antd';
 import Router from 'next/router';
 import { Controller, useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { useFetchStatus } from '@modules/fetchStatus';
-import { signup, SIGNUP_SCHEMA, userSelector } from '@modules/user';
+import { signup, SIGNUP_SCHEMA, useReadMyUser } from '@modules/user';
 import { FormSignup } from '@modules/user/@types';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
 import { HOME_URL } from '@utils/urls';
 
-import { FormWrapper } from './styles';
+import { StyledForm } from './styles';
 
 const Signup = () => {
   const dispatch = useDispatch();
   const { status } = useFetchStatus(signup.TYPE);
-  const myData = useSelector(userSelector.myData);
+  const { data: myData } = useReadMyUser();
 
   const {
     control,
     handleSubmit: checkSubmit,
     formState: { errors },
   } = useForm<FormSignup>({
-    mode: 'onChange',
+    mode: 'onSubmit',
     resolver: yupResolver(SIGNUP_SCHEMA),
   });
 
-  const handleSubmit = useMemo(() => {
-    return checkSubmit(async (formData) => {
+  const handleSubmitCreateUser = useCallback(
+    async (formData: FormSignup) => {
       try {
         await dispatch(signup.asyncThunk(formData));
         message.success('회원가입을 완료했습니다.');
@@ -40,8 +40,9 @@ const Signup = () => {
           message.error(JSON.stringify(error.response.data.resMsg));
         }
       }
-    });
-  }, [checkSubmit, dispatch]);
+    },
+    [dispatch],
+  );
 
   useEffect(() => {
     if (myData) {
@@ -51,8 +52,8 @@ const Signup = () => {
   }, [myData]);
 
   return (
-    <FormWrapper onFinish={() => handleSubmit()}>
-      <Typography.Title>Signup</Typography.Title>
+    <StyledForm onSubmitCapture={checkSubmit(handleSubmitCreateUser)}>
+      <Typography.Title className="title">Signup</Typography.Title>
       <Form.Item
         label="이메일"
         htmlFor="email"
@@ -62,8 +63,8 @@ const Signup = () => {
       >
         <Controller
           control={control}
-          render={() => <Input id="email" type="email" placeholder="User Email" prefix={<MailOutlined />} />}
           name="email"
+          render={() => <Input id="email" type="email" placeholder="User Email" prefix={<MailOutlined />} />}
         />
       </Form.Item>
       <Form.Item
@@ -75,8 +76,8 @@ const Signup = () => {
       >
         <Controller
           control={control}
-          render={() => <Input id="nickname" placeholder="Nickname" prefix={<UserOutlined />} />}
           name="nickname"
+          render={() => <Input id="nickname" placeholder="Nickname" prefix={<UserOutlined />} />}
         />
       </Form.Item>
       <Form.Item
@@ -88,8 +89,8 @@ const Signup = () => {
       >
         <Controller
           control={control}
-          render={() => <Input id="password" type="password" placeholder="Password Check" prefix={<LockOutlined />} />}
           name="password"
+          render={() => <Input id="password" type="password" placeholder="Password Check" prefix={<LockOutlined />} />}
         />
       </Form.Item>
       <Form.Item
@@ -101,10 +102,10 @@ const Signup = () => {
       >
         <Controller
           control={control}
+          name="password-check"
           render={() => (
             <Input id="password-check" type="password" placeholder="Password Check" prefix={<LockOutlined />} />
           )}
-          name="password-check"
         />
       </Form.Item>
       <Form.Item
@@ -118,19 +119,26 @@ const Signup = () => {
           control={control}
           name="user-term"
           render={({ field: { value, onChange } }) => (
-            <Checkbox id="user-term" onChange={() => onChange(!value)} checked={value} value={value}>
+            <Checkbox
+              id="user-term"
+              value={value}
+              checked={value}
+              onChange={() => onChange(!value)}
+              defaultChecked={false}
+            >
               약관에 동의 합니다.
             </Checkbox>
           )}
-          defaultValue={false}
         />
       </Form.Item>
-      <Form.Item name="submit">
-        <Button type="primary" htmlType="submit" loading={status === 'LOADING'}>
-          가입하기
-        </Button>
-      </Form.Item>
-    </FormWrapper>
+      <div className="btn-group">
+        <Form.Item name="submit">
+          <Button className="submit-button" type="primary" htmlType="submit" loading={status === 'LOADING'}>
+            가입하기
+          </Button>
+        </Form.Item>
+      </div>
+    </StyledForm>
   );
 };
 
