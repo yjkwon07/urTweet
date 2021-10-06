@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { UserDeleteOutlined } from '@ant-design/icons';
 import { Avatar, Card } from 'antd';
@@ -17,6 +17,8 @@ export interface IProps {
 }
 
 const FollowUserCard = ({ data, loading, onCancel }: IProps) => {
+  const [showUnfollow, setShowUnfollow] = useState(false);
+
   return (
     <StyledCard>
       <Card.Meta
@@ -32,16 +34,17 @@ const FollowUserCard = ({ data, loading, onCancel }: IProps) => {
             <div className="nickname">{data.nickname}</div>
             <div>
               <StyledButton
-                key="stop"
                 shape="round"
                 type="primary"
                 ghost
-                danger
-                icon={<UserDeleteOutlined />}
+                danger={showUnfollow}
+                icon={showUnfollow && <UserDeleteOutlined />}
                 loading={loading}
+                onMouseEnter={() => setShowUnfollow(true)}
+                onMouseLeave={() => setShowUnfollow(false)}
                 onClick={() => onCancel(data.id)}
               >
-                Unfollow
+                {showUnfollow ? 'Unfollow' : 'Following'}
               </StyledButton>
             </div>
           </StyledTitle>
