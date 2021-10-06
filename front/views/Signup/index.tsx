@@ -64,7 +64,16 @@ const Signup = () => {
         <Controller
           control={control}
           name="email"
-          render={() => <Input id="email" type="email" placeholder="User Email" prefix={<MailOutlined />} />}
+          render={({ field: { value, onChange } }) => (
+            <Input
+              id="email"
+              type="email"
+              value={value}
+              onChange={onChange}
+              placeholder="User Email"
+              prefix={<MailOutlined />}
+            />
+          )}
         />
       </Form.Item>
       <Form.Item
@@ -77,7 +86,9 @@ const Signup = () => {
         <Controller
           control={control}
           name="nickname"
-          render={() => <Input id="nickname" placeholder="Nickname" prefix={<UserOutlined />} />}
+          render={({ field: { value, onChange } }) => (
+            <Input id="nickname" value={value} onChange={onChange} placeholder="Nickname" prefix={<UserOutlined />} />
+          )}
         />
       </Form.Item>
       <Form.Item
@@ -90,7 +101,16 @@ const Signup = () => {
         <Controller
           control={control}
           name="password"
-          render={() => <Input id="password" type="password" placeholder="Password Check" prefix={<LockOutlined />} />}
+          render={({ field: { value, onChange } }) => (
+            <Input
+              id="password"
+              type="password"
+              value={value}
+              onChange={onChange}
+              placeholder="Password"
+              prefix={<LockOutlined />}
+            />
+          )}
         />
       </Form.Item>
       <Form.Item
@@ -103,8 +123,15 @@ const Signup = () => {
         <Controller
           control={control}
           name="password-check"
-          render={() => (
-            <Input id="password-check" type="password" placeholder="Password Check" prefix={<LockOutlined />} />
+          render={({ field: { value, onChange } }) => (
+            <Input
+              id="password-check"
+              type="password"
+              value={value}
+              onChange={onChange}
+              placeholder="Password Check"
+              prefix={<LockOutlined />}
+            />
           )}
         />
       </Form.Item>
@@ -119,13 +146,7 @@ const Signup = () => {
           control={control}
           name="user-term"
           render={({ field: { value, onChange } }) => (
-            <Checkbox
-              id="user-term"
-              value={value}
-              checked={value}
-              onChange={() => onChange(!value)}
-              defaultChecked={false}
-            >
+            <Checkbox id="user-term" value onChange={() => onChange(!value)} checked={value} defaultChecked={false}>
               약관에 동의 합니다.
             </Checkbox>
           )}
