@@ -4,12 +4,7 @@ export const HOME_URL = '/';
 export const POST_URL = '/post/[id]';
 export const PROFILE_URL = '/profile';
 export const SIGNUP_URL = '/signup';
-export const HASHTAG_URL = '/hashtag/:hashtag';
 export const USER_URL = '/user/[id]';
-
-export const GET_HASHTAG_URL = (hashtag: string) => {
-  return HASHTAG_URL.replace(':hashtag', hashtag);
-};
 
 export const GET_USER_URL = (id: string) => {
   return USER_URL.replace('[id]', id);

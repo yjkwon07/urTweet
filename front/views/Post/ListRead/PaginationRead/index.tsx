@@ -26,7 +26,7 @@ const PaginationRead = ({ status, postList, totalCount, errorMsg }: IProps) => {
 
   const handleChangePage = useCallback(
     (page: number) => {
-      filterSearch(router, { page });
+      filterSearch(router.pathname, router.query, { page });
     },
     [router],
   );
