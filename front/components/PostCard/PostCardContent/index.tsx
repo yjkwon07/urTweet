@@ -4,7 +4,8 @@ import Link from 'next/link';
 import regexifyString from 'regexify-string';
 
 import { Image as IImage } from '@modules/post/@types';
-import { GET_HASHTAG_URL, PASS_HREF } from '@utils/urls';
+import { HOME_URL, PASS_HREF } from '@utils/urls';
+import { getQueryString, parseQuery } from '@views/Post/ListRead/filterSearch';
 
 import PostImages from '../PostImages';
 
@@ -22,7 +23,7 @@ const PostCardContent = ({ postContent, imageList }: IProps) => {
         decorator(word, index) {
           if (word.match(/(#[^\s#]+)/)) {
             return (
-              <Link href={GET_HASHTAG_URL(word.slice(1))} key={index} passHref>
+              <Link href={`${HOME_URL}${getQueryString(parseQuery({ hashtag: word.slice(1) }))}`} key={index} passHref>
                 <a href={PASS_HREF}>{word}</a>
               </Link>
             );
