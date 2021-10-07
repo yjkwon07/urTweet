@@ -43,7 +43,7 @@ const PostForm = () => {
           message.error(JSON.stringify(error.response.data.resMsg));
         }
       } finally {
-        reset({});
+        reset();
       }
     },
     [dispatch, reset],

@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Global } from '@emotion/react';
 import dayjs from 'dayjs';
+import 'dayjs/locale/ko';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { AppProps } from 'next/app';
 import Head from 'next/head';

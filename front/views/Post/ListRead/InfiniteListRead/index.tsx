@@ -37,7 +37,7 @@ const InfiniteListRead = ({ status, postList, isMoreRead, errorMsg }: IProps) =>
   return (
     <StyledViewWrapper>
       <Space className="wrapper" direction="vertical" size={10}>
-        {myData && (
+        {myData && !filter?.hashtag && (
           <>
             <PostForm />
             <StyledFormBlock />
