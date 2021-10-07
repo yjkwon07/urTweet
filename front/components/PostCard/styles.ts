@@ -12,6 +12,18 @@ export const StyledCard = styled(Card)`
     .ant-card-actions > li:not(:last-child) {
       border-right: 0px;
     }
+    .retweet {
+      color: #09a909 !important;
+    }
+    .status-detail {
+      color: #65676b;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      & > div:not(:last-child) {
+        margin-right: 4px;
+      }
+    }
   }
 `;
 

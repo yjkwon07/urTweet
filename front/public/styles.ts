@@ -56,6 +56,9 @@ export const globalStyles = css`
     background-color: #606060;
   }
 
+  .mt-10 {
+    margin-top: 10px !important;
+  }
   .mt-45 {
     margin-top: 45px !important;
   }

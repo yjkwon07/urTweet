@@ -5,12 +5,15 @@ import {
   EditOutlined,
   EllipsisOutlined,
   ExclamationCircleOutlined,
+  ExportOutlined,
   HeartOutlined,
   HeartTwoTone,
   MessageOutlined,
   RetweetOutlined,
 } from '@ant-design/icons';
 import { Popover, Button, Divider, message, Tooltip, Modal } from 'antd';
+import cls from 'classnames';
+import Link from 'next/link';
 import { useDispatch } from 'react-redux';
 
 import { useFetchStatus } from '@modules/fetchStatus';
@@ -19,6 +22,7 @@ import { Post } from '@modules/post/@types/db';
 import { useReadMyUser } from '@modules/user';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
 import requiredLogin from '@utils/requiredLogin';
+import { GET_POST_URL, PASS_HREF } from '@utils/urls';
 
 import CommentForm from './CommentForm';
 import CommentList from './CommentList';
@@ -92,7 +96,7 @@ const PostCard = ({ data, initCommentListOpen = false }: IProps) => {
     <StyledCard
       actions={[
         <Tooltip key="retweet" placement="bottom" title="리트윗">
-          <RetweetOutlined onClick={handleRetweet} />
+          <RetweetOutlined className={cls({ retweet: data.RetweetId })} onClick={handleRetweet} />
         </Tooltip>,
         isLike ? (
           <Tooltip key="heart-cancel" placement="bottom" title="좋아요 취소">
@@ -109,13 +113,23 @@ const PostCard = ({ data, initCommentListOpen = false }: IProps) => {
         <Tooltip key="more" placement="bottom" title="더보기">
           <Popover
             trigger="onclick"
+            title="더보기"
             visible={morePopOverOpen}
             onVisibleChange={handleToggleMorePopOver}
             content={
               <div role="presentation" onClick={handleToggleMorePopOver}>
+                <p>
+                  <Button type="text" ghost size="small">
+                    <Link href={GET_POST_URL(data.id.toString())} passHref>
+                      <a href={PASS_HREF}>
+                        <ExportOutlined /> 상세페이지 이동
+                      </a>
+                    </Link>
+                  </Button>
+                </p>
                 {data.User.id === myData?.id && !data.RetweetId && (
                   <p>
-                    <Button type="primary" ghost size="small" onClick={handleEditMode}>
+                    <Button type="text" ghost size="small" onClick={handleEditMode}>
                       <EditOutlined /> 수정
                     </Button>
                   </p>
@@ -123,8 +137,7 @@ const PostCard = ({ data, initCommentListOpen = false }: IProps) => {
                 {data.User.id === myData?.id && (
                   <p>
                     <Button
-                      type="primary"
-                      danger
+                      type="text"
                       ghost
                       size="small"
                       loading={removePostStatus === 'LOADING'}
@@ -150,7 +163,7 @@ const PostCard = ({ data, initCommentListOpen = false }: IProps) => {
         description={
           data.Retweet ? (
             <>
-              <div className="mb-10">
+              <div className={cls('mb-10', { retweet: data.RetweetId })}>
                 <RetweetOutlined alt="리트윗" /> {data.User.nickname}님이 리트윗하셨습니다.
               </div>
               <StyledRetweetCard>
@@ -184,9 +197,19 @@ const PostCard = ({ data, initCommentListOpen = false }: IProps) => {
           )
         }
       />
+      <div className="mt-10 status-detail">
+        <div>
+          <span>
+            <HeartTwoTone twoToneColor="#eb2f96" /> {data.Likers.length} like
+          </span>
+        </div>
+        <div>
+          <span>댓글 {data.Comments.length}개</span>
+        </div>
+      </div>
       {commentListOpen && (
         <>
-          <Divider plain>{`${data.Comments.length}개의 댓글`}</Divider>
+          <Divider plain />
           <CommentList commentList={data.Comments} />
           {myData?.id && <CommentForm userId={myData?.id} postId={data.id} />}
         </>
