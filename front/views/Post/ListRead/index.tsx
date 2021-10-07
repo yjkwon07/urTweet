@@ -10,16 +10,13 @@ import { ListReadHashtagUrlQuery, useListReadHashtag } from '@modules/hashtag';
 import { ListReadPostUrlQuery, useListReadPost } from '@modules/post';
 import { useSearchFilter } from '@modules/searchFilter';
 
-import filterSearch, { ViewMode } from './filterSearch';
+import filterSearch, { DEFAULT_CUR_PAGE, DEFAULT_PER_PAGE, ViewMode } from './filterSearch';
 import InfiniteMode from './InfiniteListRead';
 import PaginationMode from './PaginationRead';
 import { StyledFilter } from './styles';
 
 const { Title } = Typography;
 const { Option } = Select;
-
-const DEFAULT_CUR_PAGE = 1;
-const DEFAULT_PER_PAGE = 10;
 
 const PostListReadView = () => {
   const router = useRouter();
@@ -50,19 +47,12 @@ const PostListReadView = () => {
   }, [hashtagListData, hashtagListError]);
 
   const handleRefreshPostListData = useCallback(() => {
-    filterSearch(router, {
-      page: DEFAULT_CUR_PAGE,
-      pageSize: DEFAULT_PER_PAGE,
-      hashtag: '',
-    });
+    filterSearch(router.pathname, router.query, { page: DEFAULT_CUR_PAGE, pageSize: DEFAULT_PER_PAGE, hashtag: '' });
   }, [router]);
 
   const handleChangePageSize = useCallback(
     (pageSize: number) => {
-      filterSearch(router, {
-        page: DEFAULT_CUR_PAGE,
-        pageSize,
-      });
+      filterSearch(router.pathname, router.query, { page: DEFAULT_CUR_PAGE, pageSize });
     },
     [router],
   );
@@ -70,15 +60,9 @@ const PostListReadView = () => {
   const handleChangeMode = useCallback(
     (mode: ViewMode) => () => {
       if (mode === 'infinite') {
-        filterSearch(router, {
-          page: DEFAULT_CUR_PAGE,
-          mode,
-        });
+        filterSearch(router.pathname, router.query, { page: DEFAULT_CUR_PAGE, mode });
       } else {
-        filterSearch(router, {
-          page: listReadPostFilter?.page,
-          mode,
-        });
+        filterSearch(router.pathname, router.query, { page: listReadPostFilter?.page, mode });
       }
     },
     [listReadPostFilter?.page, router],
@@ -99,10 +83,7 @@ const PostListReadView = () => {
   }, [changeListReadHashtagFilter, hashtagKeyword]);
 
   const handleSelectHashTagOption = (hashtag: string) => {
-    filterSearch(router, {
-      page: DEFAULT_CUR_PAGE,
-      hashtag,
-    });
+    filterSearch(router.pathname, router.query, { page: DEFAULT_CUR_PAGE, hashtag });
   };
 
   return (
