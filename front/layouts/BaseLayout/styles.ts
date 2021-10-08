@@ -20,6 +20,7 @@ export const StyledLayout = styled(Layout)`
         font-size: 25px;
       }
       .title {
+        color: rgb(255 255 255 / 85%) !important;
         font-weight: 500;
       }
     }
