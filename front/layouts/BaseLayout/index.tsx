@@ -23,9 +23,11 @@ const BaseLayout: FC<IProps> = ({ filterGroup, children }) => {
     <StyledLayout>
       <Content>
         <div className="header mb-50">
-          <span>
-            <ExperimentTwoTone className="logo" /> <span className="title">UrTweet</span>
-          </span>
+          <Link href={HOME_URL} passHref>
+            <a href={PASS_HREF}>
+              <ExperimentTwoTone className="logo" /> <span className="title">UrTweet</span>
+            </a>
+          </Link>
         </div>
         <Row gutter={30}>
           <Col className="header-menu" xs={24} sm={24} md={24} lg={8}>

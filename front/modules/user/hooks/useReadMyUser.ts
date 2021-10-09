@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 
 import { useAppSelector } from '@hooks/useAppRedux';
 import { useFetchStatus } from '@modules/fetchStatus';
+import { getUserId } from '@utils/auth';
 
 import { ReadMyUserRes } from '../api';
 import { userAction, userSelector } from '../slice';
@@ -18,7 +19,7 @@ export default function useReadMyUser() {
 
   useEffect(() => {
     if (!isInitFetch.current) {
-      dispatch(userAction.readMyUser.request({}));
+      if (getUserId()) dispatch(userAction.readMyUser.request({}));
     } else {
       isInitFetch.current = false;
     }
