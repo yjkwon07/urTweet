@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true, // ES6 모듈 사양을 준수하여 CommonJS 모듈을 가져올 수 있게 된다.
+    "module": "esnext", // 모듈 선택
+    "moduleResolution": "node", // 모듈 해석하는 순서
+    "forceConsistentCasingInFileNames": true, // 	동일 파일 참조에 대해 일관성 없는 대소문자를 비활성화합니다.
+    "target": "esnext",
+    "lib": ["ES2020","DOM"],
+    "jsx": "preserve",
+    "allowJs":true,
+    "strict": true,
+    "isolatedModules": true,
+    "alwaysStrict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "baseUrl": "./",
+    "paths": { // 절대경로 설정
+      "@/*": ["/*"],
+      "@components/*": ["components/*"],
+      "@hooks/*": ["hooks/*"],
+      "@layouts/*": ["layouts/*"],
+      "@modules/*": ["modules/*"],
+      "@pages/*": ["pages/*"],
+      "@styles/*": ["styles/*"],
+      "@typings/*": ["typings/*"],
+      "@utils/*": ["utils/*"],
+      "@views/*": ["views/*"]
+    },
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+  ]
+}
