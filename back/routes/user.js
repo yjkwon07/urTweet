@@ -173,7 +173,7 @@ router.post('/login', isNotLoggedIn, (req, res, next) => {
       return next(err);
     }
     if (info) {
-      return res.status(USER_ERROR).send(info.reason);
+      return res.status(USER_ERROR).send(resErrorDataFormat(CLIENT_ERROR, info.reason));
     }
     // req.login()시에 serializeUser 호출
     return req.login(user, async (loginErr) => {
