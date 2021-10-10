@@ -42,6 +42,8 @@
     "source.fixAll.eslint": true
   },
   "cSpell.words": [
-    "resave"
+    "resave",
+    "googlebot",
+    "urtweet"
   ],
 }

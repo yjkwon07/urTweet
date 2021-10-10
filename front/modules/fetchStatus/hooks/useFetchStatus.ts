@@ -1,10 +1,28 @@
-import { useAppSelector } from '@modules/store/configStore';
+import { useAppSelector } from '@hooks/useAppRedux';
 
-import { FETCH_STATUS } from '../slice';
+import { FetchStatus } from '../slice';
 
-export default function useFetchStatus(type: string) {
-  const status = useAppSelector((state) => state[FETCH_STATUS][type]?.status);
-  const data = useAppSelector((state) => state[FETCH_STATUS][type]?.data);
+export default function useFetchStatus<T = any, E = any>(
+  type: string,
+  actionId?: any,
+): { status: FetchStatus; data: T | null; error: E | null } {
+  const { status, data, actionList } = useAppSelector(
+    (state) =>
+      state.FETCH_STATUS[type] || {
+        status: 'INIT',
+        actionList: [],
+        data: null,
+      },
+  );
 
-  return { status, data };
+  if (actionId && actionList && !actionList.includes(actionId)) {
+    return { status: 'INIT', data, error: null };
+  }
+  if (status === 'SUCCESS') {
+    return { status, data, error: null };
+  }
+  if (status === 'FAIL') {
+    return { status, data, error: data };
+  }
+  return { status, data, error: null };
 }
