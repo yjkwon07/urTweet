@@ -62,63 +62,16 @@ function findPostWithoutUserPassword(where) {
   });
 }
 
-function findPostListWithoutUserPassword({ where = {}, limit }) {
-  return Post.findAll({
+function findPostListWithoutUserPassword({ where = {}, limit, offset, hashtag }) {
+  return Post.findAndCountAll({
     where,
-    limit,
-    order: [['createdAt', 'DESC']],
-    include: [
-      {
-        model: Image,
-      },
-      {
-        model: Comment,
-        include: [
-          {
-            model: User,
-            attributes: ['id', 'nickname'],
-            order: [['createdAt', 'DESC']],
-          },
-        ],
-      },
-      {
-        model: User,
-        attributes: ['id', 'nickname'],
-      },
-      {
-        model: User,
-        as: 'Likers',
-        attributes: ['id'],
-        through: {
-          attributes: [],
-        },
-      },
-      {
-        model: Post,
-        as: 'Retweet',
-        include: [
-          {
-            model: User,
-            attributes: ['id', 'nickname'],
-          },
-          {
-            model: Image,
-          },
-        ],
-      },
-    ],
-  });
-}
-
-function findHashtagPostListWithoutUserPassword({ where = {}, limit }, hashtag) {
-  return Post.findAll({
-    where,
+    offset,
     limit,
     order: [['createdAt', 'DESC']],
     include: [
       {
         model: Hashtag,
-        where: { name: hashtag },
+        where: hashtag && { name: hashtag },
       },
       {
         model: Image,
@@ -159,6 +112,7 @@ function findHashtagPostListWithoutUserPassword({ where = {}, limit }, hashtag) 
         ],
       },
     ],
+    distinct: true,
   });
 }
 
@@ -167,5 +121,4 @@ module.exports = {
   findRetweetPost,
   findPostWithoutUserPassword,
   findPostListWithoutUserPassword,
-  findHashtagPostListWithoutUserPassword,
 };

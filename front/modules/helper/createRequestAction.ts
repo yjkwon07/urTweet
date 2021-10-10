@@ -2,10 +2,11 @@ import { createAction } from '@reduxjs/toolkit';
 import { AxiosResponse } from 'axios';
 
 import { createRequestAsyncThunk } from './createRequestAsyncThunk';
+import { RequestCommonMeta } from './type';
 
-export const createRequestAction = <R, S, M = any, F = any>(
+export const createRequestAction = <R, S, M extends RequestCommonMeta>(
   type: string,
-  requestAPI?: (query: R) => Promise<AxiosResponse<S>>,
+  requestAPI: (query: R) => Promise<AxiosResponse<S>>,
 ) => {
   const REQUEST = `${type}/request`;
   const SUCCESS = `${type}/success`;
@@ -13,11 +14,11 @@ export const createRequestAction = <R, S, M = any, F = any>(
 
   const action = {
     TYPE: type,
-    requestAPI,
-    requset: createAction(REQUEST, (payload: R, meta?: M) => ({ payload, meta })),
+    request: createAction(REQUEST, (payload: R, meta?: M) => ({ payload, meta })),
     success: createAction(SUCCESS, (payload: S, meta?: M) => ({ payload, meta })),
-    failure: createAction(FAILURE, (payload: F, meta?: M) => ({ payload, meta })),
+    failure: createAction(FAILURE, (payload: AxiosResponse, meta?: M) => ({ payload, meta })),
+    requestAPI,
   };
-  const asyncTunk = createRequestAsyncThunk<R, S, M>(action.requset);
-  return { ...action, asyncTunk };
+  const asyncThunk = createRequestAsyncThunk<R, S, M>(action.request);
+  return { ...action, asyncThunk };
 };

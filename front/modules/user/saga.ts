@@ -7,7 +7,7 @@ import {
   signup,
   logout,
   readMyUser,
-  modifyNickname,
+  updateMyUser,
   follow,
   unFollow,
   listReadFollow,
@@ -21,62 +21,62 @@ const logoutSaga = createRequestSaga(logout, logout.requestAPI);
 const signupSaga = createRequestSaga(signup, signup.requestAPI);
 const readMyUserSaga = createRequestSaga(readMyUser, readMyUser.requestAPI);
 const readUserSaga = createRequestSaga(readUser, readUser.requestAPI);
-const modifyNicknameSaga = createRequestSaga(modifyNickname, modifyNickname.requestAPI);
-const listReadfollowSaga = createRequestSaga(listReadFollow, listReadFollow.requestAPI);
-const listReadfollowingSaga = createRequestSaga(listReadFollowing, listReadFollowing.requestAPI);
+const updateMyUserSaga = createRequestSaga(updateMyUser, updateMyUser.requestAPI);
+const listReadFollowSaga = createRequestSaga(listReadFollow, listReadFollow.requestAPI);
+const listReadFollowingSaga = createRequestSaga(listReadFollowing, listReadFollowing.requestAPI);
 const followSaga = createRequestSaga(follow, follow.requestAPI);
 const unFollowSaga = createRequestSaga(unFollow, unFollow.requestAPI);
 const removeFollowerMeSaga = createRequestSaga(removeFollowerMe, removeFollowerMe.requestAPI);
 
 function* watchLogIn() {
-  yield takeLatest(login.requset, loginSaga);
+  yield takeLatest(login.request, loginSaga);
 }
 
 function* watchLogout() {
-  yield takeLatest(logout.requset, logoutSaga);
+  yield takeLatest(logout.request, logoutSaga);
 }
 
-function* watchSinup() {
-  yield debounce(300, signup.requset, signupSaga);
+function* watchSignup() {
+  yield debounce(300, signup.request, signupSaga);
 }
 
 function* watchReadMyUser() {
-  yield takeLatest(readMyUser.requset, readMyUserSaga);
+  yield debounce(300, readMyUser.request, readMyUserSaga);
 }
 
 function* watchReadUser() {
-  yield takeLatest(readUser.requset, readUserSaga);
+  yield takeLatest(readUser.request, readUserSaga);
 }
 
 function* watchModifyNickname() {
-  yield takeLatest(modifyNickname.requset, modifyNicknameSaga);
+  yield takeLatest(updateMyUser.request, updateMyUserSaga);
 }
 
 function* watchListReadFollow() {
-  yield takeLatest(listReadFollow.requset, listReadfollowSaga);
+  yield takeLatest(listReadFollow.request, listReadFollowSaga);
 }
 
 function* watchListReadFollowing() {
-  yield takeLatest(listReadFollowing.requset, listReadfollowingSaga);
+  yield takeLatest(listReadFollowing.request, listReadFollowingSaga);
 }
 
 function* watchFollow() {
-  yield takeLatest(follow.requset, followSaga);
+  yield takeLatest(follow.request, followSaga);
 }
 
 function* watchUnFollow() {
-  yield takeLatest(unFollow.requset, unFollowSaga);
+  yield takeLatest(unFollow.request, unFollowSaga);
 }
 
 function* watchRemoveFollowerMe() {
-  yield takeLatest(removeFollowerMe.requset, removeFollowerMeSaga);
+  yield takeLatest(removeFollowerMe.request, removeFollowerMeSaga);
 }
 
 export default function* userSaga() {
   yield all([
     fork(watchLogIn),
     fork(watchLogout),
-    fork(watchSinup),
+    fork(watchSignup),
     fork(watchReadMyUser),
     fork(watchReadUser),
     fork(watchModifyNickname),

@@ -1,117 +1,78 @@
-import { all, fork, takeLatest, debounce, throttle, call, select, put } from 'redux-saga/effects';
+import { all, fork, takeLatest, debounce, call, select, put } from 'redux-saga/effects';
 
 import { createRequestSaga } from '@modules/helper';
-import { RootState } from '@modules/store/slices';
 import { addPostToMe, removePostToMe } from '@modules/user';
 
-import {
-  uploadImages,
-  likePost,
-  unlikePost,
-  readPost,
-  listReadUserPost,
-  listReadHashTagPost,
-  listReadPost,
-  createPost,
-  modifyPost,
-  removePost,
-  createComment,
-  retweetPost,
-  infinteListReadPost,
-} from './slice';
+import { postAction } from './slice';
 
-const uploadImagesSaga = createRequestSaga(uploadImages, uploadImages.requestAPI);
-const likePostSaga = createRequestSaga(likePost, likePost.requestAPI);
-const unlikePostSaga = createRequestSaga(unlikePost, unlikePost.requestAPI);
-const readPostSaga = createRequestSaga(readPost, readPost.requestAPI);
-const listReadUserPostSaga = createRequestSaga(listReadUserPost, listReadUserPost.requestAPI);
-const listReadHashTagPostSaga = createRequestSaga(listReadHashTagPost, listReadHashTagPost.requestAPI);
-const listReadPostSaga = createRequestSaga(listReadPost, listReadPost.requestAPI);
-const infiniteListReadPostSaga = createRequestSaga(infinteListReadPost, infinteListReadPost.requestAPI);
-const createPostSaga = createRequestSaga(createPost, createPost.requestAPI);
-const modifyPostSaga = createRequestSaga(modifyPost, modifyPost.requestAPI);
-const removePostSaga = createRequestSaga(removePost, removePost.requestAPI);
-const createCommentSaga = createRequestSaga(createComment, createComment.requestAPI);
-const retweetPostSaga = createRequestSaga(retweetPost, retweetPost.requestAPI);
+const retweetPostSaga = createRequestSaga(postAction.createRetweet, postAction.createRetweet.requestAPI);
+const createPostSaga = createRequestSaga(postAction.createPost, postAction.createPost.requestAPI);
+const readPostSaga = createRequestSaga(postAction.readPost, postAction.readPost.requestAPI);
+const listReadPostSaga = createRequestSaga(postAction.listReadPost, postAction.listReadPost.requestAPI);
+const updatePostSaga = createRequestSaga(postAction.updatePost, postAction.updatePost.requestAPI);
+const removePostSaga = createRequestSaga(postAction.removePost, postAction.removePost.requestAPI);
+const unlikePostSaga = createRequestSaga(postAction.unlikePost, postAction.unlikePost.requestAPI);
+const likePostSaga = createRequestSaga(postAction.likePost, postAction.likePost.requestAPI);
+const createCommentSaga = createRequestSaga(postAction.createComment, postAction.createComment.requestAPI);
 
-function* watchUploadImages() {
-  yield takeLatest(uploadImages.requset, uploadImagesSaga);
-}
-
-function* watchLikePost() {
-  yield takeLatest(likePost.requset, likePostSaga);
-}
-
-function* watchUnlikePost() {
-  yield takeLatest(unlikePost.requset, unlikePostSaga);
-}
-
-function* watchReadPost() {
-  yield takeLatest(readPost.requset, readPostSaga);
-}
-
-function* watchListReadUserPost() {
-  yield throttle(300, listReadUserPost.requset, listReadUserPostSaga);
-}
-
-function* watchListReadHashTag() {
-  yield takeLatest(listReadHashTagPost.requset, listReadHashTagPostSaga);
-}
-
-function* watchListRead() {
-  yield takeLatest(listReadPost.requset, listReadPostSaga);
-}
-
-function* watchInfiniteListRead() {
-  yield throttle(300, infinteListReadPost.requset, infiniteListReadPostSaga);
+function* watchRetweetPost() {
+  yield debounce(300, postAction.createRetweet.request, retweetPostSaga);
 }
 
 function* watchCreatePost() {
-  yield debounce(300, createPost.requset, function* (action) {
+  yield debounce(300, postAction.createPost.request, function* (action) {
     yield call(createPostSaga, action);
     const rootState: RootState = yield select();
-    const { status, data } = rootState.FETCH_STATUS[createPost.TYPE];
+    const { status, data } = rootState.FETCH_STATUS[postAction.createPost.TYPE];
     if (status === 'SUCCESS') {
       yield put(addPostToMe(data.id));
     }
   });
 }
 
-function* watchModifyPost() {
-  yield takeLatest(modifyPost.requset, modifyPostSaga);
+function* watchReadPost() {
+  yield takeLatest(postAction.readPost.request, readPostSaga);
+}
+
+function* watchListRead() {
+  yield takeLatest(postAction.listReadPost.request, listReadPostSaga);
+}
+
+function* watchUpdatePost() {
+  yield takeLatest(postAction.updatePost.request, updatePostSaga);
 }
 
 function* watchRemovePost() {
-  yield takeLatest(removePost.requset, function* (action) {
+  yield takeLatest(postAction.removePost.request, function* (action) {
     yield call(removePostSaga, action);
     const rootState: RootState = yield select();
-    const { status, data } = rootState.FETCH_STATUS[removePost.TYPE];
+    const { status, data } = rootState.FETCH_STATUS[postAction.removePost.TYPE];
     if (status === 'SUCCESS') {
       yield put(removePostToMe(data.PostId));
     }
   });
 }
 
-function* watchCreateComment() {
-  yield debounce(300, createComment.requset, createCommentSaga);
+function* watchLikePost() {
+  yield takeLatest(postAction.likePost.request, likePostSaga);
 }
 
-function* watchRetweetPost() {
-  yield debounce(300, retweetPost.requset, retweetPostSaga);
+function* watchUnlikePost() {
+  yield takeLatest(postAction.unlikePost.request, unlikePostSaga);
+}
+
+function* watchCreateComment() {
+  yield debounce(300, postAction.createComment.request, createCommentSaga);
 }
 
 export default function* postSaga() {
   yield all([
-    fork(watchUploadImages),
     fork(watchLikePost),
     fork(watchUnlikePost),
     fork(watchReadPost),
-    fork(watchListReadUserPost),
-    fork(watchListReadHashTag),
     fork(watchListRead),
-    fork(watchInfiniteListRead),
     fork(watchCreatePost),
-    fork(watchModifyPost),
+    fork(watchUpdatePost),
     fork(watchRemovePost),
     fork(watchCreateComment),
     fork(watchRetweetPost),

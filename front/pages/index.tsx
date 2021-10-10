@@ -3,48 +3,34 @@ import React from 'react';
 import Head from 'next/head';
 import { END } from 'redux-saga';
 
-import SEO, { IProps as ISEOProps } from '@components/SEO';
-import AppLayout from '@layouts/App';
-import { infinteListReadPost } from '@modules/post';
-import { DEAFULT_PAGE_SIZE } from '@modules/post/utils/constants';
-import { wrapper } from '@modules/store/configStore';
+import SEO from '@components/SEO';
+import { postAction } from '@modules/post';
+import { searchFilterAction } from '@modules/searchFilter';
+import wrapper from '@modules/store/configStore';
 import { HOME_URL } from '@utils/urls';
-import Home from '@views/Home';
+import ListReadView from '@views/Post/ListRead';
+import { parseQuery } from '@views/Post/ListRead/filterSearch';
 
-export interface IProps {
-  title: string;
-  seo: ISEOProps;
-}
-
-const HomePage = ({ title, seo }: IProps) => {
+const HomePage = () => {
   return (
-    <AppLayout>
+    <>
       <Head>
-        <title>{title}</title>
-        <SEO title={seo.title} url={seo.url} description={seo.description} name={seo.name} keywords={seo.keywords} />
+        <title>HOME | urTweet</title>
+        <SEO title="urTweet Home" url={HOME_URL} description="urTweet Home page" name="urTweet Home" keywords="Home" />
       </Head>
-      <Home isSSR />
-    </AppLayout>
+      <ListReadView />
+    </>
   );
 };
 
 // SSR
-// https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering
-export const getServerSideProps = wrapper.getServerSideProps(async ({ store }) => {
-  await store.dispatch(infinteListReadPost.asyncTunk({ pageSize: DEAFULT_PAGE_SIZE }));
+export const getServerSideProps = wrapper.getServerSideProps(async ({ store, query }) => {
+  const { page, pageSize, hashtag } = parseQuery(query);
+  const filter = { page, pageSize, hashtag };
+
+  store.dispatch(searchFilterAction.changeSearchFilter({ key: 'LIST_READ_POST', filter }));
+  await store.dispatch(postAction.listReadPost.asyncThunk(filter));
   store.dispatch(END);
-  return {
-    props: {
-      title: `HOME | urTweet`,
-      seo: {
-        title: `urTweet Home`,
-        url: HOME_URL,
-        description: `urTweet Home page`,
-        name: `urTweet Home`,
-        keywords: `Home`,
-      },
-    },
-  };
 });
 
 export default HomePage;

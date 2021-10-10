@@ -1,14 +1,18 @@
 import { createAction, createSlice } from '@reduxjs/toolkit';
 
 // Type
-interface ItypePayload {
+export interface FetchStatusActionPayload {
   type: string;
+  actionList?: any[];
   data?: any;
 }
 
-export interface IFetchReducer {
-  [key: string]: {
-    status: 'INIT' | 'LOADING' | 'SUCCESS' | 'FAIL';
+export type FetchStatus = 'INIT' | 'LOADING' | 'SUCCESS' | 'FAIL';
+
+export interface FetchStatusState {
+  [type: string]: {
+    status: FetchStatus;
+    actionList: any[];
     data?: any;
   };
 }
@@ -17,40 +21,44 @@ export interface IFetchReducer {
 export const FETCH_STATUS = 'FETCH_STATUS';
 
 // Action
-export const initFetch = createAction<ItypePayload>(`${FETCH_STATUS}/initFetch`);
-export const request = createAction<ItypePayload>(`${FETCH_STATUS}/request`);
-export const success = createAction<ItypePayload>(`${FETCH_STATUS}/success`);
-export const fail = createAction<ItypePayload>(`${FETCH_STATUS}/fail`);
+const initFetchStatus = createAction<Pick<FetchStatusActionPayload, 'type'>>(`${FETCH_STATUS}/init`);
+const requestFetchStatus = createAction<FetchStatusActionPayload>(`${FETCH_STATUS}/request`);
+const successFetchStatus = createAction<FetchStatusActionPayload>(`${FETCH_STATUS}/success`);
+const failureFetchStatus = createAction<FetchStatusActionPayload>(`${FETCH_STATUS}/fail`);
 
 // Reducer
-const initialState: IFetchReducer = {};
+const initialState: FetchStatusState = {};
 const slice = createSlice({
   name: FETCH_STATUS,
   initialState,
   reducers: {},
   extraReducers: (builder) =>
     builder
-      .addCase(initFetch, (state, { payload: { type } }) => {
+      .addCase(initFetchStatus, (state, { payload: { type } }) => {
         state[type] = {
           status: 'INIT',
+          actionList: [],
           data: null,
         };
       })
-      .addCase(request, (state, { payload: { type } }) => {
+      .addCase(requestFetchStatus, (state, { payload: { type, actionList = [] } }) => {
         state[type] = {
           status: 'LOADING',
+          actionList: state[type]?.actionList.concat(actionList) || actionList,
           data: null,
         };
       })
-      .addCase(success, (state, { payload: { type, data } }) => {
+      .addCase(successFetchStatus, (state, { payload: { type, actionList = [], data } }) => {
         state[type] = {
           status: 'SUCCESS',
+          actionList: state[type]?.actionList.filter((action) => !actionList?.includes(action)) || [],
           data,
         };
       })
-      .addCase(fail, (state, { payload: { type, data } }) => {
+      .addCase(failureFetchStatus, (state, { payload: { type, actionList = [], data } }) => {
         state[type] = {
           status: 'FAIL',
+          actionList: state[type]?.actionList.filter((action) => !actionList?.includes(action)) || [],
           data,
         };
       })
@@ -58,4 +66,10 @@ const slice = createSlice({
 });
 
 export const fetchStatusReducer = slice.reducer;
-export const fetchStatusAction = slice.actions;
+export const fetchStatusAction = {
+  ...slice.actions,
+  initFetchStatus,
+  requestFetchStatus,
+  successFetchStatus,
+  failureFetchStatus,
+};

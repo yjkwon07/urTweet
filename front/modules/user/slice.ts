@@ -1,22 +1,22 @@
-import { createAction, createSlice } from '@reduxjs/toolkit';
+import { createAction, createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit';
 import _remove from 'lodash/remove';
 
-import { createRequestAction } from '@modules/helper/createRequestAction';
+import { createRequestAction } from '@modules/helper';
 
-import { IMyUser, IUser } from './@types/db';
+import { MyUser, User } from './@types/db';
 import {
   requestFollow,
   requestListReadFollow,
   requestListReadFollowing,
   requestLogin,
   requestLogout,
-  requestModifyNickname,
+  requestUpdateMyUser,
   requestReadMyUser,
   requestReadUser,
   requestRemoveFollowerMe,
   requestSignup,
   requestUnfollow,
-} from './api/requestAPI';
+} from './api';
 
 export const USER = 'USER';
 
@@ -26,7 +26,7 @@ export const logout = createRequestAction(`${USER}/logout`, requestLogout);
 export const signup = createRequestAction(`${USER}/signup`, requestSignup);
 export const readMyUser = createRequestAction(`${USER}/readMyUser`, requestReadMyUser);
 export const readUser = createRequestAction(`${USER}/readUser`, requestReadUser);
-export const modifyNickname = createRequestAction(`${USER}/modifyNickname`, requestModifyNickname);
+export const updateMyUser = createRequestAction(`${USER}/updateMyUser`, requestUpdateMyUser);
 export const listReadFollow = createRequestAction(`${USER}/listReadFollow`, requestListReadFollow);
 export const listReadFollowing = createRequestAction(`${USER}/listReadFollowing`, requestListReadFollowing);
 export const follow = createRequestAction(`${USER}/follow`, requestFollow);
@@ -37,20 +37,31 @@ export const removeFollowerMe = createRequestAction(`${USER}/removeFollowerMe`, 
 export const addPostToMe = createAction<number>(`${USER}/addPostToMe`);
 export const removePostToMe = createAction<number>(`${USER}/removePostToMe`);
 
+// Entity
+const followerListDataAdapter = createEntityAdapter<User>({
+  selectId: (data) => data.id,
+});
+const followingListDataAdapter = createEntityAdapter<User>({
+  selectId: (data) => data.id,
+});
+
 // Type
-export interface IState {
-  MyInfo: IMyUser | null;
-  user: IUser | null;
-  followerListData: IUser[];
-  followingListData: IUser[];
+export type PostState = EntityState<User>;
+
+// Type
+export interface UserState {
+  myInfo: MyUser | null;
+  user: User | null;
+  followerListData: EntityState<User>;
+  followingListData: EntityState<User>;
 }
 
 // Reducer
-const initialState: IState = {
-  MyInfo: null,
+const initialState: UserState = {
+  myInfo: null,
   user: null,
-  followerListData: [],
-  followingListData: [],
+  followerListData: followerListDataAdapter.getInitialState(),
+  followingListData: followingListDataAdapter.getInitialState(),
 };
 
 const slice = createSlice({
@@ -59,44 +70,81 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (builder) =>
     builder
-      .addCase(readMyUser.success, (state, { payload: data }) => {
-        state.MyInfo = data;
+      .addCase(readMyUser.success, (state, { payload: { resData } }) => {
+        const { item } = resData;
+        state.myInfo = item;
       })
-      .addCase(readUser.success, (state, { payload: data }) => {
-        state.user = data;
+      .addCase(readUser.success, (state, { payload: { resData } }) => {
+        const { item } = resData;
+        state.user = item;
       })
-      .addCase(modifyNickname.success, (state, { payload: data }) => {
-        if (state.MyInfo) state.MyInfo.nickname = data.nickname;
+      .addCase(updateMyUser.success, (state, { payload: { resData } }) => {
+        const { email, nickname } = resData;
+        if (state.myInfo) {
+          state.myInfo.email = email;
+          state.myInfo.nickname = nickname;
+        }
       })
-      .addCase(listReadFollow.success, (state, { payload: data }) => {
-        state.followerListData = data;
+      .addCase(listReadFollow.success, (state, { payload: { resData } }) => {
+        const { list } = resData;
+        followerListDataAdapter.addMany(state.followerListData, list);
       })
-      .addCase(listReadFollowing.success, (state, { payload: data }) => {
-        state.followingListData = data;
+      .addCase(listReadFollowing.success, (state, { payload: { resData } }) => {
+        const { list } = resData;
+        followingListDataAdapter.addMany(state.followingListData, list);
       })
-      .addCase(follow.success, (state, { payload: data }) => {
-        if (state.MyInfo) state.MyInfo.Followings.push({ id: data.UserId });
+      .addCase(follow.success, (state, { payload: { resData } }) => {
+        const { userId } = resData;
+        if (state.myInfo) state.myInfo.Followings.push({ id: userId });
       })
-      .addCase(unFollow.success, (state, { payload: data }) => {
-        if (state.MyInfo) state.MyInfo.Followings = state.MyInfo.Followings.filter((_) => _.id !== data.UserId);
+      .addCase(unFollow.success, (state, { payload: { resData } }) => {
+        const { userId } = resData;
+        if (state.myInfo) _remove(state.myInfo.Followings, { id: userId });
       })
-      .addCase(removeFollowerMe.success, (state, { payload: data }) => {
-        if (state.MyInfo) state.MyInfo.Followers = state.MyInfo.Followers.filter((_) => _.id !== data.UserId);
+      .addCase(removeFollowerMe.success, (state, { payload: { resData } }) => {
+        const { userId } = resData;
+        if (state.myInfo) _remove(state.myInfo.Followers, { id: userId });
       })
       .addCase(addPostToMe, (state, { payload: id }) => {
-        if (state.MyInfo) state.MyInfo.Posts.unshift({ id });
+        if (state.myInfo) state.myInfo.Posts.unshift({ id });
       })
       .addCase(removePostToMe, (state, { payload: id }) => {
-        if (state.MyInfo) _remove(state.MyInfo.Posts, (v) => v.id === id);
+        if (state.myInfo) _remove(state.myInfo.Posts, { id });
       })
-      .addCase(login.success, (state, { payload: data }) => {
-        state.MyInfo = data;
+      .addCase(login.success, (state, { payload: { resData } }) => {
+        state.myInfo = resData;
       })
       .addCase(logout.success, (state) => {
-        state.MyInfo = null;
-      })
-      .addDefaultCase((state) => state),
+        state.myInfo = null;
+      }),
 });
 
+const { selectAll: followListData } = followerListDataAdapter.getSelectors(
+  (state: RootState) => state.USER.followerListData,
+);
+const { selectAll: followingListData } = followingListDataAdapter.getSelectors(
+  (state: RootState) => state.USER.followingListData,
+);
+
 export const userReducer = slice.reducer;
-export const userAction = slice.actions;
+export const userSelector = {
+  myData: (state: RootState) => state.USER.myInfo,
+  userData: (state: RootState) => state.USER.user,
+  followListData,
+  followingListData,
+};
+export const userAction = {
+  ...slice.actions,
+  readMyUser,
+  readUser,
+  updateMyUser,
+  listReadFollow,
+  listReadFollowing,
+  follow,
+  unFollow,
+  removeFollowerMe,
+  addPostToMe,
+  removePostToMe,
+  login,
+  logout,
+};

@@ -1,102 +1,77 @@
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 
-import { PlusOutlined } from '@ant-design/icons';
+import { SearchOutlined } from '@ant-design/icons';
 
-import ImagesZoom from '@components/ImagesZoom';
-import { IIMage } from '@modules/post/@types/db';
-import { GET_IMAGE_URL } from '@utils/urls';
+import ImageListZoom from '@components/ImageListZoom';
+import imageDownloadLink from '@modules/file/utils/imageDownloadLink';
+import { Image } from '@modules/post/@types/db';
 
-export interface IProps {
-  images: IIMage[];
+import { StyledImage } from './styles';
+
+interface IProps {
+  imageList: Image[];
 }
 
-const PostImages = ({ images }: IProps) => {
-  const [showImagesZoom, setShowImagesZoom] = useState(false);
+const PostImages = ({ imageList }: IProps) => {
+  const [showImageListZoom, setShowImageListZoom] = useState(false);
+  const [isShowDetailImageBtn, setIsShowDetailImageBtn] = useState(false);
+
+  const handleShowDetailImageBtn = useCallback(() => {
+    setIsShowDetailImageBtn(true);
+  }, []);
+
+  const handleCloseDetailImageBtn = useCallback(() => {
+    setIsShowDetailImageBtn(false);
+  }, []);
 
   const handleZoom = useCallback(() => {
-    setShowImagesZoom(true);
+    setShowImageListZoom(true);
   }, []);
 
   const handleClose = useCallback(() => {
-    setShowImagesZoom(false);
+    setShowImageListZoom(false);
   }, []);
 
-  if (images.length === 1) {
+  if (imageList.length === 1) {
     return (
-      <div>
-        <img
-          src={GET_IMAGE_URL(images[0].src)}
-          alt={images[0].src}
-          style={{ width: '100%', display: 'inline-block' }}
-          role="presentation"
-          onClick={handleZoom}
-        />
-        {showImagesZoom && <ImagesZoom images={images} onClose={handleClose} />}
-      </div>
+      <StyledImage onMouseEnter={handleShowDetailImageBtn} onMouseLeave={handleCloseDetailImageBtn}>
+        <img className="one-image" src={imageDownloadLink(imageList[0].src)} alt="" />
+        {isShowDetailImageBtn && (
+          <div className="detail-image" role="presentation" onClick={handleZoom}>
+            <SearchOutlined /> 자세히 보기
+          </div>
+        )}
+        {showImageListZoom && <ImageListZoom imageList={imageList} onClose={handleClose} />}
+      </StyledImage>
     );
   }
-  if (images.length === 2) {
+  if (imageList.length === 2) {
     return (
-      <div>
-        <img
-          src={GET_IMAGE_URL(images[0].src)}
-          alt={images[0].src}
-          style={{ width: '50%', display: 'inline-block' }}
-          role="presentation"
-          onClick={handleZoom}
-        />
-        <img
-          src={GET_IMAGE_URL(images[1].src)}
-          alt={images[1].src}
-          role="presentation"
-          style={{ width: '50%', display: 'inline-block' }}
-          onClick={handleZoom}
-        />
-        {showImagesZoom && <ImagesZoom images={images} onClose={handleClose} />}
-      </div>
+      <StyledImage onMouseEnter={handleShowDetailImageBtn} onMouseLeave={handleCloseDetailImageBtn}>
+        <img className="two-image-l" src={imageDownloadLink(imageList[0].src)} alt="" />
+        <img className="two-image-r" src={imageDownloadLink(imageList[1].src)} alt={imageList[1].src} />
+        {isShowDetailImageBtn && (
+          <div className="detail-image" role="presentation" onClick={handleZoom}>
+            <SearchOutlined /> 자세히 보기
+          </div>
+        )}
+        {showImageListZoom && <ImageListZoom imageList={imageList} onClose={handleClose} />}
+      </StyledImage>
     );
   }
   return (
-    <div style={{ position: 'relative' }}>
-      <div>
-        <img
-          src={GET_IMAGE_URL(images[0].src)}
-          alt={images[0].src}
-          style={{ width: '50%', display: 'inline-block' }}
-          role="presentation"
-          onClick={handleZoom}
-        />
-        <img
-          src={GET_IMAGE_URL(images[1].src)}
-          alt={images[0].src}
-          style={{ width: '50%', display: 'inline-block' }}
-          role="presentation"
-          onClick={handleZoom}
-        />
-        <div
-          role="presentation"
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            backgroundColor: 'rgba(0, 0, 0, 50%)',
-            borderRadius: '.5em',
-            padding: 10,
-            textAlign: 'center',
-            color: '#fff',
-            lineHeight: '30px',
-          }}
-          onClick={handleZoom}
-        >
-          <PlusOutlined />
-          <br />
-          {images.length - 2}
-          개의 사진 더보기
+    <StyledImage onMouseEnter={handleShowDetailImageBtn} onMouseLeave={handleCloseDetailImageBtn}>
+      <img className="four-image-l-t" src={imageDownloadLink(imageList[0].src)} alt="" />
+      <img className="four-image-r-t" src={imageDownloadLink(imageList[1].src)} alt="" />
+      <img className="four-image-l-d" src={imageDownloadLink(imageList[2].src)} alt="" />
+      <img className="four-image-r-d" src={imageDownloadLink(imageList[3].src)} alt="" />
+      {isShowDetailImageBtn && (
+        <div className="detail-image" role="presentation" onClick={handleZoom}>
+          <SearchOutlined /> 자세히 보기
         </div>
-      </div>
-      {showImagesZoom && <ImagesZoom images={images} onClose={handleClose} />}
-    </div>
+      )}
+      {showImageListZoom && <ImageListZoom imageList={imageList} onClose={handleClose} />}
+    </StyledImage>
   );
 };
 

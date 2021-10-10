@@ -1,57 +1,46 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createAction, createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit';
 
-import { createRequestAction } from '@modules/helper/createRequestAction';
+import { createRequestAction } from '@modules/helper';
 
-import { IPost } from './@types/db';
+import { Post } from './@types';
 import {
   requestCreateComment,
   requestCreatePost,
-  requestCreatePostRetweet,
+  requestCreateRetweet,
   requestLikePost,
-  requestListReadHashtagPost,
   requestListReadPost,
-  requestListReadUserPost,
-  requestModifyPost,
+  requestUpdatePost,
   requestReadPost,
   requestRemovePost,
   requestUnlikePost,
-  requestUploadPostImages,
-} from './api/requestAPI';
+} from './api';
 
 export const POST = 'POST';
 
 // Action - API
-export const uploadImages = createRequestAction(`${POST}/uploadImages`, requestUploadPostImages);
-export const listReadUserPost = createRequestAction(`${POST}/listReadUserPost`, requestListReadUserPost);
-export const infinteListReadPost = createRequestAction(`${POST}infinteListReadPost`, requestListReadPost);
-export const listReadHashTagPost = createRequestAction(`${POST}/listReadHashTagPost`, requestListReadHashtagPost);
-export const listReadPost = createRequestAction(`${POST}listReadPost`, requestListReadPost);
-export const readPost = createRequestAction(`${POST}/readPost`, requestReadPost);
-export const retweetPost = createRequestAction(`${POST}/retweetPost`, requestCreatePostRetweet);
-export const createPost = createRequestAction(`${POST}/createPost`, requestCreatePost);
-export const modifyPost = createRequestAction(`${POST}/modifyPost`, requestModifyPost);
-export const removePost = createRequestAction(`${POST}/removePost`, requestRemovePost);
-export const likePost = createRequestAction(`${POST}/likePost`, requestLikePost);
-export const unlikePost = createRequestAction(`${POST}/unlikePost`, requestUnlikePost);
-export const createComment = createRequestAction(`${POST}/createComment`, requestCreateComment);
+const createRetweet = createRequestAction(`${POST}/createRetweet`, requestCreateRetweet);
+const createPost = createRequestAction(`${POST}/createPost`, requestCreatePost);
+const listReadPost = createRequestAction(`${POST}listReadPost`, requestListReadPost);
+const readPost = createRequestAction(`${POST}/readPost`, requestReadPost);
+const updatePost = createRequestAction(`${POST}/updatePost`, requestUpdatePost);
+const removePost = createRequestAction(`${POST}/removePost`, requestRemovePost);
+const likePost = createRequestAction(`${POST}/likePost`, requestLikePost);
+const unlikePost = createRequestAction(`${POST}/unlikePost`, requestUnlikePost);
+const createComment = createRequestAction(`${POST}/createComment`, requestCreateComment);
+
+// Action
+const listDataReset = createAction(`${POST}/listDataReset`);
+
+// Entity
+const postListDataAdapter = createEntityAdapter<Post>({
+  selectId: (data) => data.id,
+});
 
 // Type
-export interface IState {
-  infinitePost: IPost[];
-  infiniteUserPost: IPost[];
-  infiniteHashTagPost: IPost[];
-  list: IPost[];
-  data: IPost | null;
-}
+export type PostState = EntityState<Post>;
 
 // Reducer
-const initialState: IState = {
-  infinitePost: [],
-  infiniteUserPost: [],
-  infiniteHashTagPost: [],
-  list: [],
-  data: null,
-};
+const initialState: PostState = postListDataAdapter.getInitialState();
 
 const slice = createSlice({
   name: POST,
@@ -59,69 +48,76 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (builder) =>
     builder
-      .addCase(readPost.success, (state, { payload: data }) => {
-        state.data = data;
+      .addCase(listDataReset, (state) => {
+        postListDataAdapter.removeAll(state);
       })
-      .addCase(listReadPost.success, (state, { payload: data }) => {
-        state.list = data;
+      .addCase(createRetweet.success, (state, { payload: { resData } }) => {
+        const list = postListDataAdapter.getSelectors().selectAll(state);
+        postListDataAdapter.setAll(state, [resData].concat(list));
       })
-      .addCase(infinteListReadPost.success, (state, { payload: data }) => {
-        state.infinitePost.push(...data);
+      .addCase(createPost.success, (state, { payload: { resData } }) => {
+        const list = postListDataAdapter.getSelectors().selectAll(state);
+        postListDataAdapter.setAll(state, [resData].concat(list));
       })
-      .addCase(listReadUserPost.success, (state, { payload: data }) => {
-        state.infiniteUserPost.push(...data);
-      })
-      .addCase(listReadHashTagPost.success, (state, { payload: data }) => {
-        state.infiniteHashTagPost.push(...data);
-      })
-      .addCase(retweetPost.success, (state, { payload: data }) => {
-        state.infinitePost.unshift(data);
-      })
-      .addCase(createPost.success, (state, { payload: data }) => {
-        state.infinitePost.unshift(data);
-      })
-      .addCase(modifyPost.success, (state, { payload: data }) => {
-        const post = state.list.find((v) => v.id === data.PostId);
-        const infinitePost = state.infinitePost.find((v) => v.id === data.PostId);
-        const infiniteUserPost = state.infiniteUserPost.find((v) => v.id === data.PostId);
-        const infiniteHashTagPost = state.infiniteHashTagPost.find((v) => v.id === data.PostId);
-        if (post) post.content = data.content;
-        if (infinitePost) infinitePost.content = data.content;
-        if (infiniteUserPost) infiniteUserPost.content = data.content;
-        if (infiniteHashTagPost) infiniteHashTagPost.content = data.content;
-      })
-      .addCase(removePost.success, (state, { payload: data }) => {
-        state.list = state.list.filter((v) => v.id !== data.PostId);
-        state.infinitePost = state.infinitePost.filter((v) => v.id !== data.PostId);
-        state.infiniteUserPost = state.infiniteUserPost.filter((v) => v.id !== data.PostId);
-        state.infiniteHashTagPost = state.infiniteHashTagPost.filter((v) => v.id !== data.PostId);
-      })
-      .addCase(likePost.success, (state, { payload: data }) => {
-        state.list.find((v) => v.id === data.PostId)?.Likers.push({ id: data.UserId });
-        state.infinitePost.find((v) => v.id === data.PostId)?.Likers.push({ id: data.UserId });
-        state.infiniteUserPost.find((v) => v.id === data.PostId)?.Likers.push({ id: data.UserId });
-        state.infiniteHashTagPost.find((v) => v.id === data.PostId)?.Likers.push({ id: data.UserId });
-      })
-      .addCase(unlikePost.success, (state, { payload: data }) => {
-        const post = state.list.find((v) => v.id === data.PostId);
-        const infinitePost = state.infinitePost.find((v) => v.id === data.PostId);
-        const infiniteUserPost = state.infiniteUserPost.find((v) => v.id === data.PostId);
-        const infiniteHashTagPost = state.infiniteHashTagPost.find((v) => v.id === data.PostId);
-        if (post) post.Likers = post.Likers.filter((v) => v.id !== data.UserId);
-        if (infinitePost) infinitePost.Likers = infinitePost?.Likers.filter((v) => v.id !== data.UserId);
-        if (infiniteUserPost) infiniteUserPost.Likers = infiniteUserPost?.Likers.filter((v) => v.id !== data.UserId);
-        if (infiniteHashTagPost) {
-          infiniteHashTagPost.Likers = infiniteHashTagPost?.Likers.filter((v) => v.id !== data.UserId);
+      .addCase(listReadPost.success, (state, { payload: { resData }, meta }) => {
+        const { list } = resData;
+        if (meta?.isLoadMore) {
+          postListDataAdapter.removeMany(
+            state,
+            list.map((data) => data.id),
+          );
+          postListDataAdapter.addMany(state, list);
+        } else {
+          postListDataAdapter.setAll(state, list);
         }
       })
-      .addCase(createComment.success, (state, { payload: data }) => {
-        state.list.find((v) => v.id === data.PostId)?.Comments.unshift(data);
-        state.infinitePost.find((v) => v.id === data.PostId)?.Comments.unshift(data);
-        state.infiniteUserPost.find((v) => v.id === data.PostId)?.Comments.unshift(data);
-        state.infiniteHashTagPost.find((v) => v.id === data.PostId)?.Comments.unshift(data);
+      .addCase(readPost.success, (state, { payload: { resData } }) => {
+        const { item } = resData;
+        postListDataAdapter.setAll(state, [item]);
       })
-      .addDefaultCase((state) => state),
+      .addCase(updatePost.success, (state, { payload: { resData } }) => {
+        postListDataAdapter.updateOne(state, {
+          id: resData.id,
+          changes: resData,
+        });
+      })
+      .addCase(removePost.success, (state, { payload: { resData } }) => {
+        postListDataAdapter.removeOne(state, resData.PostId);
+      })
+      .addCase(likePost.success, (state, { payload: { resData } }) => {
+        postListDataAdapter.updateOne(state, {
+          id: resData.PostId,
+          changes: { Likers: state.entities[resData.PostId]?.Likers.concat({ id: resData.UserId }) },
+        });
+      })
+      .addCase(unlikePost.success, (state, { payload: { resData } }) => {
+        postListDataAdapter.updateOne(state, {
+          id: resData.PostId,
+          changes: { Likers: state.entities[resData.PostId]?.Likers.filter((liker) => liker.id !== resData.UserId) },
+        });
+      })
+      .addCase(createComment.success, (state, { payload: { resData } }) => {
+        postListDataAdapter.updateOne(state, {
+          id: resData.PostId,
+          changes: { Comments: state.entities[resData.PostId]?.Comments.concat(resData) },
+        });
+      }),
 });
 
+const { selectAll: listData, selectById } = postListDataAdapter.getSelectors((state: RootState) => state.POST);
+
 export const postReducer = slice.reducer;
-export const postAction = slice.actions;
+export const postSelector = { listData, selectById };
+export const postAction = {
+  ...slice.actions,
+  createRetweet,
+  createPost,
+  listReadPost,
+  readPost,
+  updatePost,
+  removePost,
+  likePost,
+  unlikePost,
+  createComment,
+  listDataReset,
+};

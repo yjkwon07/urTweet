@@ -1,20 +1,25 @@
 import React from 'react';
 
-import moment from 'dayjs';
+import { Global } from '@emotion/react';
+import dayjs from 'dayjs';
+import 'dayjs/locale/ko';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 
-import { wrapper } from '@modules/store/configStore';
+import wrapper from '@modules/store/configStore';
+import { globalStyles } from 'public/styles';
+
 import 'antd/dist/antd.css';
 
-moment.locale('ko');
-moment.extend(relativeTime);
+dayjs.locale('ko');
+dayjs.extend(relativeTime);
 
 const App = ({ Component, pageProps }: AppProps) => {
   return (
     <>
       <Head>
+        <Global styles={globalStyles} />
         <meta charSet="utf-8" />
         <meta
           name="viewport"

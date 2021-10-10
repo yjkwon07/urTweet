@@ -1,3 +1,10 @@
 import { ActionCreatorWithPreparedPayload } from '@reduxjs/toolkit';
 
-export type ActionMetaPayload<P, M> = ActionCreatorWithPreparedPayload<[payload: P, meta?: M], P, string, never, M>;
+import { FetchStatusActionPayload } from '@modules/fetchStatus';
+
+export interface RequestCommonMeta extends SubPartial<FetchStatusActionPayload['data'], 'actionList'> {
+  keyName?: string;
+  isLoadMore?: boolean;
+}
+
+export type ActionMetaPayload<P, M> = ActionCreatorWithPreparedPayload<[payload: P, meta?: M], P, string>;

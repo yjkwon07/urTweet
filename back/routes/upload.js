@@ -23,10 +23,10 @@ const localUpload = multer({
     filename(req, file, done) {
       const ext = path.extname(file.originalname); // 확장자 추출(.png)
       const basename = path.basename(file.originalname, ext); // ss
-      done(null, basename + '_' + new Date().getTime() + ext); // ss15184712891.png
+      done(null, `${Date.now()}_${basename + ext}`); // ss15184712891.png
     },
   }),
   limits: { fileSize: 20 * 1024 * 1024 }, // 20MB
 });
 
-module.exports = { awsUpload, localUpload };
+module.exports = { upload: process.env.NODE_ENV === 'production' ? awsUpload : localUpload };

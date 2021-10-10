@@ -1,7 +1,7 @@
 {
   "javascript.format.enable": false,
   "typescript.format.enable": false,
-  "editor.formatOnSave": false,
+  "editor.formatOnSave": true,
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
   },
@@ -41,4 +41,9 @@
     "source.organizeImports": false,
     "source.fixAll.eslint": true
   },
+  "cSpell.words": [
+    "resave",
+    "googlebot",
+    "urtweet"
+  ],
 }

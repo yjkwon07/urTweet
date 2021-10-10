@@ -1,47 +1,77 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
-import { UserAddOutlined, UserDeleteOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
-import { useDispatch, useSelector } from 'react-redux';
+import { ExclamationCircleOutlined, UserAddOutlined, UserDeleteOutlined } from '@ant-design/icons';
+import { Modal } from 'antd';
+import { useDispatch } from 'react-redux';
 
 import { useFetchStatus } from '@modules/fetchStatus';
-import { IPost } from '@modules/post/@types/db';
-import { follow, unFollow, userSelector } from '@modules/user';
+import { follow, unFollow, useReadMyUser } from '@modules/user';
 
-export interface IProps {
-  data: IPost;
+import { StyledButton } from './styles';
+
+const { confirm } = Modal;
+
+interface IProps {
+  userId: number;
 }
 
-const FollowButton = ({ data }: IProps) => {
+const FollowButton = ({ userId }: IProps) => {
   const dispatch = useDispatch();
-  const myData = useSelector(userSelector.myData);
-  const { status: followStatus } = useFetchStatus(follow.TYPE);
-  const { status: unfollowStatus } = useFetchStatus(unFollow.TYPE);
+  const { status: followStatus } = useFetchStatus(follow.TYPE, userId);
+  const { status: unfollowStatus } = useFetchStatus(unFollow.TYPE, userId);
+  const { data: myData } = useReadMyUser();
 
-  const isFollowing = useMemo(() => !!myData?.Followings.find((_) => _.id === data.User.id), [
-    data.User.id,
-    myData?.Followings,
-  ]);
+  const isFollowing = useMemo(
+    () => !!myData?.Followings.find((Following) => Following.id === userId),
+    [userId, myData?.Followings],
+  );
 
-  const handleToogleFollow = useCallback(() => {
-    if (isFollowing) dispatch(unFollow.requset({ userId: data.User.id }));
-    else dispatch(follow.requset({ userId: data.User.id }));
-  }, [data.User.id, dispatch, isFollowing]);
+  const [showUnfollow, setShowUnfollow] = useState(false);
 
-  if (!myData || data.User.id === myData.id) {
-    return null;
-  }
+  const handleFollow = useCallback(() => {
+    dispatch(follow.request({ userId }, { actionList: [userId] }));
+  }, [userId, dispatch]);
+
+  const handleShowUnfollowConfirm = useCallback(() => {
+    confirm({
+      title: '정말로 언팔로우 하시겠습니까?',
+      icon: <ExclamationCircleOutlined />,
+      content: '언팔로우시 해당 멤버의 활동을 자세히 알 수 없게 됩니다.',
+      onOk() {
+        dispatch(unFollow.request({ userId }, { actionList: [userId] }));
+      },
+    });
+  }, [userId, dispatch]);
 
   return (
-    <Button
-      size="small"
-      type={isFollowing ? undefined : 'primary'}
-      icon={isFollowing ? <UserDeleteOutlined /> : <UserAddOutlined />}
-      loading={followStatus === 'LOADING' || unfollowStatus === 'LOADING'}
-      onClick={handleToogleFollow}
-    >
-      {isFollowing ? '언팔로우' : '팔로우'}
-    </Button>
+    <>
+      {isFollowing ? (
+        <StyledButton
+          shape="round"
+          type="primary"
+          ghost
+          danger={showUnfollow}
+          icon={showUnfollow && <UserDeleteOutlined />}
+          loading={unfollowStatus === 'LOADING'}
+          onMouseEnter={() => setShowUnfollow(true)}
+          onMouseLeave={() => setShowUnfollow(false)}
+          onClick={handleShowUnfollowConfirm}
+        >
+          {showUnfollow ? 'Unfollow' : 'Following'}
+        </StyledButton>
+      ) : (
+        <StyledButton
+          shape="round"
+          type="primary"
+          ghost
+          icon={<UserAddOutlined />}
+          loading={followStatus === 'LOADING'}
+          onClick={handleFollow}
+        >
+          Follow
+        </StyledButton>
+      )}
+    </>
   );
 };
 
