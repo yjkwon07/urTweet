@@ -34,6 +34,8 @@ export const unFollow = createRequestAction(`${USER}/unFollow`, requestUnfollow)
 export const removeFollowerMe = createRequestAction(`${USER}/removeFollowerMe`, requestRemoveFollowerMe);
 
 // Action
+export const myInfoReset = createAction(`${USER}/myInfoReset`);
+export const updateMyInfo = createAction<MyUser>(`${USER}/updateMyInfo`);
 export const addPostToMe = createAction<number>(`${USER}/addPostToMe`);
 export const removePostToMe = createAction<number>(`${USER}/removePostToMe`);
 
@@ -70,6 +72,12 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (builder) =>
     builder
+      .addCase(myInfoReset, (state) => {
+        state.myInfo = initialState.myInfo;
+      })
+      .addCase(updateMyInfo, (state, { payload }) => {
+        state.myInfo = payload;
+      })
       .addCase(readMyUser.success, (state, { payload: { resData } }) => {
         const { item } = resData;
         state.myInfo = item;
@@ -110,12 +118,6 @@ const slice = createSlice({
       })
       .addCase(removePostToMe, (state, { payload: id }) => {
         if (state.myInfo) _remove(state.myInfo.Posts, { id });
-      })
-      .addCase(login.success, (state, { payload: { resData } }) => {
-        state.myInfo = resData;
-      })
-      .addCase(logout.success, (state) => {
-        state.myInfo = null;
       }),
 });
 
@@ -135,6 +137,8 @@ export const userSelector = {
 };
 export const userAction = {
   ...slice.actions,
+  myInfoReset,
+  updateMyInfo,
   readMyUser,
   readUser,
   updateMyUser,
