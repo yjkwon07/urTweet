@@ -7,17 +7,10 @@ import Axios from 'axios';
  */
 
 export const axiosSetting = {
-<<<<<<< Updated upstream
-  scheme: 'http',
-  host: 'localhost',
-  api: '',
-  port: '3065',
-=======
   scheme: process.env.NEXT_PUBLIC_SCHEME,
   host: process.env.NEXT_PUBLIC_HOST,
   api: process.env.NEXT_PUBLIC_API,
   port: process.env.NEXT_PUBLIC_PORT,
->>>>>>> Stashed changes
   server() {
     return `${this.scheme}://${this.host}${this.api}${this.port ? `:${this.port}` : ''}`;
   },
