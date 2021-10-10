@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { useDispatch } from 'react-redux';
 
@@ -10,11 +10,10 @@ import { postSelector, postAction } from '../slice';
 
 export default function useReadPost(filter?: ReadPostUrlQuery) {
   const dispatch = useDispatch();
-  const { status, data: result } = useFetchStatus<ReadPostRes>(postAction.readPost.TYPE);
+  const { status, error } = useFetchStatus<ReadPostRes>(postAction.readPost.TYPE);
   const data = useAppSelector((state) => filter && postSelector.selectById(state, filter.postId));
 
   const isInitFetch = useRef(!!data);
-  const error = useMemo(() => (status === 'FAIL' ? result : null), [result, status]);
 
   useEffect(() => {
     if (!isInitFetch.current) {
