@@ -1,5 +1,6 @@
-import { all, debounce, fork, takeLatest } from 'redux-saga/effects';
+import { all, call, debounce, fork, put, select, takeLatest } from 'redux-saga/effects';
 
+import { fetchStatusAction } from '@modules/fetchStatus';
 import { createRequestSaga } from '@modules/helper';
 
 import {
@@ -16,6 +17,8 @@ import {
   readUser,
 } from './slice';
 
+import { userAction } from '.';
+
 const loginSaga = createRequestSaga(login, login.requestAPI);
 const logoutSaga = createRequestSaga(logout, logout.requestAPI);
 const signupSaga = createRequestSaga(signup, signup.requestAPI);
@@ -29,11 +32,27 @@ const unFollowSaga = createRequestSaga(unFollow, unFollow.requestAPI);
 const removeFollowerMeSaga = createRequestSaga(removeFollowerMe, removeFollowerMe.requestAPI);
 
 function* watchLogIn() {
-  yield takeLatest(login.request, loginSaga);
+  yield takeLatest(login.request, function* (action) {
+    yield call(loginSaga, action);
+    const rootState: RootState = yield select();
+    const { status, data } = rootState.FETCH_STATUS[userAction.login.TYPE];
+    if (status === 'SUCCESS') {
+      yield put(fetchStatusAction.successFetchStatus({ type: userAction.readMyUser.TYPE, data }));
+      yield put(userAction.updateMyInfo(data.resData));
+    }
+  });
 }
 
 function* watchLogout() {
-  yield takeLatest(logout.request, logoutSaga);
+  yield takeLatest(logout.request, function* (action) {
+    yield call(logoutSaga, action);
+    const rootState: RootState = yield select();
+    const { status } = rootState.FETCH_STATUS[userAction.logout.TYPE];
+    if (status === 'SUCCESS') {
+      yield put(fetchStatusAction.initFetchStatus({ type: userAction.readMyUser.TYPE }));
+      yield put(userAction.myInfoReset());
+    }
+  });
 }
 
 function* watchSignup() {
