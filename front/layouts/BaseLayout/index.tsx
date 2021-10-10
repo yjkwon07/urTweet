@@ -7,8 +7,8 @@ import { useRouter } from 'next/router';
 
 import { PASS_HREF, HOME_URL, PROFILE_URL } from '@utils/urls';
 
-import UserStatusView from './organism/UserStatusView';
 import { StyledLayout } from './styles';
+import UserStatusView from './UserStatusView';
 
 const { Content } = Layout;
 
