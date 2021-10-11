@@ -1,13 +1,12 @@
 import Head from 'next/head';
 
 import SEO from '@components/SEO';
-import BaseLayout from '@layouts/BaseLayout';
 import { SIGNUP_URL } from '@utils/urls';
 import Signup from '@views/Signup';
 
 const SignupPage = () => {
   return (
-    <BaseLayout>
+    <>
       <Head>
         <title>회원가입 | urTweet</title>
         <SEO
@@ -19,7 +18,7 @@ const SignupPage = () => {
         />
       </Head>
       <Signup />
-    </BaseLayout>
+    </>
   );
 };
 
