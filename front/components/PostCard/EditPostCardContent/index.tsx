@@ -7,8 +7,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 
 import { useFetchStatus } from '@modules/fetchStatus';
-import { fileUpload } from '@modules/file';
-import imageDownload from '@modules/file/utils/imageDownloadLink';
+import { fileDownloadLink, fileUpload } from '@modules/file';
 import { postAction } from '@modules/post';
 import { FormEditPost, Image as IImage } from '@modules/post/@types';
 import { EDIT_POST_SCHEMA } from '@modules/post/config';
@@ -137,7 +136,7 @@ const EditPostCardContent = ({ postId, postContent, imageList, onCancel }: IProp
         <Image.PreviewGroup>
           {previewImageList?.map((filePath) => (
             <div key={filePath} className="wrapper">
-              <Image width={150} height={150} src={imageDownload(filePath, true)} alt="" />
+              <Image width={150} height={150} src={fileDownloadLink(filePath, true)} alt="" />
               <div className="button_wrapper">
                 <Button type="primary" danger onClick={handleRemoveImage(filePath)}>
                   제거
