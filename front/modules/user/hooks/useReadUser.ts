@@ -3,14 +3,17 @@ import { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { useAppSelector } from '@hooks/useAppRedux';
-import { useFetchStatus } from '@modules/fetchStatus';
+import { fetchStatusSelector } from '@modules/fetchStatus';
+import { CustomAxiosError } from '@typings/type';
 
 import { ReadUserRes, ReadUserUrlQuery } from '../api';
 import { userAction, userSelector } from '../slice';
 
 export default function useReadUser(filter?: ReadUserUrlQuery) {
   const dispatch = useDispatch();
-  const { status, error } = useFetchStatus<ReadUserRes>(userAction.readUser.TYPE);
+  const { status, error } = useAppSelector(
+    fetchStatusSelector.byTypeData<ReadUserRes, CustomAxiosError>(userAction.readUser.TYPE),
+  );
   const data = useAppSelector(userSelector.userData);
 
   const isInitFetch = useRef(!!data);

@@ -29,7 +29,7 @@ export const createRequestSaga = <R, S, M extends RequestCommonMeta>(
       yield put(fetchStatusAction.requestFetchStatus({ type: actionCreator.TYPE, actionList }));
       const { data }: AxiosResponse<S> = yield call(requestCall, action.payload);
       yield put(actionCreator.success(data, action.meta));
-      yield put(fetchStatusAction.successFetchStatus({ type: actionCreator.TYPE, data, actionList }));
+      yield put(fetchStatusAction.successFetchStatus({ type: actionCreator.TYPE, response: data, actionList }));
       if (action.resolve) {
         yield call(action.resolve, data);
       }
@@ -37,7 +37,7 @@ export const createRequestSaga = <R, S, M extends RequestCommonMeta>(
       if (isCustomAxiosError(error)) {
         yield put(actionCreator.failure(error.response.data, action.meta));
         yield put(
-          fetchStatusAction.failureFetchStatus({ type: actionCreator.TYPE, data: error.response.data, actionList }),
+          fetchStatusAction.failureFetchStatus({ type: actionCreator.TYPE, response: error.response.data, actionList }),
         );
         if (action.reject) {
           yield call(action.reject, error);

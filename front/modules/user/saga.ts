@@ -37,7 +37,7 @@ function* watchLogIn() {
     const rootState: RootState = yield select();
     const { status, data } = rootState.FETCH_STATUS[userAction.login.TYPE];
     if (status === 'SUCCESS') {
-      yield put(fetchStatusAction.successFetchStatus({ type: userAction.readMyUser.TYPE, data }));
+      yield put(fetchStatusAction.successFetchStatus({ type: userAction.readMyUser.TYPE, response: data }));
       yield put(userAction.updateMyInfo(data.resData));
     }
   });

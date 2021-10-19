@@ -3,14 +3,21 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { useAppSelector } from '@hooks/useAppRedux';
-import { useFetchStatus } from '@modules/fetchStatus';
+import { fetchStatusSelector } from '@modules/fetchStatus';
+import { CustomAxiosError } from '@typings/type';
 
 import { ListReadFollowRes, ListReadFollowUrlQuery } from '../api';
 import { userAction, userSelector } from '../slice';
 
 export default function useListReadFollow(filter?: ListReadFollowUrlQuery) {
   const dispatch = useDispatch();
-  const { status, data: result, error } = useFetchStatus<ListReadFollowRes>(userAction.listReadFollow.TYPE);
+  const {
+    status,
+    data: result,
+    error,
+  } = useAppSelector(
+    fetchStatusSelector.byTypeData<ListReadFollowRes, CustomAxiosError>(userAction.listReadFollow.TYPE),
+  );
   const data = useAppSelector(userSelector.followListData);
 
   const isInitFetch = useRef(!!data.length);

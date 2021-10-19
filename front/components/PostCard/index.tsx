@@ -16,7 +16,8 @@ import cls from 'classnames';
 import Link from 'next/link';
 import { useDispatch } from 'react-redux';
 
-import { useFetchStatus } from '@modules/fetchStatus';
+import { useAppSelector } from '@hooks/useAppRedux';
+import { fetchStatusSelector } from '@modules/fetchStatus';
 import { postAction } from '@modules/post';
 import { Post } from '@modules/post/@types/db';
 import { useReadMyUser } from '@modules/user';
@@ -40,7 +41,9 @@ export interface IProps {
 
 const PostCard = ({ data, initCommentListOpen = false }: IProps) => {
   const dispatch = useDispatch();
-  const { status: removePostStatus } = useFetchStatus(postAction.removePost.TYPE, data.id);
+  const { status: removePostStatus } = useAppSelector(
+    fetchStatusSelector.byTypeData(postAction.removePost.TYPE, data.id),
+  );
   const { data: myData } = useReadMyUser();
 
   const [morePopOverOpen, setMorePopOverOpen] = useState(false);

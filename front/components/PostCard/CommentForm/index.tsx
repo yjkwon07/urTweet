@@ -5,7 +5,8 @@ import { Form, Input, Button, message } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 
-import { useFetchStatus } from '@modules/fetchStatus';
+import { useAppSelector } from '@hooks/useAppRedux';
+import { fetchStatusSelector } from '@modules/fetchStatus';
 import { postAction } from '@modules/post';
 import { FormCreateComment } from '@modules/post/@types';
 import { CREATE_COMMENT_SCHEMA } from '@modules/post/config';
@@ -20,7 +21,7 @@ interface IProps {
 
 const CommentForm = ({ userId, postId }: IProps) => {
   const dispatch = useDispatch();
-  const { status } = useFetchStatus(postAction.createComment.TYPE, postId);
+  const { status } = useAppSelector(fetchStatusSelector.byTypeData(postAction.createComment.TYPE, postId));
 
   const {
     control,

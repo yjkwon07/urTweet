@@ -6,7 +6,8 @@ import { Button, Input, Form, message, Image } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 
-import { useFetchStatus } from '@modules/fetchStatus';
+import { useAppSelector } from '@hooks/useAppRedux';
+import { fetchStatusSelector } from '@modules/fetchStatus';
 import { fileDownloadLink, fileUpload } from '@modules/file';
 import { postAction } from '@modules/post';
 import { FormEditPost, Image as IImage } from '@modules/post/@types';
@@ -25,7 +26,7 @@ export interface IProps {
 
 const EditPostCardContent = ({ postId, postContent, imageList, onCancel }: IProps) => {
   const dispatch = useDispatch();
-  const { status } = useFetchStatus(postAction.updatePost.TYPE, postId);
+  const { status } = useAppSelector(fetchStatusSelector.byTypeData(postAction.updatePost.TYPE, postId));
 
   const {
     control,

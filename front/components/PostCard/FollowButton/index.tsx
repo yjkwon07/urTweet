@@ -4,7 +4,8 @@ import { ExclamationCircleOutlined, UserAddOutlined, UserDeleteOutlined } from '
 import { Modal } from 'antd';
 import { useDispatch } from 'react-redux';
 
-import { useFetchStatus } from '@modules/fetchStatus';
+import { useAppSelector } from '@hooks/useAppRedux';
+import { fetchStatusSelector } from '@modules/fetchStatus';
 import { follow, unFollow, useReadMyUser } from '@modules/user';
 
 import { StyledButton } from './styles';
@@ -17,8 +18,8 @@ interface IProps {
 
 const FollowButton = ({ userId }: IProps) => {
   const dispatch = useDispatch();
-  const { status: followStatus } = useFetchStatus(follow.TYPE, userId);
-  const { status: unfollowStatus } = useFetchStatus(unFollow.TYPE, userId);
+  const { status: followStatus } = useAppSelector(fetchStatusSelector.byTypeData(follow.TYPE, userId));
+  const { status: unfollowStatus } = useAppSelector(fetchStatusSelector.byTypeData(unFollow.TYPE, userId));
   const { data: myData } = useReadMyUser();
 
   const isFollowing = useMemo(

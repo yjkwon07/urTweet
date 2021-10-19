@@ -7,7 +7,8 @@ import Link from 'next/link';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 
-import { useFetchStatus } from '@modules/fetchStatus';
+import { useAppSelector } from '@hooks/useAppRedux';
+import { fetchStatusSelector } from '@modules/fetchStatus';
 import { login, LOGIN_SCHEMA } from '@modules/user';
 import { FormLogin } from '@modules/user/@types';
 import { setUserId } from '@utils/auth';
@@ -18,7 +19,7 @@ import { StyledForm } from './styles';
 
 const LoginForm = () => {
   const dispatch = useDispatch();
-  const { status } = useFetchStatus(login.TYPE);
+  const { status } = useAppSelector(fetchStatusSelector.byTypeData(login.TYPE));
 
   const {
     control,
