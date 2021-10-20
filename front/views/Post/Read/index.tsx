@@ -15,7 +15,7 @@ const PostReadView = () => {
     <BaseLayout>
       <StyledViewWrapper>
         {status === 'SUCCESS' && postData && <PostCard data={postData} initCommentListOpen />}
-        {status === 'FAIL' && <Empty description={postError.resMsg} />}
+        {status === 'FAIL' && <Empty description={postError?.response.data.resMsg} />}
       </StyledViewWrapper>
     </BaseLayout>
   );

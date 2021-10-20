@@ -36,9 +36,7 @@ export const createRequestSaga = <R, S, M extends RequestCommonMeta>(
     } catch (error) {
       if (isCustomAxiosError(error)) {
         yield put(actionCreator.failure(error.response.data, action.meta));
-        yield put(
-          fetchStatusAction.failureFetchStatus({ type: actionCreator.TYPE, response: error.response.data, actionList }),
-        );
+        yield put(fetchStatusAction.failureFetchStatus({ type: actionCreator.TYPE, response: error, actionList }));
         if (action.reject) {
           yield call(action.reject, error);
         }

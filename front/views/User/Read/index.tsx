@@ -49,7 +49,7 @@ const UserRead = () => {
               )}
               {status === 'FAIL' && (
                 <StyledCenter>
-                  <Empty description={PostListError.resMsg} />
+                  <Empty description={PostListError?.response.data.resMsg} />
                 </StyledCenter>
               )}
             </>
