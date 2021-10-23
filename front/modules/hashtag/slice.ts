@@ -3,12 +3,14 @@ import { createAction, createEntityAdapter, createSlice, EntityState } from '@re
 import { createRequestAction } from '@modules/helper';
 
 import { Hashtag } from './@types';
-import { requestListReadHashtag } from './api';
+import { ListReadHashtagRes, ListReadHashtagUrlQuery } from './api';
 
 export const HASHTAG = 'HASHTAG';
 
 // Action - API
-const listReadHashtag = createRequestAction(`${HASHTAG}listReadHashtag`, requestListReadHashtag);
+const fetchListReadHashtag = createRequestAction<ListReadHashtagUrlQuery, ListReadHashtagRes>(
+  `${HASHTAG}/fetchListReadHashtag`,
+);
 
 // Action
 const listDataReset = createAction(`${HASHTAG}/listDataReset`);
@@ -33,7 +35,7 @@ const slice = createSlice({
       .addCase(listDataReset, (state) => {
         hashtagListDataAdapter.removeAll(state);
       })
-      .addCase(listReadHashtag.success, (state, { payload: { resData } }) => {
+      .addCase(fetchListReadHashtag.success, (state, { payload: { resData } }) => {
         const { list } = resData;
         hashtagListDataAdapter.setAll(state, list);
       }),
@@ -45,6 +47,6 @@ export const hashtagReducer = slice.reducer;
 export const hashtagSelector = { listData, selectById };
 export const hashtagAction = {
   ...slice.actions,
-  listReadHashtag,
+  fetchListReadHashtag,
   listDataReset,
 };

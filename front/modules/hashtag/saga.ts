@@ -2,12 +2,14 @@ import { all, fork, takeLatest } from 'redux-saga/effects';
 
 import { createRequestSaga } from '@modules/helper';
 
+import { requestListReadHashtag } from './api';
 import { hashtagAction } from './slice';
 
-const listReadHashtagSaga = createRequestSaga(hashtagAction.listReadHashtag, hashtagAction.listReadHashtag.requestAPI);
-
 function* watchListRead() {
-  yield takeLatest(hashtagAction.listReadHashtag.request, listReadHashtagSaga);
+  yield takeLatest(
+    hashtagAction.fetchListReadHashtag.request,
+    createRequestSaga(hashtagAction.fetchListReadHashtag, requestListReadHashtag),
+  );
 }
 
 export default function* hashtagSaga() {

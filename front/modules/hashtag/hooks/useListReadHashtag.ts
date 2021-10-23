@@ -16,7 +16,7 @@ export default function useListReadHashtag(filter?: ListReadHashtagUrlQuery) {
     data: result,
     error,
   } = useAppSelector(
-    fetchStatusSelector.byTypeData<ListReadHashtagRes, CustomAxiosError>(hashtagAction.listReadHashtag.TYPE),
+    fetchStatusSelector.byTypeData<ListReadHashtagRes, CustomAxiosError>(hashtagAction.fetchListReadHashtag.TYPE),
   );
   const data = useAppSelector(hashtagSelector.listData);
 
@@ -26,7 +26,7 @@ export default function useListReadHashtag(filter?: ListReadHashtagUrlQuery) {
 
   useEffect(() => {
     if (!isInitFetch.current) {
-      if (filter) dispatch(hashtagAction.listReadHashtag.request(filter));
+      if (filter) dispatch(hashtagAction.fetchListReadHashtag.request(filter));
     } else {
       isInitFetch.current = false;
     }
