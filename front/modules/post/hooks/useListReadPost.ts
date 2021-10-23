@@ -20,8 +20,10 @@ export default function useListReadPost({ mode, filter }: IProps) {
     status,
     data: result,
     error,
-  } = useAppSelector(fetchStatusSelector.byTypeData<ListReadPostRes, CustomAxiosError>(postAction.listReadPost.TYPE));
-  const data = useAppSelector(postSelector.listData);
+  } = useAppSelector(
+    fetchStatusSelector.byTypeData<ListReadPostRes, CustomAxiosError>(postAction.fetchListReadPost.TYPE),
+  );
+  const data = useAppSelector(postSelector.selectAll);
 
   const isInitFetch = useRef(!!data.length);
   const isMoreRead = useMemo(() => !!result?.resData?.nextPage || false, [result?.resData?.nextPage]);
@@ -29,7 +31,7 @@ export default function useListReadPost({ mode, filter }: IProps) {
 
   useEffect(() => {
     if (!isInitFetch.current) {
-      if (filter) dispatch(postAction.listReadPost.request(filter, { isLoadMore: mode === 'infinite' }));
+      if (filter) dispatch(postAction.fetchListReadPost.request(filter, { isLoadMore: mode === 'infinite' }));
     } else {
       isInitFetch.current = false;
     }

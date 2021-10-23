@@ -45,7 +45,7 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, par
     const {
       resData: { item: userData },
     } = await store.dispatch(readUser.asyncThunk({ userId: Number(userId) }));
-    await store.dispatch(postAction.listReadPost.asyncThunk(filter));
+    await store.dispatch(postAction.fetchListReadPost.asyncThunk(filter));
     store.dispatch(END);
 
     return {

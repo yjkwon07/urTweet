@@ -1,5 +1,3 @@
-import { IUserInfo } from '@modules/user/@types/db';
-
 export type Post = {
   Comments: Comment[];
   Images: Image[];

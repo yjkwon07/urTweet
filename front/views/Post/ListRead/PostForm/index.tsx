@@ -37,7 +37,7 @@ const PostForm = () => {
   const handleSubmitCreatePost = useCallback(
     async (formData: FormEditPost) => {
       try {
-        await dispatch(postAction.createPost.asyncThunk(formData));
+        await dispatch(postAction.fetchCreatePost.asyncThunk(formData));
       } catch (error) {
         if (isCustomAxiosError(error)) {
           message.error(JSON.stringify(error.response.data.resMsg));

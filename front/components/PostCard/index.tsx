@@ -42,7 +42,7 @@ export interface IProps {
 const PostCard = ({ data, initCommentListOpen = false }: IProps) => {
   const dispatch = useDispatch();
   const { status: removePostStatus } = useAppSelector(
-    fetchStatusSelector.byTypeData(postAction.removePost.TYPE, data.id),
+    fetchStatusSelector.byTypeData(postAction.fetchRemovePost.TYPE, data.id),
   );
   const { data: myData } = useReadMyUser();
 
@@ -54,7 +54,7 @@ const PostCard = ({ data, initCommentListOpen = false }: IProps) => {
   const handleRetweet = useCallback(async () => {
     try {
       if (!requiredLogin()) return;
-      await dispatch(postAction.createRetweet.asyncThunk({ postId: data.id }));
+      await dispatch(postAction.fetchCreateRetweet.asyncThunk({ postId: data.id }));
     } catch (error) {
       if (isCustomAxiosError(error)) {
         message.error(JSON.stringify(error.response.data.resMsg));
@@ -64,8 +64,8 @@ const PostCard = ({ data, initCommentListOpen = false }: IProps) => {
 
   const handleToggleLike = useCallback(() => {
     if (!requiredLogin()) return;
-    if (!isLike) dispatch(postAction.likePost.request({ postId: data.id }));
-    else dispatch(postAction.unlikePost.request({ postId: data.id }));
+    if (!isLike) dispatch(postAction.fetchLikePost.request({ postId: data.id }));
+    else dispatch(postAction.fetchUnlikePost.request({ postId: data.id }));
   }, [data.id, dispatch, isLike]);
 
   const handleToggleCommentList = useCallback(() => {
@@ -90,7 +90,7 @@ const PostCard = ({ data, initCommentListOpen = false }: IProps) => {
       icon: <ExclamationCircleOutlined />,
       content: '삭제시 해당 컨텐츠는 복구 불가 합니다.',
       async onOk() {
-        dispatch(postAction.removePost.request({ postId: data.id }, { actionList: [data.id] }));
+        dispatch(postAction.fetchRemovePost.request({ postId: data.id }, { actionList: [data.id] }));
       },
     });
   }, [data.id, dispatch]);

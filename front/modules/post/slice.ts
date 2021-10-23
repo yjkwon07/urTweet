@@ -4,29 +4,38 @@ import { createRequestAction } from '@modules/helper';
 
 import { Post } from './@types';
 import {
-  requestCreateComment,
-  requestCreatePost,
-  requestCreateRetweet,
-  requestLikePost,
-  requestListReadPost,
-  requestUpdatePost,
-  requestReadPost,
-  requestRemovePost,
-  requestUnlikePost,
+  CreateRetweetUrlQuery,
+  CreateRetweetRes,
+  CreatePostBodyQuery,
+  CreatePostRes,
+  ListReadPostUrlQuery,
+  ListReadPostRes,
+  ReadPostUrlQuery,
+  ReadPostRes,
+  UpdatePostReq,
+  RemovePostUrlQuery,
+  UpdatePostRes,
+  RemovePostRes,
+  LikePostUrlQuery,
+  LikePostRes,
+  UnLikePostUrlQuery,
+  UnlikePostRes,
+  CreateCommentReq,
+  CreateCommentRes,
 } from './api';
 
 export const POST = 'POST';
 
 // Action - API
-const createRetweet = createRequestAction(`${POST}/createRetweet`, requestCreateRetweet);
-const createPost = createRequestAction(`${POST}/createPost`, requestCreatePost);
-const listReadPost = createRequestAction(`${POST}listReadPost`, requestListReadPost);
-const readPost = createRequestAction(`${POST}/readPost`, requestReadPost);
-const updatePost = createRequestAction(`${POST}/updatePost`, requestUpdatePost);
-const removePost = createRequestAction(`${POST}/removePost`, requestRemovePost);
-const likePost = createRequestAction(`${POST}/likePost`, requestLikePost);
-const unlikePost = createRequestAction(`${POST}/unlikePost`, requestUnlikePost);
-const createComment = createRequestAction(`${POST}/createComment`, requestCreateComment);
+const fetchCreateRetweet = createRequestAction<CreateRetweetUrlQuery, CreateRetweetRes>(`${POST}/fetchCreateRetweet`);
+const fetchCreatePost = createRequestAction<CreatePostBodyQuery, CreatePostRes>(`${POST}/fetchCreatePost`);
+const fetchListReadPost = createRequestAction<ListReadPostUrlQuery, ListReadPostRes>(`${POST}fetchListReadPost`);
+const fetchReadPost = createRequestAction<ReadPostUrlQuery, ReadPostRes>(`${POST}/fetchReadPost`);
+const fetchUpdatePost = createRequestAction<UpdatePostReq, UpdatePostRes>(`${POST}/fetchUpdatePost`);
+const fetchRemovePost = createRequestAction<RemovePostUrlQuery, RemovePostRes>(`${POST}/fetchRemovePost`);
+const fetchLikePost = createRequestAction<LikePostUrlQuery, LikePostRes>(`${POST}/fetchLikePost`);
+const fetchUnlikePost = createRequestAction<UnLikePostUrlQuery, UnlikePostRes>(`${POST}/fetchUnlikePost`);
+const fetchCreateComment = createRequestAction<CreateCommentReq, CreateCommentRes>(`${POST}/fetchCreateComment`);
 
 // Action
 const listDataReset = createAction(`${POST}/listDataReset`);
@@ -51,15 +60,15 @@ const slice = createSlice({
       .addCase(listDataReset, (state) => {
         postListDataAdapter.removeAll(state);
       })
-      .addCase(createRetweet.success, (state, { payload: { resData } }) => {
+      .addCase(fetchCreateRetweet.success, (state, { payload: { resData } }) => {
         const list = postListDataAdapter.getSelectors().selectAll(state);
         postListDataAdapter.setAll(state, [resData].concat(list));
       })
-      .addCase(createPost.success, (state, { payload: { resData } }) => {
+      .addCase(fetchCreatePost.success, (state, { payload: { resData } }) => {
         const list = postListDataAdapter.getSelectors().selectAll(state);
         postListDataAdapter.setAll(state, [resData].concat(list));
       })
-      .addCase(listReadPost.success, (state, { payload: { resData }, meta }) => {
+      .addCase(fetchListReadPost.success, (state, { payload: { resData }, meta }) => {
         const { list } = resData;
         if (meta?.isLoadMore) {
           postListDataAdapter.removeMany(
@@ -71,32 +80,32 @@ const slice = createSlice({
           postListDataAdapter.setAll(state, list);
         }
       })
-      .addCase(readPost.success, (state, { payload: { resData } }) => {
+      .addCase(fetchReadPost.success, (state, { payload: { resData } }) => {
         const { item } = resData;
         postListDataAdapter.setAll(state, [item]);
       })
-      .addCase(updatePost.success, (state, { payload: { resData } }) => {
+      .addCase(fetchUpdatePost.success, (state, { payload: { resData } }) => {
         postListDataAdapter.updateOne(state, {
           id: resData.id,
           changes: resData,
         });
       })
-      .addCase(removePost.success, (state, { payload: { resData } }) => {
+      .addCase(fetchRemovePost.success, (state, { payload: { resData } }) => {
         postListDataAdapter.removeOne(state, resData.PostId);
       })
-      .addCase(likePost.success, (state, { payload: { resData } }) => {
+      .addCase(fetchLikePost.success, (state, { payload: { resData } }) => {
         postListDataAdapter.updateOne(state, {
           id: resData.PostId,
           changes: { Likers: state.entities[resData.PostId]?.Likers.concat({ id: resData.UserId }) },
         });
       })
-      .addCase(unlikePost.success, (state, { payload: { resData } }) => {
+      .addCase(fetchUnlikePost.success, (state, { payload: { resData } }) => {
         postListDataAdapter.updateOne(state, {
           id: resData.PostId,
           changes: { Likers: state.entities[resData.PostId]?.Likers.filter((liker) => liker.id !== resData.UserId) },
         });
       })
-      .addCase(createComment.success, (state, { payload: { resData } }) => {
+      .addCase(fetchCreateComment.success, (state, { payload: { resData } }) => {
         postListDataAdapter.updateOne(state, {
           id: resData.PostId,
           changes: { Comments: state.entities[resData.PostId]?.Comments.concat(resData) },
@@ -104,20 +113,20 @@ const slice = createSlice({
       }),
 });
 
-const { selectAll: listData, selectById } = postListDataAdapter.getSelectors((state: RootState) => state.POST);
+const { selectAll, selectById } = postListDataAdapter.getSelectors((state: RootState) => state.POST);
 
 export const postReducer = slice.reducer;
-export const postSelector = { listData, selectById };
+export const postSelector = { selectAll, selectById };
 export const postAction = {
   ...slice.actions,
-  createRetweet,
-  createPost,
-  listReadPost,
-  readPost,
-  updatePost,
-  removePost,
-  likePost,
-  unlikePost,
-  createComment,
+  fetchCreateRetweet,
+  fetchCreatePost,
+  fetchListReadPost,
+  fetchReadPost,
+  fetchUpdatePost,
+  fetchRemovePost,
+  fetchLikePost,
+  fetchUnlikePost,
+  fetchCreateComment,
   listDataReset,
 };

@@ -26,7 +26,7 @@ export interface IProps {
 
 const EditPostCardContent = ({ postId, postContent, imageList, onCancel }: IProps) => {
   const dispatch = useDispatch();
-  const { status } = useAppSelector(fetchStatusSelector.byTypeData(postAction.updatePost.TYPE, postId));
+  const { status } = useAppSelector(fetchStatusSelector.byTypeData(postAction.fetchUpdatePost.TYPE, postId));
 
   const {
     control,
@@ -86,7 +86,7 @@ const EditPostCardContent = ({ postId, postContent, imageList, onCancel }: IProp
     async (formData) => {
       try {
         await dispatch(
-          postAction.updatePost.asyncThunk(
+          postAction.fetchUpdatePost.asyncThunk(
             { url: { postId }, body: { content: formData.content, image: formData.image } },
             { actionList: [postId] },
           ),

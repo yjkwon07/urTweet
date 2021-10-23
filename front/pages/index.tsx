@@ -29,7 +29,7 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, que
   const filter = { page, pageSize, hashtag };
 
   store.dispatch(searchFilterAction.changeSearchFilter({ key: 'LIST_READ_POST', filter }));
-  await store.dispatch(postAction.listReadPost.asyncThunk(filter));
+  await store.dispatch(postAction.fetchListReadPost.asyncThunk(filter));
   store.dispatch(END);
 });
 

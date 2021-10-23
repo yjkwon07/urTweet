@@ -36,7 +36,7 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, par
     store.dispatch(searchFilterAction.changeSearchFilter({ key: 'READ_POST', filter }));
     const {
       resData: { item: postData },
-    } = await store.dispatch(postAction.readPost.asyncThunk({ postId }));
+    } = await store.dispatch(postAction.fetchReadPost.asyncThunk({ postId }));
     store.dispatch(END);
 
     return {

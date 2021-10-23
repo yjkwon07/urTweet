@@ -21,7 +21,7 @@ interface IProps {
 
 const CommentForm = ({ userId, postId }: IProps) => {
   const dispatch = useDispatch();
-  const { status } = useAppSelector(fetchStatusSelector.byTypeData(postAction.createComment.TYPE, postId));
+  const { status } = useAppSelector(fetchStatusSelector.byTypeData(postAction.fetchCreateComment.TYPE, postId));
 
   const {
     control,
@@ -37,7 +37,7 @@ const CommentForm = ({ userId, postId }: IProps) => {
     async (formData: FormCreateComment) => {
       try {
         await dispatch(
-          postAction.createComment.asyncThunk(
+          postAction.fetchCreateComment.asyncThunk(
             {
               url: { postId },
               body: { content: formData.content, userId },

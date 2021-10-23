@@ -12,7 +12,7 @@ import { postSelector, postAction } from '../slice';
 export default function useReadPost(filter?: ReadPostUrlQuery) {
   const dispatch = useDispatch();
   const { status, error } = useAppSelector(
-    fetchStatusSelector.byTypeData<ReadPostRes, CustomAxiosError>(postAction.readPost.TYPE),
+    fetchStatusSelector.byTypeData<ReadPostRes, CustomAxiosError>(postAction.fetchReadPost.TYPE),
   );
   const data = useAppSelector((state) => filter && postSelector.selectById(state, filter.postId));
 
@@ -20,7 +20,7 @@ export default function useReadPost(filter?: ReadPostUrlQuery) {
 
   useEffect(() => {
     if (!isInitFetch.current) {
-      if (filter) dispatch(postAction.readPost.request({ postId: filter.postId }));
+      if (filter) dispatch(postAction.fetchReadPost.request({ postId: filter.postId }));
     } else {
       isInitFetch.current = false;
     }
