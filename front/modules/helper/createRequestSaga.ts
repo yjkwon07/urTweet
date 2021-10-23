@@ -7,38 +7,38 @@ import isCustomAxiosError from '@utils/isCustomAxiosError';
 import { fetchStatusAction } from '../fetchStatus';
 import { ActionMetaPayload, RequestCommonMeta } from './type';
 
-type PromiseAction<R, S, M> = {
+type PromiseAction<R, S, F, M> = {
   payload: R;
   meta?: M;
   resolve?: (value: S) => void;
-  reject?: (value: CustomAxiosError) => void;
+  reject?: (value: CustomAxiosError<F>) => void;
 };
 
-export const createRequestSaga = <R, S, M extends RequestCommonMeta>(
-  actionCreator: {
+export const createRequestSaga = <R, S, F, M extends RequestCommonMeta>(
+  requestAction: {
     TYPE: string;
-    request: ActionMetaPayload<R, M | undefined>;
-    success: ActionMetaPayload<S, M | undefined>;
-    failure: ActionMetaPayload<AxiosResponse, M | undefined>;
+    success: ActionMetaPayload<S, M>;
+    failure: ActionMetaPayload<F, M>;
   },
   requestCall: (...args: any[]) => any,
 ) => {
-  return function* (action: PromiseAction<R, S, M>) {
+  return function* (action: PromiseAction<R, S, F, M>) {
     const actionList = action.meta?.actionList;
     try {
-      yield put(fetchStatusAction.requestFetchStatus({ type: actionCreator.TYPE, actionList }));
+      yield put(fetchStatusAction.requestFetchStatus({ type: requestAction.TYPE, actionList }));
       const { data }: AxiosResponse<S> = yield call(requestCall, action.payload);
-      yield put(actionCreator.success(data, action.meta));
-      yield put(fetchStatusAction.successFetchStatus({ type: actionCreator.TYPE, response: data, actionList }));
+      yield put(requestAction.success(data, action.meta));
+      yield put(fetchStatusAction.successFetchStatus({ type: requestAction.TYPE, response: data, actionList }));
       if (action.resolve) {
-        yield call(action.resolve, data);
+        action.resolve(data);
       }
     } catch (error) {
       if (isCustomAxiosError(error)) {
-        yield put(actionCreator.failure(error.response.data, action.meta));
-        yield put(fetchStatusAction.failureFetchStatus({ type: actionCreator.TYPE, response: error, actionList }));
+        const { data }: AxiosResponse<F> = error.response;
+        yield put(requestAction.failure(data, action.meta));
+        yield put(fetchStatusAction.failureFetchStatus({ type: requestAction.TYPE, response: data, actionList }));
         if (action.reject) {
-          yield call(action.reject, error);
+          action.reject(error);
         }
       }
     }
