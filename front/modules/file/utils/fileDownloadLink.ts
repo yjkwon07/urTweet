@@ -1,8 +1,8 @@
 import { axiosSetting } from '@modules/client';
 
-export default function fileDownloadLink(src: string, isOriginal = false) {
+export default function fileDownloadLink(fileLink: string, isOriginal = false) {
+  let src = fileLink;
   if (isOriginal) {
-    // eslint-disable-next-line no-param-reassign
     src = src.replace(/\/thumb\//, '/original/');
   }
   return `${axiosSetting.server()}/${src}`;
