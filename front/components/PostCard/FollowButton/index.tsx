@@ -48,7 +48,7 @@ const FollowButton = ({ userId }: IProps) => {
 
   return (
     <>
-      {isFollowing ? (
+      {isFollowing && (
         <StyledButton
           shape="round"
           type="primary"
@@ -62,7 +62,8 @@ const FollowButton = ({ userId }: IProps) => {
         >
           {showUnfollow ? 'Unfollow' : 'Following'}
         </StyledButton>
-      ) : (
+      )}
+      {myData && !isFollowing && myData.id !== userId && (
         <StyledButton
           shape="round"
           type="primary"
