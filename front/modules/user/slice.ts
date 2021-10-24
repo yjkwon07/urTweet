@@ -1,7 +1,7 @@
 import { createAction, createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit';
 import _remove from 'lodash/remove';
 
-import { createRequestAction } from '@modules/helper';
+import { createFetchAction } from '@modules/helper';
 
 import { MyUser, User } from './@types/db';
 import {
@@ -30,21 +30,19 @@ import {
 export const USER = 'USER';
 
 // Action - API
-const fetchLogin = createRequestAction<LoginBodyQuery, LoginRes>(`${USER}/fetchLogin`);
-const fetchLogout = createRequestAction<void, LogoutRes>(`${USER}/fetchLogout`);
-const fetchSignup = createRequestAction<SignupBodyQuery, SignupRes>(`${USER}/fetchSignup`);
-const fetchReadMyUser = createRequestAction<void, ReadMyUserRes>(`${USER}/fetchReadMyUser`);
-const fetchReadUser = createRequestAction<ReadUserUrlQuery, ReadUserRes>(`${USER}/fetchReadUser`);
-const fetchUpdateMyUser = createRequestAction<UpdateMyUserBodyQuery, UpdateMyUserRes>(`${USER}/fetchUpdateMyUser`);
-const fetchListReadFollow = createRequestAction<ListReadFollowUrlQuery, ListReadFollowRes>(
-  `${USER}/fetchListReadFollow`,
-);
-const fetchListReadFollowing = createRequestAction<ListReadFollowingUrlQuery, ListReadFollowingRes>(
+const fetchLogin = createFetchAction<LoginBodyQuery, LoginRes>(`${USER}/fetchLogin`);
+const fetchLogout = createFetchAction<void, LogoutRes>(`${USER}/fetchLogout`);
+const fetchSignup = createFetchAction<SignupBodyQuery, SignupRes>(`${USER}/fetchSignup`);
+const fetchReadMyUser = createFetchAction<void, ReadMyUserRes>(`${USER}/fetchReadMyUser`);
+const fetchReadUser = createFetchAction<ReadUserUrlQuery, ReadUserRes>(`${USER}/fetchReadUser`);
+const fetchUpdateMyUser = createFetchAction<UpdateMyUserBodyQuery, UpdateMyUserRes>(`${USER}/fetchUpdateMyUser`);
+const fetchListReadFollow = createFetchAction<ListReadFollowUrlQuery, ListReadFollowRes>(`${USER}/fetchListReadFollow`);
+const fetchListReadFollowing = createFetchAction<ListReadFollowingUrlQuery, ListReadFollowingRes>(
   `${USER}/fetchListReadFollowing`,
 );
-const fetchFollow = createRequestAction<FollowUrlQuery, FollowRes>(`${USER}/fetchFollow`);
-const fetchUnFollow = createRequestAction<UnFollowUrlQuery, UnFollowRes>(`${USER}/fetchUnFollow`);
-const fetchRemoveFollowerMe = createRequestAction<RemoveFollowerMeUrlQuery, RemoveFollowerMeRes>(
+const fetchFollow = createFetchAction<FollowUrlQuery, FollowRes>(`${USER}/fetchFollow`);
+const fetchUnFollow = createFetchAction<UnFollowUrlQuery, UnFollowRes>(`${USER}/fetchUnFollow`);
+const fetchRemoveFollowerMe = createFetchAction<RemoveFollowerMeUrlQuery, RemoveFollowerMeRes>(
   `${USER}/fetchRemoveFollowerMe`,
 );
 

@@ -1,6 +1,6 @@
 import { createAction, createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit';
 
-import { createRequestAction } from '@modules/helper';
+import { createFetchAction } from '@modules/helper';
 
 import { Post } from './@types';
 import {
@@ -27,15 +27,15 @@ import {
 export const POST = 'POST';
 
 // Action - API
-const fetchCreateRetweet = createRequestAction<CreateRetweetUrlQuery, CreateRetweetRes>(`${POST}/fetchCreateRetweet`);
-const fetchCreatePost = createRequestAction<CreatePostBodyQuery, CreatePostRes>(`${POST}/fetchCreatePost`);
-const fetchListReadPost = createRequestAction<ListReadPostUrlQuery, ListReadPostRes>(`${POST}fetchListReadPost`);
-const fetchReadPost = createRequestAction<ReadPostUrlQuery, ReadPostRes>(`${POST}/fetchReadPost`);
-const fetchUpdatePost = createRequestAction<UpdatePostReq, UpdatePostRes>(`${POST}/fetchUpdatePost`);
-const fetchRemovePost = createRequestAction<RemovePostUrlQuery, RemovePostRes>(`${POST}/fetchRemovePost`);
-const fetchLikePost = createRequestAction<LikePostUrlQuery, LikePostRes>(`${POST}/fetchLikePost`);
-const fetchUnlikePost = createRequestAction<UnLikePostUrlQuery, UnlikePostRes>(`${POST}/fetchUnlikePost`);
-const fetchCreateComment = createRequestAction<CreateCommentReq, CreateCommentRes>(`${POST}/fetchCreateComment`);
+const fetchCreateRetweet = createFetchAction<CreateRetweetUrlQuery, CreateRetweetRes>(`${POST}/fetchCreateRetweet`);
+const fetchCreatePost = createFetchAction<CreatePostBodyQuery, CreatePostRes>(`${POST}/fetchCreatePost`);
+const fetchListReadPost = createFetchAction<ListReadPostUrlQuery, ListReadPostRes>(`${POST}fetchListReadPost`);
+const fetchReadPost = createFetchAction<ReadPostUrlQuery, ReadPostRes>(`${POST}/fetchReadPost`);
+const fetchUpdatePost = createFetchAction<UpdatePostReq, UpdatePostRes>(`${POST}/fetchUpdatePost`);
+const fetchRemovePost = createFetchAction<RemovePostUrlQuery, RemovePostRes>(`${POST}/fetchRemovePost`);
+const fetchLikePost = createFetchAction<LikePostUrlQuery, LikePostRes>(`${POST}/fetchLikePost`);
+const fetchUnlikePost = createFetchAction<UnLikePostUrlQuery, UnlikePostRes>(`${POST}/fetchUnlikePost`);
+const fetchCreateComment = createFetchAction<CreateCommentReq, CreateCommentRes>(`${POST}/fetchCreateComment`);
 
 // Action
 const listDataReset = createAction(`${POST}/listDataReset`);

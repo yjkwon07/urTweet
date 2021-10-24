@@ -3,7 +3,7 @@ import { createAction } from '@reduxjs/toolkit';
 import { createRequestAsyncThunk } from './createRequestAsyncThunk';
 import { RequestCommonMeta } from './type';
 
-export const createRequestAction = <
+export const createFetchAction = <
   R,
   S,
   F extends ErrorCommonRes = ErrorCommonRes,

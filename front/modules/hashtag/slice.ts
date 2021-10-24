@@ -1,6 +1,6 @@
 import { createAction, createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit';
 
-import { createRequestAction } from '@modules/helper';
+import { createFetchAction } from '@modules/helper';
 
 import { Hashtag } from './@types';
 import { ListReadHashtagRes, ListReadHashtagUrlQuery } from './api';
@@ -8,7 +8,7 @@ import { ListReadHashtagRes, ListReadHashtagUrlQuery } from './api';
 export const HASHTAG = 'HASHTAG';
 
 // Action - API
-const fetchListReadHashtag = createRequestAction<ListReadHashtagUrlQuery, ListReadHashtagRes>(
+const fetchListReadHashtag = createFetchAction<ListReadHashtagUrlQuery, ListReadHashtagRes>(
   `${HASHTAG}/fetchListReadHashtag`,
 );
 
