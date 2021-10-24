@@ -2,7 +2,7 @@ import { AxiosResponse } from 'axios';
 import { all, fork, takeLatest, debounce, call, put } from 'redux-saga/effects';
 
 import { createRequestSaga } from '@modules/helper';
-import { addPostToMe, removePostToMe } from '@modules/user';
+import { userAction } from '@modules/user';
 
 import {
   requestCreateComment,
@@ -31,9 +31,9 @@ function* watchCreatePost() {
   yield debounce(
     300,
     postAction.fetchCreatePost.request,
-    createRequestSaga(postAction.fetchCreatePost, function* (action) {
-      const { data }: AxiosResponse<CreatePostRes> = yield call(requestCreatePost, action.payload);
-      yield put(addPostToMe(data.resData.id));
+    createRequestSaga(postAction.fetchCreatePost, function* (payload) {
+      const { data }: AxiosResponse<CreatePostRes> = yield call(requestCreatePost, payload);
+      yield put(userAction.addPostToMe(data.resData.id));
       return data;
     }),
   );
@@ -60,9 +60,9 @@ function* watchUpdatePost() {
 function* watchRemovePost() {
   yield takeLatest(
     postAction.fetchRemovePost.request,
-    createRequestSaga(postAction.fetchRemovePost, function* (action) {
-      const { data }: AxiosResponse<RemovePostRes> = yield call(requestRemovePost, action.payload);
-      yield put(removePostToMe(data.resData.PostId));
+    createRequestSaga(postAction.fetchRemovePost, function* (payload) {
+      const { data }: AxiosResponse<RemovePostRes> = yield call(requestRemovePost, payload);
+      yield put(userAction.removePostToMe(data.resData.PostId));
       return data;
     }),
   );

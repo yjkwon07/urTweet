@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 
 import { useAppSelector } from '@hooks/useAppRedux';
 import { fetchStatusSelector } from '@modules/fetchStatus';
-import { follow, unFollow, useReadMyUser } from '@modules/user';
+import { userAction, useReadMyUser } from '@modules/user';
 
 import { StyledButton } from './styles';
 
@@ -18,8 +18,10 @@ interface IProps {
 
 const FollowButton = ({ userId }: IProps) => {
   const dispatch = useDispatch();
-  const { status: followStatus } = useAppSelector(fetchStatusSelector.byTypeData(follow.TYPE, userId));
-  const { status: unfollowStatus } = useAppSelector(fetchStatusSelector.byTypeData(unFollow.TYPE, userId));
+  const { status: followStatus } = useAppSelector(fetchStatusSelector.byTypeData(userAction.fetchFollow.TYPE, userId));
+  const { status: unfollowStatus } = useAppSelector(
+    fetchStatusSelector.byTypeData(userAction.fetchUnFollow.TYPE, userId),
+  );
   const { data: myData } = useReadMyUser();
 
   const isFollowing = useMemo(
@@ -30,7 +32,7 @@ const FollowButton = ({ userId }: IProps) => {
   const [showUnfollow, setShowUnfollow] = useState(false);
 
   const handleFollow = useCallback(() => {
-    dispatch(follow.request({ userId }, { actionList: [userId] }));
+    dispatch(userAction.fetchFollow.request({ userId }, { actionList: [userId] }));
   }, [userId, dispatch]);
 
   const handleShowUnfollowConfirm = useCallback(() => {
@@ -39,7 +41,7 @@ const FollowButton = ({ userId }: IProps) => {
       icon: <ExclamationCircleOutlined />,
       content: '언팔로우시 해당 멤버의 활동을 자세히 알 수 없게 됩니다.',
       onOk() {
-        dispatch(unFollow.request({ userId }, { actionList: [userId] }));
+        dispatch(userAction.fetchUnFollow.request({ userId }, { actionList: [userId] }));
       },
     });
   }, [userId, dispatch]);

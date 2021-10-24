@@ -1,94 +1,100 @@
-import { all, call, debounce, fork, put, select, takeLatest } from 'redux-saga/effects';
+import { AxiosResponse } from 'axios';
+import { all, call, debounce, fork, put, takeLatest } from 'redux-saga/effects';
 
 import { fetchStatusAction } from '@modules/fetchStatus';
 import { createRequestSaga } from '@modules/helper';
 
 import {
-  login,
-  signup,
-  logout,
-  readMyUser,
-  updateMyUser,
-  follow,
-  unFollow,
-  listReadFollow,
-  listReadFollowing,
-  removeFollowerMe,
-  readUser,
-} from './slice';
-
-import { userAction } from '.';
-
-const loginSaga = createRequestSaga(login, login.requestAPI);
-const logoutSaga = createRequestSaga(logout, logout.requestAPI);
-const signupSaga = createRequestSaga(signup, signup.requestAPI);
-const readMyUserSaga = createRequestSaga(readMyUser, readMyUser.requestAPI);
-const readUserSaga = createRequestSaga(readUser, readUser.requestAPI);
-const updateMyUserSaga = createRequestSaga(updateMyUser, updateMyUser.requestAPI);
-const listReadFollowSaga = createRequestSaga(listReadFollow, listReadFollow.requestAPI);
-const listReadFollowingSaga = createRequestSaga(listReadFollowing, listReadFollowing.requestAPI);
-const followSaga = createRequestSaga(follow, follow.requestAPI);
-const unFollowSaga = createRequestSaga(unFollow, unFollow.requestAPI);
-const removeFollowerMeSaga = createRequestSaga(removeFollowerMe, removeFollowerMe.requestAPI);
+  LoginRes,
+  LogoutRes,
+  requestFollow,
+  requestListReadFollow,
+  requestListReadFollowing,
+  requestLogin,
+  requestLogout,
+  requestReadMyUser,
+  requestReadUser,
+  requestRemoveFollowerMe,
+  requestSignup,
+  requestUnfollow,
+  requestUpdateMyUser,
+} from './api';
+import { userAction } from './slice';
 
 function* watchLogIn() {
-  yield takeLatest(login.request, function* (action) {
-    yield call(loginSaga, action);
-    const rootState: RootState = yield select();
-    const { status, data } = rootState.FETCH_STATUS[userAction.login.TYPE];
-    if (status === 'SUCCESS') {
-      yield put(fetchStatusAction.successFetchStatus({ type: userAction.readMyUser.TYPE, response: data }));
+  yield takeLatest(
+    userAction.fetchLogin.request,
+    createRequestSaga(userAction.fetchLogout, function* (payload) {
+      const { data }: AxiosResponse<LoginRes> = yield call(requestLogin, payload);
+      yield put(fetchStatusAction.successFetchStatus({ type: userAction.fetchReadMyUser.TYPE, response: data }));
       yield put(userAction.updateMyInfo(data.resData));
-    }
-  });
+      return data;
+    }),
+  );
 }
 
 function* watchLogout() {
-  yield takeLatest(logout.request, function* (action) {
-    yield call(logoutSaga, action);
-    const rootState: RootState = yield select();
-    const { status } = rootState.FETCH_STATUS[userAction.logout.TYPE];
-    if (status === 'SUCCESS') {
-      yield put(fetchStatusAction.initFetchStatus({ type: userAction.readMyUser.TYPE }));
+  yield takeLatest(
+    userAction.fetchLogout.request,
+    createRequestSaga(userAction.fetchLogout, function* () {
+      const { data }: AxiosResponse<LogoutRes> = yield call(requestLogout);
+      yield put(fetchStatusAction.initFetchStatus({ type: userAction.fetchReadMyUser.TYPE }));
       yield put(userAction.myInfoReset());
-    }
-  });
+      return data;
+    }),
+  );
 }
 
 function* watchSignup() {
-  yield debounce(300, signup.request, signupSaga);
+  yield debounce(300, userAction.fetchSignup.request, createRequestSaga(userAction.fetchSignup, requestSignup));
 }
 
 function* watchReadMyUser() {
-  yield debounce(300, readMyUser.request, readMyUserSaga);
+  yield debounce(
+    300,
+    userAction.fetchReadMyUser.request,
+    createRequestSaga(userAction.fetchReadMyUser, requestReadMyUser),
+  );
 }
 
 function* watchReadUser() {
-  yield takeLatest(readUser.request, readUserSaga);
+  yield takeLatest(userAction.fetchReadUser.request, createRequestSaga(userAction.fetchReadUser, requestReadUser));
 }
 
 function* watchModifyNickname() {
-  yield takeLatest(updateMyUser.request, updateMyUserSaga);
+  yield takeLatest(
+    userAction.fetchUpdateMyUser.request,
+    createRequestSaga(userAction.fetchUpdateMyUser, requestUpdateMyUser),
+  );
 }
 
 function* watchListReadFollow() {
-  yield takeLatest(listReadFollow.request, listReadFollowSaga);
+  yield takeLatest(
+    userAction.fetchListReadFollow.request,
+    createRequestSaga(userAction.fetchListReadFollow, requestListReadFollow),
+  );
 }
 
 function* watchListReadFollowing() {
-  yield takeLatest(listReadFollowing.request, listReadFollowingSaga);
+  yield takeLatest(
+    userAction.fetchListReadFollowing.request,
+    createRequestSaga(userAction.fetchListReadFollowing, requestListReadFollowing),
+  );
 }
 
 function* watchFollow() {
-  yield takeLatest(follow.request, followSaga);
+  yield takeLatest(userAction.fetchFollow.request, createRequestSaga(userAction.fetchFollow, requestFollow));
 }
 
 function* watchUnFollow() {
-  yield takeLatest(unFollow.request, unFollowSaga);
+  yield takeLatest(userAction.fetchUnFollow.request, createRequestSaga(userAction.fetchUnFollow, requestUnfollow));
 }
 
 function* watchRemoveFollowerMe() {
-  yield takeLatest(removeFollowerMe.request, removeFollowerMeSaga);
+  yield takeLatest(
+    userAction.fetchRemoveFollowerMe.request,
+    createRequestSaga(userAction.fetchRemoveFollowerMe, requestRemoveFollowerMe),
+  );
 }
 
 export default function* userSaga() {

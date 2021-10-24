@@ -16,7 +16,7 @@ import { StyledForm } from './styles';
 
 const EditMyUserForm = () => {
   const dispatch = useDispatch();
-  const { status } = useAppSelector(fetchStatusSelector.byTypeData(userAction.updateMyUser.TYPE));
+  const { status } = useAppSelector(fetchStatusSelector.byTypeData(userAction.fetchUpdateMyUser.TYPE));
   const { data: myData } = useReadMyUser();
 
   const {
@@ -42,7 +42,7 @@ const EditMyUserForm = () => {
     async (formData: FormUpdateMyUser) => {
       if (!myData?.id) return;
       try {
-        await dispatch(userAction.updateMyUser.asyncThunk(formData));
+        await dispatch(userAction.fetchUpdateMyUser.asyncThunk(formData));
         message.success('수정 되었습니다.');
       } catch (error) {
         if (isCustomAxiosError(error)) {

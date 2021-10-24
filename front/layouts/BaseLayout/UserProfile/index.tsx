@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 
 import { useAppSelector } from '@hooks/useAppRedux';
 import { fetchStatusSelector } from '@modules/fetchStatus';
-import { logout, useReadMyUser } from '@modules/user';
+import { userAction, useReadMyUser } from '@modules/user';
 import { removeUserId } from '@utils/auth';
 import { GET_USER_URL, PASS_HREF } from '@utils/urls';
 
@@ -14,12 +14,12 @@ import { StyledCard, StyledCardMeta } from './styles';
 
 const UserProfile = () => {
   const dispatch = useDispatch();
-  const { status: logoutStatus } = useAppSelector(fetchStatusSelector.byTypeData(logout.TYPE));
+  const { status: logoutStatus } = useAppSelector(fetchStatusSelector.byTypeData(userAction.fetchLogout.TYPE));
   const { data: myData } = useReadMyUser();
 
   const handleLogout = useCallback(() => {
     removeUserId();
-    dispatch(logout.request({}));
+    dispatch(userAction.fetchLogout.request());
   }, [dispatch]);
 
   if (!myData) return null;

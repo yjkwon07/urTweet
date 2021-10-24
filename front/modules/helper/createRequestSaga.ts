@@ -20,7 +20,7 @@ export const createRequestSaga = <R, S, F, M extends RequestCommonMeta>(
     success: ActionMetaPayload<S, M>;
     failure: ActionMetaPayload<F, M>;
   },
-  requestCall: (...args: any[]) => any,
+  requestCall: (query: R | never) => any,
 ) => {
   return function* (action: PromiseAction<R, S, F, M>) {
     const actionList = action.meta?.actionList;

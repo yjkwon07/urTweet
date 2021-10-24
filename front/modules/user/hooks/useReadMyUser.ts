@@ -13,7 +13,7 @@ import { userAction, userSelector } from '../slice';
 export default function useReadMyUser() {
   const dispatch = useDispatch();
   const { status, error } = useAppSelector(
-    fetchStatusSelector.byTypeData<ReadMyUserRes, CustomAxiosError>(userAction.readMyUser.TYPE),
+    fetchStatusSelector.byTypeData<ReadMyUserRes, CustomAxiosError>(userAction.fetchReadMyUser.TYPE),
   );
   const data = useAppSelector(userSelector.myData);
 
@@ -21,7 +21,7 @@ export default function useReadMyUser() {
 
   useEffect(() => {
     if (!isInitFetch.current) {
-      if (getUserId()) dispatch(userAction.readMyUser.request({}));
+      if (getUserId()) dispatch(userAction.fetchReadMyUser.request());
     } else {
       isInitFetch.current = false;
     }

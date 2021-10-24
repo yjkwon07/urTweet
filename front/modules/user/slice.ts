@@ -5,39 +5,54 @@ import { createRequestAction } from '@modules/helper';
 
 import { MyUser, User } from './@types/db';
 import {
-  requestFollow,
-  requestListReadFollow,
-  requestListReadFollowing,
-  requestLogin,
-  requestLogout,
-  requestUpdateMyUser,
-  requestReadMyUser,
-  requestReadUser,
-  requestRemoveFollowerMe,
-  requestSignup,
-  requestUnfollow,
+  FollowRes,
+  FollowUrlQuery,
+  ListReadFollowingRes,
+  ListReadFollowingUrlQuery,
+  ListReadFollowRes,
+  ListReadFollowUrlQuery,
+  LoginBodyQuery,
+  LoginRes,
+  LogoutRes,
+  ReadMyUserRes,
+  ReadUserRes,
+  ReadUserUrlQuery,
+  RemoveFollowerMeRes,
+  RemoveFollowerMeUrlQuery,
+  SignupBodyQuery,
+  SignupRes,
+  UnFollowRes,
+  UnFollowUrlQuery,
+  UpdateMyUserBodyQuery,
+  UpdateMyUserRes,
 } from './api';
 
 export const USER = 'USER';
 
 // Action - API
-export const login = createRequestAction(`${USER}/login`, requestLogin);
-export const logout = createRequestAction(`${USER}/logout`, requestLogout);
-export const signup = createRequestAction(`${USER}/signup`, requestSignup);
-export const readMyUser = createRequestAction(`${USER}/readMyUser`, requestReadMyUser);
-export const readUser = createRequestAction(`${USER}/readUser`, requestReadUser);
-export const updateMyUser = createRequestAction(`${USER}/updateMyUser`, requestUpdateMyUser);
-export const listReadFollow = createRequestAction(`${USER}/listReadFollow`, requestListReadFollow);
-export const listReadFollowing = createRequestAction(`${USER}/listReadFollowing`, requestListReadFollowing);
-export const follow = createRequestAction(`${USER}/follow`, requestFollow);
-export const unFollow = createRequestAction(`${USER}/unFollow`, requestUnfollow);
-export const removeFollowerMe = createRequestAction(`${USER}/removeFollowerMe`, requestRemoveFollowerMe);
+const fetchLogin = createRequestAction<LoginBodyQuery, LoginRes>(`${USER}/fetchLogin`);
+const fetchLogout = createRequestAction<void, LogoutRes>(`${USER}/fetchLogout`);
+const fetchSignup = createRequestAction<SignupBodyQuery, SignupRes>(`${USER}/fetchSignup`);
+const fetchReadMyUser = createRequestAction<void, ReadMyUserRes>(`${USER}/fetchReadMyUser`);
+const fetchReadUser = createRequestAction<ReadUserUrlQuery, ReadUserRes>(`${USER}/fetchReadUser`);
+const fetchUpdateMyUser = createRequestAction<UpdateMyUserBodyQuery, UpdateMyUserRes>(`${USER}/fetchUpdateMyUser`);
+const fetchListReadFollow = createRequestAction<ListReadFollowUrlQuery, ListReadFollowRes>(
+  `${USER}/fetchListReadFollow`,
+);
+const fetchListReadFollowing = createRequestAction<ListReadFollowingUrlQuery, ListReadFollowingRes>(
+  `${USER}/fetchListReadFollowing`,
+);
+const fetchFollow = createRequestAction<FollowUrlQuery, FollowRes>(`${USER}/fetchFollow`);
+const fetchUnFollow = createRequestAction<UnFollowUrlQuery, UnFollowRes>(`${USER}/fetchUnFollow`);
+const fetchRemoveFollowerMe = createRequestAction<RemoveFollowerMeUrlQuery, RemoveFollowerMeRes>(
+  `${USER}/fetchRemoveFollowerMe`,
+);
 
 // Action
-export const myInfoReset = createAction(`${USER}/myInfoReset`);
-export const updateMyInfo = createAction<MyUser>(`${USER}/updateMyInfo`);
-export const addPostToMe = createAction<number>(`${USER}/addPostToMe`);
-export const removePostToMe = createAction<number>(`${USER}/removePostToMe`);
+const myInfoReset = createAction(`${USER}/myInfoReset`);
+const updateMyInfo = createAction<MyUser>(`${USER}/updateMyInfo`);
+const addPostToMe = createAction<number>(`${USER}/addPostToMe`);
+const removePostToMe = createAction<number>(`${USER}/removePostToMe`);
 
 // Entity
 const followerListDataAdapter = createEntityAdapter<User>({
@@ -78,38 +93,38 @@ const slice = createSlice({
       .addCase(updateMyInfo, (state, { payload }) => {
         state.myInfo = payload;
       })
-      .addCase(readMyUser.success, (state, { payload: { resData } }) => {
+      .addCase(fetchReadMyUser.success, (state, { payload: { resData } }) => {
         const { item } = resData;
         state.myInfo = item;
       })
-      .addCase(readUser.success, (state, { payload: { resData } }) => {
+      .addCase(fetchReadUser.success, (state, { payload: { resData } }) => {
         const { item } = resData;
         state.user = item;
       })
-      .addCase(updateMyUser.success, (state, { payload: { resData } }) => {
+      .addCase(fetchUpdateMyUser.success, (state, { payload: { resData } }) => {
         const { email, nickname } = resData;
         if (state.myInfo) {
           state.myInfo.email = email;
           state.myInfo.nickname = nickname;
         }
       })
-      .addCase(listReadFollow.success, (state, { payload: { resData } }) => {
+      .addCase(fetchListReadFollow.success, (state, { payload: { resData } }) => {
         const { list } = resData;
         followerListDataAdapter.addMany(state.followerListData, list);
       })
-      .addCase(listReadFollowing.success, (state, { payload: { resData } }) => {
+      .addCase(fetchListReadFollowing.success, (state, { payload: { resData } }) => {
         const { list } = resData;
         followingListDataAdapter.addMany(state.followingListData, list);
       })
-      .addCase(follow.success, (state, { payload: { resData } }) => {
+      .addCase(fetchFollow.success, (state, { payload: { resData } }) => {
         const { userId } = resData;
         if (state.myInfo) state.myInfo.Followings.push({ id: userId });
       })
-      .addCase(unFollow.success, (state, { payload: { resData } }) => {
+      .addCase(fetchUnFollow.success, (state, { payload: { resData } }) => {
         const { userId } = resData;
         if (state.myInfo) _remove(state.myInfo.Followings, { id: userId });
       })
-      .addCase(removeFollowerMe.success, (state, { payload: { resData } }) => {
+      .addCase(fetchRemoveFollowerMe.success, (state, { payload: { resData } }) => {
         const { userId } = resData;
         if (state.myInfo) _remove(state.myInfo.Followers, { id: userId });
       })
@@ -139,16 +154,17 @@ export const userAction = {
   ...slice.actions,
   myInfoReset,
   updateMyInfo,
-  readMyUser,
-  readUser,
-  updateMyUser,
-  listReadFollow,
-  listReadFollowing,
-  follow,
-  unFollow,
-  removeFollowerMe,
   addPostToMe,
   removePostToMe,
-  login,
-  logout,
+  fetchReadMyUser,
+  fetchReadUser,
+  fetchUpdateMyUser,
+  fetchListReadFollow,
+  fetchListReadFollowing,
+  fetchFollow,
+  fetchUnFollow,
+  fetchRemoveFollowerMe,
+  fetchLogin,
+  fetchLogout,
+  fetchSignup,
 };

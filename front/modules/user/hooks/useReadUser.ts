@@ -12,7 +12,7 @@ import { userAction, userSelector } from '../slice';
 export default function useReadUser(filter?: ReadUserUrlQuery) {
   const dispatch = useDispatch();
   const { status, error } = useAppSelector(
-    fetchStatusSelector.byTypeData<ReadUserRes, CustomAxiosError>(userAction.readUser.TYPE),
+    fetchStatusSelector.byTypeData<ReadUserRes, CustomAxiosError>(userAction.fetchReadUser.TYPE),
   );
   const data = useAppSelector(userSelector.userData);
 
@@ -20,7 +20,7 @@ export default function useReadUser(filter?: ReadUserUrlQuery) {
 
   useEffect(() => {
     if (!isInitFetch.current) {
-      if (filter) dispatch(userAction.readUser.request(filter));
+      if (filter) dispatch(userAction.fetchReadUser.request(filter));
     } else {
       isInitFetch.current = false;
     }

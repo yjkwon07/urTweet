@@ -12,7 +12,7 @@ import { userAction, userSelector } from '../slice';
 export default function useListReadFollowing(filter?: ListReadFollowingUrlQuery) {
   const dispatch = useDispatch();
   const { status, data: result } = useAppSelector(
-    fetchStatusSelector.byTypeData<ListReadFollowingRes, CustomAxiosError>(userAction.listReadFollowing.TYPE),
+    fetchStatusSelector.byTypeData<ListReadFollowingRes, CustomAxiosError>(userAction.fetchListReadFollowing.TYPE),
   );
   const data = useAppSelector(userSelector.followingListData);
 
@@ -23,7 +23,7 @@ export default function useListReadFollowing(filter?: ListReadFollowingUrlQuery)
 
   useEffect(() => {
     if (!isInitFetch.current) {
-      if (filter) dispatch(userAction.listReadFollowing.request(filter));
+      if (filter) dispatch(userAction.fetchListReadFollowing.request(filter));
     } else {
       isInitFetch.current = false;
     }

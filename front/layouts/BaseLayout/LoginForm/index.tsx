@@ -9,7 +9,7 @@ import { useDispatch } from 'react-redux';
 
 import { useAppSelector } from '@hooks/useAppRedux';
 import { fetchStatusSelector } from '@modules/fetchStatus';
-import { login, LOGIN_SCHEMA } from '@modules/user';
+import { LOGIN_SCHEMA, userAction } from '@modules/user';
 import { FormLogin } from '@modules/user/@types';
 import { setUserId } from '@utils/auth';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
@@ -19,7 +19,7 @@ import { StyledForm } from './styles';
 
 const LoginForm = () => {
   const dispatch = useDispatch();
-  const { status } = useAppSelector(fetchStatusSelector.byTypeData(login.TYPE));
+  const { status } = useAppSelector(fetchStatusSelector.byTypeData(userAction.fetchLogin.TYPE));
 
   const {
     control,
@@ -33,7 +33,7 @@ const LoginForm = () => {
   const handleSubmit = useCallback(
     async (formData) => {
       try {
-        const { resData } = await dispatch(login.asyncThunk(formData));
+        const { resData } = await dispatch(userAction.fetchLogin.asyncThunk(formData));
         setUserId(resData.id.toString());
       } catch (error) {
         if (isCustomAxiosError(error)) {

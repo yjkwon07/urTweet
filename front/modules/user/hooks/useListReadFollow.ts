@@ -16,7 +16,7 @@ export default function useListReadFollow(filter?: ListReadFollowUrlQuery) {
     data: result,
     error,
   } = useAppSelector(
-    fetchStatusSelector.byTypeData<ListReadFollowRes, CustomAxiosError>(userAction.listReadFollow.TYPE),
+    fetchStatusSelector.byTypeData<ListReadFollowRes, CustomAxiosError>(userAction.fetchListReadFollow.TYPE),
   );
   const data = useAppSelector(userSelector.followListData);
 
@@ -26,7 +26,7 @@ export default function useListReadFollow(filter?: ListReadFollowUrlQuery) {
 
   useEffect(() => {
     if (!isInitFetch.current) {
-      if (filter) dispatch(userAction.listReadFollow.request(filter));
+      if (filter) dispatch(userAction.fetchListReadFollow.request(filter));
     } else {
       isInitFetch.current = false;
     }

@@ -66,7 +66,7 @@ const ProfileView = () => {
         icon: <ExclamationCircleOutlined />,
         content: '언팔로우시 해당 멤버의 활동을 자세히 알 수 없게 됩니다.',
         onOk() {
-          dispatch(userAction.removeFollowerMe.request({ userId }));
+          dispatch(userAction.fetchRemoveFollowerMe.request({ userId }));
         },
       });
     },
@@ -88,7 +88,7 @@ const ProfileView = () => {
         icon: <ExclamationCircleOutlined />,
         content: '언팔로우시 해당 멤버가 나의 활동을 자세히 알 수 없게 됩니다.',
         onOk() {
-          dispatch(userAction.removeFollowerMe.request({ userId }));
+          dispatch(userAction.fetchRemoveFollowerMe.request({ userId }));
         },
       });
     },

@@ -7,7 +7,7 @@ import SEO, { IProps as ISEOProps } from '@components/SEO';
 import { postAction } from '@modules/post';
 import { searchFilterAction } from '@modules/searchFilter';
 import wrapper from '@modules/store/configStore';
-import { readUser } from '@modules/user';
+import { userAction } from '@modules/user';
 import { GET_USER_URL } from '@utils/urls';
 import UserRead from '@views/User/Read';
 
@@ -44,7 +44,7 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, par
     store.dispatch(searchFilterAction.changeSearchFilter({ key: 'READ_USER', filter: { userId } }));
     const {
       resData: { item: userData },
-    } = await store.dispatch(readUser.asyncThunk({ userId: Number(userId) }));
+    } = await store.dispatch(userAction.fetchReadUser.asyncThunk({ userId: Number(userId) }));
     await store.dispatch(postAction.fetchListReadPost.asyncThunk(filter));
     store.dispatch(END);
 
