@@ -28,6 +28,9 @@ export const StyledLayout = styled(Layout)`
 
   .header-menu {
     padding-left: 180px !important;
+    @media screen and (max-width: 576px) {
+      padding-left: 10px !important;
+    }
     & {
       .content {
         position: sticky;

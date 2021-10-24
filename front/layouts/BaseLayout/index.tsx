@@ -30,7 +30,7 @@ const BaseLayout: FC<IProps> = ({ filterGroup, children }) => {
           </Link>
         </div>
         <Row gutter={20}>
-          <Col className="header-menu" xs={24} sm={24} md={24} lg={8}>
+          <Col className="header-menu" xs={24} sm={24} md={8} lg={8}>
             <div className="content">
               <UserStatusView />
               <Menu className="menu mt-45" mode="vertical" defaultSelectedKeys={[router.pathname]}>
@@ -53,10 +53,10 @@ const BaseLayout: FC<IProps> = ({ filterGroup, children }) => {
           </Col>
           {filterGroup ? (
             <>
-              <Col xs={24} sm={24} md={24} lg={9}>
+              <Col xs={24} sm={24} md={9} lg={9}>
                 {children}
               </Col>
-              <Col className="filter" xs={24} sm={24} md={24} lg={7}>
+              <Col className="filter" xs={0} sm={0} md={7} lg={7}>
                 <div className="content">{filterGroup}</div>
               </Col>
             </>
