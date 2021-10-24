@@ -29,7 +29,7 @@ const BaseLayout: FC<IProps> = ({ filterGroup, children }) => {
             </a>
           </Link>
         </div>
-        <Row gutter={30}>
+        <Row gutter={20}>
           <Col className="header-menu" xs={24} sm={24} md={24} lg={8}>
             <div className="content">
               <UserStatusView />

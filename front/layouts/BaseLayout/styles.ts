@@ -27,7 +27,7 @@ export const StyledLayout = styled(Layout)`
   }
 
   .header-menu {
-    padding-left: 200px !important;
+    padding-left: 180px !important;
     & {
       .content {
         position: sticky;
@@ -58,7 +58,7 @@ export const StyledLayout = styled(Layout)`
   }
 
   .filter {
-    padding-right: 200px !important;
+    padding-right: 180px !important;
     & {
       .content {
         position: sticky;
