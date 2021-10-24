@@ -140,7 +140,7 @@ const PostListReadView = () => {
           status={status}
           postList={postListData}
           isMoreRead={isMoreRead}
-          errorMsg={status === 'FAIL' && PostListError?.response.data.resMsg}
+          errorMsg={PostListError?.resMsg}
         />
       )}
       {mode === 'page' && (
@@ -148,7 +148,7 @@ const PostListReadView = () => {
           status={status}
           postList={postListData}
           totalCount={totalCount}
-          errorMsg={status === 'FAIL' && PostListError?.response.data.resMsg}
+          errorMsg={PostListError?.resMsg}
         />
       )}
     </BaseLayout>

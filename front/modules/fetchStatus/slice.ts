@@ -1,7 +1,6 @@
 import { createAction, createSlice } from '@reduxjs/toolkit';
 
 import { FetchAction } from '@modules/helper/type';
-import { CustomAxiosError } from '@typings/type';
 
 import { FetchStatusActionPayload } from './@types';
 
@@ -87,9 +86,7 @@ export const fetchStatusSelector = {
     },
   byFetchAction:
     <R, S, F, M>(fetchAction: FetchAction<R, S, F, M>, actionId?: any) =>
-    (
-      state: RootState,
-    ): { status: FetchStatus; data: S | null; error: CustomAxiosError<F> | null; actionList: any[] } => {
+    (state: RootState): { status: FetchStatus; data: S | null; error: F | null; actionList: any[] } => {
       let result = state.FETCH_STATUS[fetchAction.TYPE] || {
         status: 'INIT',
         actionList: [],

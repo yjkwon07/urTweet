@@ -30,7 +30,7 @@ export const createFetchSaga = <R, S, F, M extends RequestCommonMeta>(
       if (isCustomAxiosError(error)) {
         const { data }: AxiosResponse<F> = error.response;
         yield put(fetchAction.failure(data, action.meta));
-        yield put(fetchStatusAction.failureFetchStatus({ type: fetchAction.TYPE, response: error, actionList }));
+        yield put(fetchStatusAction.failureFetchStatus({ type: fetchAction.TYPE, response: data, actionList }));
         if (failureCall) {
           yield call(failureCall, error);
         }
