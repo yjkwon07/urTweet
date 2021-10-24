@@ -20,7 +20,9 @@ export const createRequestSaga = <R, S, F, M extends RequestCommonMeta>(
     success: ActionMetaPayload<S, M>;
     failure: ActionMetaPayload<F, M>;
   },
-  requestCall: (query: R | never) => any,
+  requestCall: (query: R | never) => Promise<AxiosResponse<S>>,
+  successCall?: (data: S) => void,
+  failureCall?: (error: CustomAxiosError<F>) => void,
 ) => {
   return function* (action: PromiseAction<R, S, F, M>) {
     const actionList = action.meta?.actionList;
@@ -29,6 +31,9 @@ export const createRequestSaga = <R, S, F, M extends RequestCommonMeta>(
       const { data }: AxiosResponse<S> = yield call(requestCall, action.payload);
       yield put(requestAction.success(data, action.meta));
       yield put(fetchStatusAction.successFetchStatus({ type: requestAction.TYPE, response: data, actionList }));
+      if (successCall) {
+        yield call(successCall, data);
+      }
       if (action.resolve) {
         action.resolve(data);
       }
@@ -36,7 +41,10 @@ export const createRequestSaga = <R, S, F, M extends RequestCommonMeta>(
       if (isCustomAxiosError(error)) {
         const { data }: AxiosResponse<F> = error.response;
         yield put(requestAction.failure(data, action.meta));
-        yield put(fetchStatusAction.failureFetchStatus({ type: requestAction.TYPE, response: data, actionList }));
+        yield put(fetchStatusAction.failureFetchStatus({ type: requestAction.TYPE, response: error, actionList }));
+        if (failureCall) {
+          yield call(failureCall, error);
+        }
         if (action.reject) {
           action.reject(error);
         }

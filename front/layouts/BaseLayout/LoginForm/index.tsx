@@ -31,7 +31,7 @@ const LoginForm = () => {
   });
 
   const handleSubmit = useCallback(
-    async (formData) => {
+    async (formData: FormLogin) => {
       try {
         const { resData } = await dispatch(userAction.fetchLogin.asyncThunk(formData));
         setUserId(resData.id.toString());

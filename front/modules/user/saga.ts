@@ -24,11 +24,9 @@ import { userAction } from './slice';
 function* watchLogIn() {
   yield takeLatest(
     userAction.fetchLogin.request,
-    createRequestSaga(userAction.fetchLogout, function* (payload) {
-      const { data }: AxiosResponse<LoginRes> = yield call(requestLogin, payload);
+    createRequestSaga(userAction.fetchLogin, requestLogin, function* (data) {
       yield put(fetchStatusAction.successFetchStatus({ type: userAction.fetchReadMyUser.TYPE, response: data }));
       yield put(userAction.updateMyInfo(data.resData));
-      return data;
     }),
   );
 }
@@ -36,11 +34,9 @@ function* watchLogIn() {
 function* watchLogout() {
   yield takeLatest(
     userAction.fetchLogout.request,
-    createRequestSaga(userAction.fetchLogout, function* () {
-      const { data }: AxiosResponse<LogoutRes> = yield call(requestLogout);
+    createRequestSaga(userAction.fetchLogout, requestLogout, function* () {
       yield put(fetchStatusAction.initFetchStatus({ type: userAction.fetchReadMyUser.TYPE }));
       yield put(userAction.myInfoReset());
-      return data;
     }),
   );
 }
