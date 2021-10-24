@@ -1,12 +1,11 @@
 import { createAction, createSlice } from '@reduxjs/toolkit';
 
-// Type
-export interface FetchStatusActionPayload {
-  type: string;
-  actionList?: any[];
-  response?: any;
-}
+import { FetchAction } from '@modules/helper/type';
+import { CustomAxiosError } from '@typings/type';
 
+import { FetchStatusActionPayload } from './@types';
+
+// Type
 export type FetchStatus = 'INIT' | 'LOADING' | 'SUCCESS' | 'FAIL';
 
 export interface FetchStatusState {
@@ -72,10 +71,26 @@ const slice = createSlice({
 
 export const fetchStatusReducer = slice.reducer;
 export const fetchStatusSelector = {
-  byTypeData:
-    <T = any, E = any>(type: string, actionId?: any) =>
-    (state: RootState): { status: FetchStatus; data: T | null; error: E | null; actionList: any[] } => {
+  byType:
+    <S = any, F = any>(type: string, actionId?: any) =>
+    (state: RootState): { status: FetchStatus; data: S | null; error: F | null; actionList: any[] } => {
       let result = state.FETCH_STATUS[type] || {
+        status: 'INIT',
+        actionList: [],
+        data: null,
+        error: null,
+      };
+      if (actionId && !result.actionList.includes(actionId)) {
+        result = { status: 'INIT', actionList: [], data: null, error: null };
+      }
+      return { status: result.status, actionList: result.actionList, data: result.data, error: result.error };
+    },
+  byFetchAction:
+    <R, S, F, M>(fetchAction: FetchAction<R, S, F, M>, actionId?: any) =>
+    (
+      state: RootState,
+    ): { status: FetchStatus; data: S | null; error: CustomAxiosError<F> | null; actionList: any[] } => {
+      let result = state.FETCH_STATUS[fetchAction.TYPE] || {
         status: 'INIT',
         actionList: [],
         data: null,

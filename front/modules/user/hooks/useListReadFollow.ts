@@ -16,7 +16,7 @@ export default function useListReadFollow(filter?: ListReadFollowUrlQuery) {
     data: result,
     error,
   } = useAppSelector(
-    fetchStatusSelector.byTypeData<ListReadFollowRes, CustomAxiosError>(userAction.fetchListReadFollow.TYPE),
+    fetchStatusSelector.byType<ListReadFollowRes, CustomAxiosError>(userAction.fetchListReadFollow.TYPE),
   );
   const data = useAppSelector(userSelector.followListData);
 

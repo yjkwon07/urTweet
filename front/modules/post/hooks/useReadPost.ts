@@ -4,16 +4,13 @@ import { useDispatch } from 'react-redux';
 
 import { useAppSelector } from '@hooks/useAppRedux';
 import { fetchStatusSelector } from '@modules/fetchStatus';
-import { CustomAxiosError } from '@typings/type';
 
-import { ReadPostRes, ReadPostUrlQuery } from '../api';
+import { ReadPostUrlQuery } from '../api';
 import { postSelector, postAction } from '../slice';
 
 export default function useReadPost(filter?: ReadPostUrlQuery) {
   const dispatch = useDispatch();
-  const { status, error } = useAppSelector(
-    fetchStatusSelector.byTypeData<ReadPostRes, CustomAxiosError>(postAction.fetchReadPost.TYPE),
-  );
+  const { status, error } = useAppSelector(fetchStatusSelector.byFetchAction(postAction.fetchReadPost));
   const data = useAppSelector((state) => filter && postSelector.selectById(state, filter.postId));
 
   const isInitFetch = useRef(!!data);

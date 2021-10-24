@@ -21,7 +21,7 @@ interface IProps {
 
 const CommentForm = ({ userId, postId }: IProps) => {
   const dispatch = useDispatch();
-  const { status } = useAppSelector(fetchStatusSelector.byTypeData(postAction.fetchCreateComment.TYPE, postId));
+  const { status } = useAppSelector(fetchStatusSelector.byFetchAction(postAction.fetchCreateComment, postId));
 
   const {
     control,

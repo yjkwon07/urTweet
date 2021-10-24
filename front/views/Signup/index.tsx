@@ -19,7 +19,7 @@ import { StyledForm } from './styles';
 
 const Signup = () => {
   const dispatch = useDispatch();
-  const { status } = useAppSelector(fetchStatusSelector.byTypeData(userAction.fetchSignup.TYPE));
+  const { status } = useAppSelector(fetchStatusSelector.byFetchAction(userAction.fetchSignup));
   const { data: myData } = useReadMyUser();
 
   const {

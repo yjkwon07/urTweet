@@ -14,7 +14,7 @@ import { StyledCard, StyledCardMeta } from './styles';
 
 const UserProfile = () => {
   const dispatch = useDispatch();
-  const { status: logoutStatus } = useAppSelector(fetchStatusSelector.byTypeData(userAction.fetchLogout.TYPE));
+  const { status: logoutStatus } = useAppSelector(fetchStatusSelector.byFetchAction(userAction.fetchLogout));
   const { data: myData } = useReadMyUser();
 
   const handleLogout = useCallback(() => {

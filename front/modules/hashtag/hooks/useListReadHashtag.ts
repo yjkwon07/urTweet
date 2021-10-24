@@ -4,9 +4,8 @@ import { useDispatch } from 'react-redux';
 
 import { useAppSelector } from '@hooks/useAppRedux';
 import { fetchStatusSelector } from '@modules/fetchStatus';
-import { CustomAxiosError } from '@typings/type';
 
-import { ListReadHashtagRes, ListReadHashtagUrlQuery } from '../api';
+import { ListReadHashtagUrlQuery } from '../api';
 import { hashtagAction, hashtagSelector } from '../slice';
 
 export default function useListReadHashtag(filter?: ListReadHashtagUrlQuery) {
@@ -15,9 +14,7 @@ export default function useListReadHashtag(filter?: ListReadHashtagUrlQuery) {
     status,
     data: result,
     error,
-  } = useAppSelector(
-    fetchStatusSelector.byTypeData<ListReadHashtagRes, CustomAxiosError>(hashtagAction.fetchListReadHashtag.TYPE),
-  );
+  } = useAppSelector(fetchStatusSelector.byFetchAction(hashtagAction.fetchListReadHashtag));
   const data = useAppSelector(hashtagSelector.listData);
 
   const isInitFetch = useRef(!!data.length);

@@ -16,7 +16,7 @@ import { StyledForm } from './styles';
 
 const EditMyUserForm = () => {
   const dispatch = useDispatch();
-  const { status } = useAppSelector(fetchStatusSelector.byTypeData(userAction.fetchUpdateMyUser.TYPE));
+  const { status } = useAppSelector(fetchStatusSelector.byFetchAction(userAction.fetchUpdateMyUser));
   const { data: myData } = useReadMyUser();
 
   const {

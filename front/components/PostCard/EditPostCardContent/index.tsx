@@ -26,7 +26,7 @@ export interface IProps {
 
 const EditPostCardContent = ({ postId, postContent, imageList, onCancel }: IProps) => {
   const dispatch = useDispatch();
-  const { status } = useAppSelector(fetchStatusSelector.byTypeData(postAction.fetchUpdatePost.TYPE, postId));
+  const { status } = useAppSelector(fetchStatusSelector.byFetchAction(postAction.fetchUpdatePost, postId));
 
   const {
     control,

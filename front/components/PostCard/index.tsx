@@ -42,7 +42,7 @@ export interface IProps {
 const PostCard = ({ data, initCommentListOpen = false }: IProps) => {
   const dispatch = useDispatch();
   const { status: removePostStatus } = useAppSelector(
-    fetchStatusSelector.byTypeData(postAction.fetchRemovePost.TYPE, data.id),
+    fetchStatusSelector.byFetchAction(postAction.fetchRemovePost, data.id),
   );
   const { data: myData } = useReadMyUser();
 
