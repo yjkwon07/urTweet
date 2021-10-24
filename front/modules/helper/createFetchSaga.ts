@@ -7,7 +7,7 @@ import isCustomAxiosError from '@utils/isCustomAxiosError';
 import { fetchStatusAction } from '../fetchStatus';
 import { FetchAction, PromiseAction, RequestCommonMeta } from './type';
 
-export const createRequestSaga = <R, S, F, M extends RequestCommonMeta>(
+export const createFetchSaga = <R, S, F, M extends RequestCommonMeta>(
   fetchAction: FetchAction<R, S, F, M>,
   requestCall: (query: R | never) => Promise<AxiosResponse<S>>,
   successCall?: (data: S) => void,

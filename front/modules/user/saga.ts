@@ -1,12 +1,9 @@
-import { AxiosResponse } from 'axios';
-import { all, call, debounce, fork, put, takeLatest } from 'redux-saga/effects';
+import { all, debounce, fork, put, takeLatest } from 'redux-saga/effects';
 
 import { fetchStatusAction } from '@modules/fetchStatus';
-import { createRequestSaga } from '@modules/helper';
+import { createFetchSaga } from '@modules/helper';
 
 import {
-  LoginRes,
-  LogoutRes,
   requestFollow,
   requestListReadFollow,
   requestListReadFollowing,
@@ -24,7 +21,7 @@ import { userAction } from './slice';
 function* watchLogIn() {
   yield takeLatest(
     userAction.fetchLogin.request,
-    createRequestSaga(userAction.fetchLogin, requestLogin, function* (data) {
+    createFetchSaga(userAction.fetchLogin, requestLogin, function* (data) {
       yield put(fetchStatusAction.successFetchStatus({ type: userAction.fetchReadMyUser.TYPE, response: data }));
       yield put(userAction.updateMyInfo(data.resData));
     }),
@@ -34,7 +31,7 @@ function* watchLogIn() {
 function* watchLogout() {
   yield takeLatest(
     userAction.fetchLogout.request,
-    createRequestSaga(userAction.fetchLogout, requestLogout, function* () {
+    createFetchSaga(userAction.fetchLogout, requestLogout, function* () {
       yield put(fetchStatusAction.initFetchStatus({ type: userAction.fetchReadMyUser.TYPE }));
       yield put(userAction.myInfoReset());
     }),
@@ -42,54 +39,54 @@ function* watchLogout() {
 }
 
 function* watchSignup() {
-  yield debounce(300, userAction.fetchSignup.request, createRequestSaga(userAction.fetchSignup, requestSignup));
+  yield debounce(300, userAction.fetchSignup.request, createFetchSaga(userAction.fetchSignup, requestSignup));
 }
 
 function* watchReadMyUser() {
   yield debounce(
     300,
     userAction.fetchReadMyUser.request,
-    createRequestSaga(userAction.fetchReadMyUser, requestReadMyUser),
+    createFetchSaga(userAction.fetchReadMyUser, requestReadMyUser),
   );
 }
 
 function* watchReadUser() {
-  yield takeLatest(userAction.fetchReadUser.request, createRequestSaga(userAction.fetchReadUser, requestReadUser));
+  yield takeLatest(userAction.fetchReadUser.request, createFetchSaga(userAction.fetchReadUser, requestReadUser));
 }
 
 function* watchModifyNickname() {
   yield takeLatest(
     userAction.fetchUpdateMyUser.request,
-    createRequestSaga(userAction.fetchUpdateMyUser, requestUpdateMyUser),
+    createFetchSaga(userAction.fetchUpdateMyUser, requestUpdateMyUser),
   );
 }
 
 function* watchListReadFollow() {
   yield takeLatest(
     userAction.fetchListReadFollow.request,
-    createRequestSaga(userAction.fetchListReadFollow, requestListReadFollow),
+    createFetchSaga(userAction.fetchListReadFollow, requestListReadFollow),
   );
 }
 
 function* watchListReadFollowing() {
   yield takeLatest(
     userAction.fetchListReadFollowing.request,
-    createRequestSaga(userAction.fetchListReadFollowing, requestListReadFollowing),
+    createFetchSaga(userAction.fetchListReadFollowing, requestListReadFollowing),
   );
 }
 
 function* watchFollow() {
-  yield takeLatest(userAction.fetchFollow.request, createRequestSaga(userAction.fetchFollow, requestFollow));
+  yield takeLatest(userAction.fetchFollow.request, createFetchSaga(userAction.fetchFollow, requestFollow));
 }
 
 function* watchUnFollow() {
-  yield takeLatest(userAction.fetchUnFollow.request, createRequestSaga(userAction.fetchUnFollow, requestUnfollow));
+  yield takeLatest(userAction.fetchUnFollow.request, createFetchSaga(userAction.fetchUnFollow, requestUnfollow));
 }
 
 function* watchRemoveFollowerMe() {
   yield takeLatest(
     userAction.fetchRemoveFollowerMe.request,
-    createRequestSaga(userAction.fetchRemoveFollowerMe, requestRemoveFollowerMe),
+    createFetchSaga(userAction.fetchRemoveFollowerMe, requestRemoveFollowerMe),
   );
 }
 

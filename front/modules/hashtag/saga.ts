@@ -1,6 +1,6 @@
 import { all, fork, takeLatest } from 'redux-saga/effects';
 
-import { createRequestSaga } from '@modules/helper';
+import { createFetchSaga } from '@modules/helper';
 
 import { requestListReadHashtag } from './api';
 import { hashtagAction } from './slice';
@@ -8,7 +8,7 @@ import { hashtagAction } from './slice';
 function* watchListRead() {
   yield takeLatest(
     hashtagAction.fetchListReadHashtag.request,
-    createRequestSaga(hashtagAction.fetchListReadHashtag, requestListReadHashtag),
+    createFetchSaga(hashtagAction.fetchListReadHashtag, requestListReadHashtag),
   );
 }
 
