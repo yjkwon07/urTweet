@@ -15,13 +15,13 @@ const isShowLoginForm = (status: FetchStatus, isLogin: boolean, isPrevLogin: boo
 
 const UserStatusView = () => {
   const { status: myDataStatus, data: myData } = useReadMyUser();
-  const isPrevLogin = getUserId();
+  const userId = getUserId();
 
   return (
     <>
       {isShowUserSkeleton(myDataStatus) && <UserSkeleton />}
       {isShowUserProfile(myDataStatus, !!myData) && <UserProfile />}
-      {isShowLoginForm(myDataStatus, !!myData, !!isPrevLogin) && <LoginForm />}
+      {isShowLoginForm(myDataStatus, !!myData, !!userId) && <LoginForm />}
     </>
   );
 };
