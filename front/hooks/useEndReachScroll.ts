@@ -12,7 +12,7 @@ const useEndReachScroll = ({ callback }: IProps) => {
       if (window.scrollY + document.documentElement.clientHeight > document.documentElement.scrollHeight - 300) {
         callback();
       }
-    }, 300);
+    }, 400);
 
     window.addEventListener('scroll', onScroll);
     return () => {
