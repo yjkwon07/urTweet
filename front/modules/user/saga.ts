@@ -44,7 +44,7 @@ function* watchSignup() {
 
 function* watchReadMyUser() {
   yield debounce(
-    300,
+    400,
     userAction.fetchReadMyUser.request,
     createFetchSaga(userAction.fetchReadMyUser, requestReadMyUser),
   );
