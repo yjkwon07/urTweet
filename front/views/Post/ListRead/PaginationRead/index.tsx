@@ -8,7 +8,7 @@ import { FetchStatus } from '@modules/fetchStatus';
 import { useListReadPost } from '@modules/post';
 import { Post } from '@modules/post/@types';
 
-import filterSearch from '../filterSearch';
+import { pageFilter } from '../config';
 import { StyledCenter, StyledViewWrapper } from './styles';
 
 export interface IProps {
@@ -25,7 +25,7 @@ const PaginationRead = ({ status, postList, totalCount, errorMsg }: IProps) => {
 
   const handleChangePage = useCallback(
     (page: number) => {
-      filterSearch(router.pathname, router.query, { page });
+      pageFilter.filterSearch(router.pathname, router.query, { page });
     },
     [router],
   );
@@ -48,7 +48,7 @@ const PaginationRead = ({ status, postList, totalCount, errorMsg }: IProps) => {
       <StyledCenter>
         <Pagination
           showSizeChanger={false}
-          current={filter?.page}
+          current={filter.page}
           total={totalCount}
           onChange={handleChangePage}
           pageSize={filter?.pageSize}

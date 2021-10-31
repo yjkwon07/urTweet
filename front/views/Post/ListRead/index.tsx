@@ -8,7 +8,7 @@ import BaseLayout from '@layouts/BaseLayout';
 import { useListReadPost } from '@modules/post';
 
 import AutoCompleteHashTag from './AutoCompleteHashTag';
-import filterSearch, { DEFAULT_CUR_PAGE, DEFAULT_PER_PAGE } from './filterSearch';
+import { pageFilter } from './config';
 import InfiniteMode from './InfiniteListRead';
 import PaginationMode from './PaginationRead';
 import { StyledFilter } from './styles';
@@ -30,12 +30,19 @@ const PostListReadView = () => {
   } = useListReadPost();
 
   const handleRefreshPostListData = useCallback(() => {
-    filterSearch(router.pathname, router.query, { page: DEFAULT_CUR_PAGE, pageSize: DEFAULT_PER_PAGE, hashtag: '' });
+    pageFilter.filterSearch(router.pathname, router.query, {
+      page: pageFilter.defaultOption.DEFAULT_CUR_PAGE,
+      pageSize: pageFilter.defaultOption.DEFAULT_PER_PAGE,
+      hashtag: '',
+    });
   }, [router]);
 
   const handleChangePageSize = useCallback(
     (pageSize: number) => {
-      filterSearch(router.pathname, router.query, { page: DEFAULT_CUR_PAGE, pageSize });
+      pageFilter.filterSearch(router.pathname, router.query, {
+        page: pageFilter.defaultOption.DEFAULT_CUR_PAGE,
+        pageSize,
+      });
     },
     [router],
   );
@@ -43,9 +50,12 @@ const PostListReadView = () => {
   const handleChangeMode = useCallback(
     (mode: ViewMode) => () => {
       if (mode === 'infinite') {
-        filterSearch(router.pathname, router.query, { page: DEFAULT_CUR_PAGE, mode });
+        pageFilter.filterSearch(router.pathname, router.query, {
+          page: pageFilter.defaultOption.DEFAULT_CUR_PAGE,
+          mode,
+        });
       } else {
-        filterSearch(router.pathname, router.query, { page: listReadPostFilter.page, mode });
+        pageFilter.filterSearch(router.pathname, router.query, { page: listReadPostFilter.page, mode });
       }
     },
     [listReadPostFilter.page, router],

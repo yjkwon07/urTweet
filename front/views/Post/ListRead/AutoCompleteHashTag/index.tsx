@@ -8,7 +8,7 @@ import { useRouter } from 'next/router';
 import { useListReadHashtag, useListReadHashtagFilter } from '@modules/hashtag';
 import { useListReadPost } from '@modules/post';
 
-import filterSearch, { DEFAULT_CUR_PAGE } from '../filterSearch';
+import { pageFilter } from '../config';
 
 function AutoCompleteHashTag() {
   const router = useRouter();
@@ -34,7 +34,10 @@ function AutoCompleteHashTag() {
   }, []);
 
   const handleSelectHashTagOption = (hashtag: string) => {
-    filterSearch(router.pathname, router.query, { page: DEFAULT_CUR_PAGE, hashtag });
+    pageFilter.filterSearch(router.pathname, router.query, {
+      page: pageFilter.defaultOption.DEFAULT_CUR_PAGE,
+      hashtag,
+    });
   };
 
   useEffect(() => {
