@@ -5,7 +5,6 @@ import { END } from 'redux-saga';
 
 import SEO from '@components/SEO';
 import { postAction } from '@modules/post';
-import { searchFilterAction } from '@modules/searchFilter';
 import wrapper from '@modules/store/configStore';
 import { HOME_URL } from '@utils/urls';
 import ListReadView from '@views/Post/ListRead';
@@ -28,7 +27,7 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, que
   const { page, pageSize, hashtag } = parseQuery(query);
   const filter = { page, pageSize, hashtag };
 
-  store.dispatch(searchFilterAction.changeSearchFilter({ key: 'LIST_READ_POST', filter }));
+  store.dispatch(postAction.changeSearchFilter({ filter }));
   await store.dispatch(postAction.fetchListReadPost.asyncThunk(filter));
   store.dispatch(END);
 });

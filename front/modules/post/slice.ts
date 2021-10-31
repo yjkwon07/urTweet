@@ -1,4 +1,4 @@
-import { createAction, createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit';
+import { createAction, createEntityAdapter, createSlice, EntityState, isAnyOf } from '@reduxjs/toolkit';
 
 import { createFetchAction } from '@modules/helper';
 
@@ -39,6 +39,8 @@ const fetchCreateComment = createFetchAction<CreateCommentReq, CreateCommentRes>
 
 // Action
 const listDataReset = createAction(`${POST}/listDataReset`);
+const changeSearchFilter = createAction<{ filter: ListReadPostUrlQuery }>(`${POST}/changeSearchFilter`);
+const resetSearchFilter = createAction(`${POST}/resetSearchFilter`);
 
 // Entity
 const postListDataAdapter = createEntityAdapter<Post>({
@@ -46,10 +48,18 @@ const postListDataAdapter = createEntityAdapter<Post>({
 });
 
 // Type
-export type PostState = EntityState<Post>;
+export interface PostState extends EntityState<Post> {
+  filter: ListReadPostUrlQuery;
+  isMoreRead: boolean;
+  totalCount: number;
+}
 
 // Reducer
-const initialState: PostState = postListDataAdapter.getInitialState();
+const initialState: PostState = postListDataAdapter.getInitialState({
+  filter: { page: 1, pageSize: 10 },
+  isMoreRead: false,
+  totalCount: 0,
+});
 
 const slice = createSlice({
   name: POST,
@@ -60,16 +70,17 @@ const slice = createSlice({
       .addCase(listDataReset, (state) => {
         postListDataAdapter.removeAll(state);
       })
-      .addCase(fetchCreateRetweet.success, (state, { payload: { resData } }) => {
-        const list = postListDataAdapter.getSelectors().selectAll(state);
-        postListDataAdapter.setAll(state, [resData].concat(list));
+      .addCase(changeSearchFilter, (state, { payload: { filter } }) => {
+        state.filter = { ...state.filter, ...filter };
       })
-      .addCase(fetchCreatePost.success, (state, { payload: { resData } }) => {
-        const list = postListDataAdapter.getSelectors().selectAll(state);
-        postListDataAdapter.setAll(state, [resData].concat(list));
+      .addCase(resetSearchFilter, (state) => {
+        state.filter = initialState.filter;
       })
       .addCase(fetchListReadPost.success, (state, { payload: { resData }, meta }) => {
-        const { list } = resData;
+        const { list, totalCount, nextPage } = resData;
+        state.totalCount = totalCount;
+        state.isMoreRead = !!nextPage;
+
         if (meta?.isLoadMore) {
           postListDataAdapter.removeMany(
             state,
@@ -110,15 +121,28 @@ const slice = createSlice({
           id: resData.PostId,
           changes: { Comments: state.entities[resData.PostId]?.Comments.concat(resData) },
         });
+      })
+      .addMatcher(isAnyOf(fetchCreatePost.success, fetchCreateRetweet.success), (state, { payload: { resData } }) => {
+        const list = postListDataAdapter.getSelectors().selectAll(state);
+        postListDataAdapter.setAll(state, [resData].concat(list));
       }),
 });
 
-const { selectAll, selectById } = postListDataAdapter.getSelectors((state: RootState) => state.POST);
+const { selectAll: listData, selectById } = postListDataAdapter.getSelectors((state: RootState) => state.POST);
 
 export const postReducer = slice.reducer;
-export const postSelector = { selectAll, selectById };
+export const postSelector = {
+  listData,
+  selectById,
+  filter: (state: RootState) => state.POST.filter,
+  isMoreRead: (state: RootState) => state.POST.isMoreRead,
+  totalCount: (state: RootState) => state.POST.totalCount,
+};
 export const postAction = {
   ...slice.actions,
+  listDataReset,
+  changeSearchFilter,
+  resetSearchFilter,
   fetchCreateRetweet,
   fetchCreatePost,
   fetchListReadPost,
@@ -128,5 +152,4 @@ export const postAction = {
   fetchLikePost,
   fetchUnlikePost,
   fetchCreateComment,
-  listDataReset,
 };

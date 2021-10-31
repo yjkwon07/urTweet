@@ -5,9 +5,8 @@ import { Empty, Space, Spin } from 'antd';
 import PostCard from '@components/PostCard';
 import useEndReachScroll from '@hooks/useEndReachScroll';
 import { FetchStatus } from '@modules/fetchStatus';
-import { ListReadPostUrlQuery } from '@modules/post';
+import { useListReadPostFilter } from '@modules/post';
 import { Post } from '@modules/post/@types';
-import { useSearchFilter } from '@modules/searchFilter';
 import { useReadMyUser } from '@modules/user';
 
 import PostForm from '../PostForm';
@@ -21,16 +20,16 @@ export interface IProps {
 }
 
 const InfiniteListRead = ({ status, postList, isMoreRead, errorMsg }: IProps) => {
-  const { filter, changeFilter } = useSearchFilter<ListReadPostUrlQuery>('LIST_READ_POST');
+  const { filter, changeFilter } = useListReadPostFilter();
   const { data: myData } = useReadMyUser();
 
   const handleNextPage = useCallback(() => {
-    if (filter?.page && isMoreRead) {
+    if (isMoreRead) {
       changeFilter({
         page: filter.page + 1,
       });
     }
-  }, [changeFilter, filter?.page, isMoreRead]);
+  }, [changeFilter, filter.page, isMoreRead]);
 
   useEndReachScroll({ callback: handleNextPage });
 

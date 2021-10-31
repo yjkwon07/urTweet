@@ -6,11 +6,10 @@ import { debounce } from 'lodash';
 import { useRouter } from 'next/router';
 
 import BaseLayout from '@layouts/BaseLayout';
-import { ListReadHashtagUrlQuery, useListReadHashtag } from '@modules/hashtag';
-import { ListReadPostUrlQuery, useListReadPost } from '@modules/post';
-import { useSearchFilter } from '@modules/searchFilter';
+import { useListReadHashtag, useListReadHashtagFilter } from '@modules/hashtag';
+import { useListReadPost, useListReadPostFilter } from '@modules/post';
 
-import filterSearch, { DEFAULT_CUR_PAGE, DEFAULT_PER_PAGE, ViewMode } from './filterSearch';
+import filterSearch, { DEFAULT_CUR_PAGE, DEFAULT_PER_PAGE, parseQuery, ViewMode } from './filterSearch';
 import InfiniteMode from './InfiniteListRead';
 import PaginationMode from './PaginationRead';
 import { StyledFilter } from './styles';
@@ -21,8 +20,9 @@ const { Option } = Select;
 const PostListReadView = () => {
   const router = useRouter();
 
-  const { filter: listReadPostFilter } = useSearchFilter<ListReadPostUrlQuery>('LIST_READ_POST');
-  const mode = useMemo<ViewMode>(() => (router.query.mode as ViewMode) || 'infinite', [router.query.mode]);
+  const { mode } = useMemo(() => parseQuery(router.query), [router.query]);
+  const { filter: listReadPostFilter } = useListReadPostFilter();
+
   const {
     status,
     data: postListData,
@@ -31,9 +31,8 @@ const PostListReadView = () => {
     totalCount,
   } = useListReadPost({ filter: listReadPostFilter, mode });
 
-  const { filter: listReadHashtagFilter, changeFilter: changeListReadHashtagFilter } =
-    useSearchFilter<ListReadHashtagUrlQuery>('LIST_READ_HASHTAG');
   const [hashtagKeyword, setHashtagKeyword] = useState('');
+  const { filter: listReadHashtagFilter, changeFilter: changeListReadHashtagFilter } = useListReadHashtagFilter();
   const { data: hashtagListData, error: hashtagListError } = useListReadHashtag(listReadHashtagFilter);
 
   const hashTagOptions = useMemo(() => {
@@ -62,29 +61,29 @@ const PostListReadView = () => {
       if (mode === 'infinite') {
         filterSearch(router.pathname, router.query, { page: DEFAULT_CUR_PAGE, mode });
       } else {
-        filterSearch(router.pathname, router.query, { page: listReadPostFilter?.page, mode });
+        filterSearch(router.pathname, router.query, { page: listReadPostFilter.page, mode });
       }
     },
-    [listReadPostFilter?.page, router],
+    [listReadPostFilter.page, router],
   );
-
-  useEffect(() => {
-    setHashtagKeyword(listReadPostFilter?.hashtag || '');
-  }, [listReadPostFilter?.hashtag]);
 
   const handleChangeHashtagKeyword = useCallback((e) => {
     setHashtagKeyword(e.target.value);
   }, []);
+
+  const handleSelectHashTagOption = (hashtag: string) => {
+    filterSearch(router.pathname, router.query, { page: DEFAULT_CUR_PAGE, hashtag });
+  };
+
+  useEffect(() => {
+    setHashtagKeyword(listReadPostFilter?.hashtag || '');
+  }, [listReadPostFilter?.hashtag]);
 
   useEffect(() => {
     debounce(() => {
       if (hashtagKeyword) changeListReadHashtagFilter({ keyword: hashtagKeyword });
     }, 300)();
   }, [changeListReadHashtagFilter, hashtagKeyword]);
-
-  const handleSelectHashTagOption = (hashtag: string) => {
-    filterSearch(router.pathname, router.query, { page: DEFAULT_CUR_PAGE, hashtag });
-  };
 
   return (
     <BaseLayout
@@ -106,12 +105,12 @@ const PostListReadView = () => {
                 <Tooltip title="새로고침">
                   <Button shape="circle" icon={<RedoOutlined />} onClick={handleRefreshPostListData} />
                 </Tooltip>
-                <Select className="select" value={listReadPostFilter?.pageSize} onChange={handleChangePageSize}>
+                <Select className="select" value={listReadPostFilter.pageSize} onChange={handleChangePageSize}>
                   <Option value={10}>10개씩 보기</Option>
                   <Option value={20}>20개씩 보기</Option>
                   <Option value={30}>30개씩 보기</Option>
                 </Select>
-                <span className="search-result">총 {status !== 'LOADING' ? totalCount : '...'}건 검색</span>
+                <span className="search-result">총 {totalCount}건 검색</span>
               </Space>
             </div>
             <div>
@@ -134,7 +133,7 @@ const PostListReadView = () => {
         </StyledFilter>
       }
     >
-      {listReadPostFilter?.hashtag && <Title>#{listReadPostFilter.hashtag}</Title>}
+      {listReadPostFilter.hashtag && <Title>#{listReadPostFilter.hashtag}</Title>}
       {mode === 'infinite' && (
         <InfiniteMode
           status={status}

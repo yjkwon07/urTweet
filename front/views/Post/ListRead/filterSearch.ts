@@ -13,7 +13,7 @@ export interface Query {
   page: number;
   pageSize: number;
   hashtag: string;
-  mode: string;
+  mode: ViewMode;
 }
 
 export function parseQuery(query: Partial<Query>): Query {

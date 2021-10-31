@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { useDispatch } from 'react-redux';
 
@@ -15,16 +15,12 @@ interface IProps {
 
 export default function useListReadPost({ mode, filter }: IProps) {
   const dispatch = useDispatch();
-  const {
-    status,
-    data: result,
-    error,
-  } = useAppSelector(fetchStatusSelector.byFetchAction(postAction.fetchListReadPost));
-  const data = useAppSelector(postSelector.selectAll);
+  const { status, error } = useAppSelector(fetchStatusSelector.byFetchAction(postAction.fetchListReadPost));
+  const data = useAppSelector(postSelector.listData);
+  const isMoreRead = useAppSelector(postSelector.isMoreRead);
+  const totalCount = useAppSelector(postSelector.totalCount);
 
   const isInitFetch = useRef(!!data.length);
-  const isMoreRead = useMemo(() => !!result?.resData?.nextPage || false, [result?.resData?.nextPage]);
-  const totalCount = useMemo(() => result?.resData?.totalCount || 0, [result?.resData?.totalCount]);
 
   useEffect(() => {
     if (!isInitFetch.current) {

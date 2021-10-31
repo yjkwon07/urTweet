@@ -5,9 +5,8 @@ import { useRouter } from 'next/router';
 
 import PostCard from '@components/PostCard';
 import { FetchStatus } from '@modules/fetchStatus';
-import { ListReadPostUrlQuery } from '@modules/post';
+import { useListReadPostFilter } from '@modules/post';
 import { Post } from '@modules/post/@types';
-import { useSearchFilter } from '@modules/searchFilter';
 
 import filterSearch from '../filterSearch';
 import { StyledCenter, StyledViewWrapper } from './styles';
@@ -22,7 +21,7 @@ export interface IProps {
 const PaginationRead = ({ status, postList, totalCount, errorMsg }: IProps) => {
   const router = useRouter();
 
-  const { filter } = useSearchFilter<ListReadPostUrlQuery>('LIST_READ_POST');
+  const { filter } = useListReadPostFilter();
 
   const handleChangePage = useCallback(
     (page: number) => {
