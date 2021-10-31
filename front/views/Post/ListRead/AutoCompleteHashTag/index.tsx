@@ -6,14 +6,14 @@ import { debounce } from 'lodash';
 import { useRouter } from 'next/router';
 
 import { useListReadHashtag, useListReadHashtagFilter } from '@modules/hashtag';
-import { useListReadPostFilter } from '@modules/post';
+import { useListReadPost } from '@modules/post';
 
 import filterSearch, { DEFAULT_CUR_PAGE } from '../filterSearch';
 
 function AutoCompleteHashTag() {
   const router = useRouter();
 
-  const { filter: listReadPostFilter } = useListReadPostFilter();
+  const { filter: listReadPostFilter } = useListReadPost();
 
   const [hashtagKeyword, setHashtagKeyword] = useState('');
   const { filter: listReadHashtagFilter, changeFilter: changeListReadHashtagFilter } = useListReadHashtagFilter();

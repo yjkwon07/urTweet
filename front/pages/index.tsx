@@ -24,8 +24,7 @@ const HomePage = () => {
 
 // SSR
 export const getServerSideProps = wrapper.getServerSideProps(async ({ store, query }) => {
-  const { page, pageSize, hashtag, mode } = parseQuery(query);
-  const filter = { page, pageSize, hashtag, mode };
+  const filter = parseQuery(query);
 
   store.dispatch(postAction.changeSearchFilter({ filter }));
   await store.dispatch(postAction.fetchListReadPost.asyncThunk(filter));

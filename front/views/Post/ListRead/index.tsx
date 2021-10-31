@@ -5,7 +5,7 @@ import { Button, Select, Space, Tooltip, Typography } from 'antd';
 import { useRouter } from 'next/router';
 
 import BaseLayout from '@layouts/BaseLayout';
-import { useListReadPost, useListReadPostFilter } from '@modules/post';
+import { useListReadPost } from '@modules/post';
 
 import AutoCompleteHashTag from './AutoCompleteHashTag';
 import filterSearch, { DEFAULT_CUR_PAGE, DEFAULT_PER_PAGE } from './filterSearch';
@@ -19,14 +19,13 @@ const { Option } = Select;
 const PostListReadView = () => {
   const router = useRouter();
 
-  const { filter: listReadPostFilter } = useListReadPostFilter();
-
   const {
     status,
     data: postListData,
     error: PostListError,
     isMoreRead,
     totalCount,
+    filter: listReadPostFilter,
     fetch: fetchListReadPost,
   } = useListReadPost();
 
@@ -53,10 +52,8 @@ const PostListReadView = () => {
   );
 
   useEffect(() => {
-    const { mode, page, pageSize, hashtag, userId } = listReadPostFilter;
-    const query = { page, pageSize, hashtag, userId };
-    fetchListReadPost({ mode, query });
-  }, [fetchListReadPost, listReadPostFilter]);
+    fetchListReadPost();
+  }, [fetchListReadPost]);
 
   return (
     <BaseLayout
