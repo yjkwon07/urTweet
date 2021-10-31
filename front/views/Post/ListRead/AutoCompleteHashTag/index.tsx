@@ -8,10 +8,11 @@ import { useRouter } from 'next/router';
 import { useListReadHashtag, useListReadHashtagFilter } from '@modules/hashtag';
 import { useListReadPost } from '@modules/post';
 
-import { pageFilter } from '../config';
+import { PageFilter } from '../utils';
 
 function AutoCompleteHashTag() {
   const router = useRouter();
+  const pageFilter = useMemo(() => new PageFilter(router.query), [router]);
 
   const { filter: listReadPostFilter } = useListReadPost();
 
@@ -34,8 +35,8 @@ function AutoCompleteHashTag() {
   }, []);
 
   const handleSelectHashTagOption = (hashtag: string) => {
-    pageFilter.filterSearch(router.pathname, router.query, {
-      page: pageFilter.defaultOption.DEFAULT_CUR_PAGE,
+    pageFilter.search({
+      page: PageFilter.defaultOption.DEFAULT_CUR_PAGE,
       hashtag,
     });
   };

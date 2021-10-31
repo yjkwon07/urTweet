@@ -8,7 +8,7 @@ import { postAction } from '@modules/post';
 import wrapper from '@modules/store/configStore';
 import { HOME_URL } from '@utils/urls';
 import ListReadView from '@views/Post/ListRead';
-import { pageFilter } from '@views/Post/ListRead/config';
+import { PageFilter } from '@views/Post/ListRead/utils';
 
 const HomePage = () => {
   return (
@@ -24,7 +24,7 @@ const HomePage = () => {
 
 // SSR
 export const getServerSideProps = wrapper.getServerSideProps(async ({ store, query }) => {
-  const filter = pageFilter.parseQuery(query);
+  const filter = PageFilter.parseQuery(query);
 
   store.dispatch(postAction.changeSearchFilter({ filter }));
   await store.dispatch(postAction.fetchListReadPost.asyncThunk(filter));

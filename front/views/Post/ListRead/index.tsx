@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 
 import { InsertRowBelowOutlined, InsertRowRightOutlined, RedoOutlined } from '@ant-design/icons';
 import { Button, Select, Space, Tooltip, Typography } from 'antd';
@@ -8,16 +8,17 @@ import BaseLayout from '@layouts/BaseLayout';
 import { useListReadPost } from '@modules/post';
 
 import AutoCompleteHashTag from './AutoCompleteHashTag';
-import { pageFilter } from './config';
 import InfiniteMode from './InfiniteListRead';
 import PaginationMode from './PaginationRead';
 import { StyledFilter } from './styles';
+import { PageFilter } from './utils';
 
 const { Title } = Typography;
 const { Option } = Select;
 
 const PostListReadView = () => {
   const router = useRouter();
+  const pageFilter = useMemo(() => new PageFilter(router.query), [router.query]);
 
   const {
     status,
@@ -30,35 +31,35 @@ const PostListReadView = () => {
   } = useListReadPost();
 
   const handleRefreshPostListData = useCallback(() => {
-    pageFilter.filterSearch(router.pathname, router.query, {
-      page: pageFilter.defaultOption.DEFAULT_CUR_PAGE,
-      pageSize: pageFilter.defaultOption.DEFAULT_PER_PAGE,
+    pageFilter.search({
+      page: PageFilter.defaultOption.DEFAULT_CUR_PAGE,
+      pageSize: PageFilter.defaultOption.DEFAULT_PER_PAGE,
       hashtag: '',
     });
-  }, [router]);
+  }, [pageFilter]);
 
   const handleChangePageSize = useCallback(
     (pageSize: number) => {
-      pageFilter.filterSearch(router.pathname, router.query, {
-        page: pageFilter.defaultOption.DEFAULT_CUR_PAGE,
+      pageFilter.search({
+        page: PageFilter.defaultOption.DEFAULT_CUR_PAGE,
         pageSize,
       });
     },
-    [router],
+    [pageFilter],
   );
 
   const handleChangeMode = useCallback(
     (mode: ViewMode) => () => {
       if (mode === 'infinite') {
-        pageFilter.filterSearch(router.pathname, router.query, {
-          page: pageFilter.defaultOption.DEFAULT_CUR_PAGE,
+        pageFilter.search({
+          page: PageFilter.defaultOption.DEFAULT_CUR_PAGE,
           mode,
         });
       } else {
-        pageFilter.filterSearch(router.pathname, router.query, { page: listReadPostFilter.page, mode });
+        pageFilter.search({ page: listReadPostFilter.page, mode });
       }
     },
-    [listReadPostFilter.page, router],
+    [listReadPostFilter.page, pageFilter],
   );
 
   useEffect(() => {
