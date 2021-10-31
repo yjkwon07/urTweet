@@ -39,7 +39,10 @@ const fetchCreateComment = createFetchAction<CreateCommentReq, CreateCommentRes>
 
 // Action
 const listDataReset = createAction(`${POST}/listDataReset`);
-const changeSearchFilter = createAction<{ filter: ListReadPostUrlQuery }>(`${POST}/changeSearchFilter`);
+export interface Filter extends ListReadPostUrlQuery {
+  mode: ViewMode;
+}
+const changeSearchFilter = createAction<{ filter: Filter }>(`${POST}/changeSearchFilter`);
 const resetSearchFilter = createAction(`${POST}/resetSearchFilter`);
 
 // Entity
@@ -49,14 +52,14 @@ const postListDataAdapter = createEntityAdapter<Post>({
 
 // Type
 export interface PostState extends EntityState<Post> {
-  filter: ListReadPostUrlQuery;
+  filter: Filter;
   isMoreRead: boolean;
   totalCount: number;
 }
 
 // Reducer
 const initialState: PostState = postListDataAdapter.getInitialState({
-  filter: { page: 1, pageSize: 10 },
+  filter: { page: 1, pageSize: 10, mode: 'page' },
   isMoreRead: false,
   totalCount: 0,
 });
@@ -132,11 +135,9 @@ const { selectAll: listData, selectById } = postListDataAdapter.getSelectors((st
 
 export const postReducer = slice.reducer;
 export const postSelector = {
+  state: (state: RootState) => state.POST,
   listData,
   selectById,
-  filter: (state: RootState) => state.POST.filter,
-  isMoreRead: (state: RootState) => state.POST.isMoreRead,
-  totalCount: (state: RootState) => state.POST.totalCount,
 };
 export const postAction = {
   ...slice.actions,

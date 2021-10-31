@@ -1,4 +1,4 @@
-import { all, fork, takeLatest, debounce, put } from 'redux-saga/effects';
+import { all, fork, takeLatest, debounce, put, takeEvery } from 'redux-saga/effects';
 
 import { createFetchSaga } from '@modules/helper';
 import { userAction } from '@modules/user';
@@ -39,7 +39,7 @@ function* watchReadPost() {
 }
 
 function* watchListRead() {
-  yield takeLatest(
+  yield takeEvery(
     postAction.fetchListReadPost.request,
     createFetchSaga(postAction.fetchListReadPost, requestListReadPost),
   );

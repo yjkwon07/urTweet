@@ -4,3 +4,5 @@ declare module '*.module.css' {
 }
 
 declare type SubPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+declare type ViewMode = 'infinite' | 'page';

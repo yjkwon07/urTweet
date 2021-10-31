@@ -1,15 +1,14 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 
-import { InsertRowBelowOutlined, InsertRowRightOutlined, RedoOutlined, SearchOutlined } from '@ant-design/icons';
-import { AutoComplete, Button, Input, Select, Space, Tooltip, Typography } from 'antd';
-import { debounce } from 'lodash';
+import { InsertRowBelowOutlined, InsertRowRightOutlined, RedoOutlined } from '@ant-design/icons';
+import { Button, Select, Space, Tooltip, Typography } from 'antd';
 import { useRouter } from 'next/router';
 
 import BaseLayout from '@layouts/BaseLayout';
-import { useListReadHashtag, useListReadHashtagFilter } from '@modules/hashtag';
 import { useListReadPost, useListReadPostFilter } from '@modules/post';
 
-import filterSearch, { DEFAULT_CUR_PAGE, DEFAULT_PER_PAGE, parseQuery, ViewMode } from './filterSearch';
+import AutoCompleteHashTag from './AutoCompleteHashTag';
+import filterSearch, { DEFAULT_CUR_PAGE, DEFAULT_PER_PAGE } from './filterSearch';
 import InfiniteMode from './InfiniteListRead';
 import PaginationMode from './PaginationRead';
 import { StyledFilter } from './styles';
@@ -20,7 +19,6 @@ const { Option } = Select;
 const PostListReadView = () => {
   const router = useRouter();
 
-  const { mode } = useMemo(() => parseQuery(router.query), [router.query]);
   const { filter: listReadPostFilter } = useListReadPostFilter();
 
   const {
@@ -29,21 +27,8 @@ const PostListReadView = () => {
     error: PostListError,
     isMoreRead,
     totalCount,
-  } = useListReadPost({ filter: listReadPostFilter, mode });
-
-  const [hashtagKeyword, setHashtagKeyword] = useState('');
-  const { filter: listReadHashtagFilter, changeFilter: changeListReadHashtagFilter } = useListReadHashtagFilter();
-  const { data: hashtagListData, error: hashtagListError } = useListReadHashtag(listReadHashtagFilter);
-
-  const hashTagOptions = useMemo(() => {
-    if (!hashtagListError) {
-      return hashtagListData.map((hashtag) => ({
-        value: hashtag.name,
-        label: `#${hashtag.name}`,
-      }));
-    }
-    return [];
-  }, [hashtagListData, hashtagListError]);
+    fetch: fetchListReadPost,
+  } = useListReadPost();
 
   const handleRefreshPostListData = useCallback(() => {
     filterSearch(router.pathname, router.query, { page: DEFAULT_CUR_PAGE, pageSize: DEFAULT_PER_PAGE, hashtag: '' });
@@ -67,23 +52,9 @@ const PostListReadView = () => {
     [listReadPostFilter.page, router],
   );
 
-  const handleChangeHashtagKeyword = useCallback((e) => {
-    setHashtagKeyword(e.target.value);
-  }, []);
-
-  const handleSelectHashTagOption = (hashtag: string) => {
-    filterSearch(router.pathname, router.query, { page: DEFAULT_CUR_PAGE, hashtag });
-  };
-
   useEffect(() => {
-    setHashtagKeyword(listReadPostFilter?.hashtag || '');
-  }, [listReadPostFilter?.hashtag]);
-
-  useEffect(() => {
-    debounce(() => {
-      if (hashtagKeyword) changeListReadHashtagFilter({ keyword: hashtagKeyword });
-    }, 300)();
-  }, [changeListReadHashtagFilter, hashtagKeyword]);
+    fetchListReadPost();
+  }, [fetchListReadPost]);
 
   return (
     <BaseLayout
@@ -114,27 +85,14 @@ const PostListReadView = () => {
               </Space>
             </div>
             <div>
-              <AutoComplete
-                className="auto-search-box"
-                dropdownMatchSelectWidth={282}
-                options={hashTagOptions}
-                onSelect={handleSelectHashTagOption}
-                value={hashtagKeyword}
-              >
-                <Input
-                  className="search-input"
-                  size="large"
-                  onChange={handleChangeHashtagKeyword}
-                  suffix={<SearchOutlined />}
-                />
-              </AutoComplete>
+              <AutoCompleteHashTag />
             </div>
           </Space>
         </StyledFilter>
       }
     >
       {listReadPostFilter.hashtag && <Title>#{listReadPostFilter.hashtag}</Title>}
-      {mode === 'infinite' && (
+      {listReadPostFilter.mode === 'infinite' && (
         <InfiniteMode
           status={status}
           postList={postListData}
@@ -142,7 +100,7 @@ const PostListReadView = () => {
           errorMsg={PostListError?.resMsg}
         />
       )}
-      {mode === 'page' && (
+      {listReadPostFilter.mode === 'page' && (
         <PaginationMode
           status={status}
           postList={postListData}

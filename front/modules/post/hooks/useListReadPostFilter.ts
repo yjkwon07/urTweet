@@ -8,7 +8,7 @@ import { postSelector, postAction } from '../slice';
 
 export default function useListReadPostFilter() {
   const dispatch = useDispatch();
-  const filter = useAppSelector(postSelector.filter);
+  const { filter } = useAppSelector(postSelector.state);
 
   const resetFilter = useCallback(() => {
     dispatch(postAction.resetSearchFilter());
