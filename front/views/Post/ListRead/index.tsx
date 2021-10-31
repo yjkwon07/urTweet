@@ -53,8 +53,10 @@ const PostListReadView = () => {
   );
 
   useEffect(() => {
-    fetchListReadPost();
-  }, [fetchListReadPost]);
+    const { mode, page, pageSize, hashtag, userId } = listReadPostFilter;
+    const query = { page, pageSize, hashtag, userId };
+    fetchListReadPost({ mode, query });
+  }, [fetchListReadPost, listReadPostFilter]);
 
   return (
     <BaseLayout
