@@ -1,7 +1,7 @@
 import { useCallback, useRef } from 'react';
 
 import { FileImageTwoTone } from '@ant-design/icons';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Button, Input, Form, message, Image } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';

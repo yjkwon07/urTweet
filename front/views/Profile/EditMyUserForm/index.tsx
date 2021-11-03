@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 
 import { MailOutlined, UserOutlined } from '@ant-design/icons';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Button, Form, Input, message } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';

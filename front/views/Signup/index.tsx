@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react';
 
 import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Form, Input, Checkbox, Button, Typography, message } from 'antd';
 import Router from 'next/router';
 import { Controller, useForm } from 'react-hook-form';

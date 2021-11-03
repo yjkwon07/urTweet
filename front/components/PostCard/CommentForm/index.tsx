@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Form, Input, Button, message } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
