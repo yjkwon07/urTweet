@@ -5,7 +5,8 @@ import { Menu, Col, Layout, Row, BackTop } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
-import { PASS_HREF, HOME_URL, PROFILE_URL } from '@utils/urls';
+import { PASS_HREF, PROFILE_URL } from '@utils/urls';
+import { PostListReadPageFilter } from '@views/Post/ListRead/utils';
 
 import { StyledLayout } from './styles';
 import UserStatusView from './UserStatusView';
@@ -23,7 +24,7 @@ const BaseLayout: FC<IProps> = ({ filterGroup, children }) => {
     <StyledLayout>
       <Content>
         <div className="header mb-50">
-          <Link href={HOME_URL} passHref>
+          <Link href={new PostListReadPageFilter().pathname} passHref>
             <a href={PASS_HREF}>
               <ExperimentTwoTone className="logo" /> <span className="title">UrTweet</span>
             </a>
@@ -34,8 +35,8 @@ const BaseLayout: FC<IProps> = ({ filterGroup, children }) => {
             <div className="content">
               <UserStatusView />
               <Menu className="menu mt-45" mode="vertical" defaultSelectedKeys={[router.pathname]}>
-                <Menu.Item key={HOME_URL} className="menu-item">
-                  <Link href={HOME_URL} passHref>
+                <Menu.Item key={new PostListReadPageFilter().pathname} className="menu-item">
+                  <Link href={new PostListReadPageFilter().pathname} passHref>
                     <a href={PASS_HREF}>
                       <HomeOutlined /> Home
                     </a>

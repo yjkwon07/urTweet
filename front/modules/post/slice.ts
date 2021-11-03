@@ -38,12 +38,11 @@ const fetchUnlikePost = createFetchAction<UnLikePostUrlQuery, UnlikePostRes>(`${
 const fetchCreateComment = createFetchAction<CreateCommentReq, CreateCommentRes>(`${POST}/fetchCreateComment`);
 
 // Action
-const listDataReset = createAction(`${POST}/listDataReset`);
 export interface Filter extends ListReadPostUrlQuery {
   mode: ViewMode;
 }
-const changeSearchFilter = createAction<{ filter: Filter }>(`${POST}/changeSearchFilter`);
-const resetSearchFilter = createAction(`${POST}/resetSearchFilter`);
+const changeFilter = createAction<{ filter: Filter }>(`${POST}/changeFilter`);
+const changeSelectId = createAction<number>(`${POST}/changeSelectId`);
 
 // Entity
 const postListDataAdapter = createEntityAdapter<Post>({
@@ -52,14 +51,16 @@ const postListDataAdapter = createEntityAdapter<Post>({
 
 // Type
 export interface PostState extends EntityState<Post> {
-  filter: Filter;
+  selectId: number | null;
+  filter: Filter | null;
   isMoreRead: boolean;
   totalCount: number;
 }
 
 // Reducer
 const initialState: PostState = postListDataAdapter.getInitialState({
-  filter: { page: 1, pageSize: 10, mode: 'page' },
+  selectId: null,
+  filter: null,
   isMoreRead: false,
   totalCount: 0,
 });
@@ -70,14 +71,11 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (builder) =>
     builder
-      .addCase(listDataReset, (state) => {
-        postListDataAdapter.removeAll(state);
+      .addCase(changeSelectId, (state, { payload }) => {
+        state.selectId = payload;
       })
-      .addCase(changeSearchFilter, (state, { payload: { filter } }) => {
+      .addCase(changeFilter, (state, { payload: { filter } }) => {
         state.filter = { ...state.filter, ...filter };
-      })
-      .addCase(resetSearchFilter, (state) => {
-        state.filter = initialState.filter;
       })
       .addCase(fetchListReadPost.success, (state, { payload: { resData }, meta }) => {
         const { list, totalCount, nextPage } = resData;
@@ -141,9 +139,8 @@ export const postSelector = {
 };
 export const postAction = {
   ...slice.actions,
-  listDataReset,
-  changeSearchFilter,
-  resetSearchFilter,
+  changeSelectId,
+  changeFilter,
   fetchCreateRetweet,
   fetchCreatePost,
   fetchListReadPost,

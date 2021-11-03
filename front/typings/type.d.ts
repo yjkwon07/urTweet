@@ -6,9 +6,14 @@ export type CustomAxiosError<T = any> = {
   response: AxiosResponse<T>;
 };
 
-export interface IPageFilter<T> {
-  replaceQuery: (query: Partial<T>) => void;
-  queryString: () => string;
+export interface PageQueryFilter<T> extends Page, QueryFilter<T> {}
+
+export interface Page {
   url: () => string;
-  search: (query: Partial<T>) => void;
+  search: () => void;
+}
+
+export interface QueryFilter<T> {
+  replaceQuery: (query: Partial<T>) => T;
+  queryString: () => string;
 }

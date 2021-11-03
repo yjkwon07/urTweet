@@ -24,12 +24,12 @@ const InfiniteListRead = ({ status, postList, isMoreRead, errorMsg }: IProps) =>
   const { data: myData } = useReadMyUser();
 
   const handleNextPage = useCallback(() => {
-    if (isMoreRead) {
+    if (filter?.page && isMoreRead) {
       changeFilter({
-        page: filter.page + 1,
+        page: filter?.page + 1,
       });
     }
-  }, [changeFilter, filter.page, isMoreRead]);
+  }, [changeFilter, filter?.page, isMoreRead]);
 
   useEndReachScroll({ callback: handleNextPage });
 

@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 
 import { Empty, Pagination, Space, Spin } from 'antd';
 import { useRouter } from 'next/router';
@@ -8,7 +8,7 @@ import { FetchStatus } from '@modules/fetchStatus';
 import { useListReadPost } from '@modules/post';
 import { Post } from '@modules/post/@types';
 
-import { PageFilter } from '../utils';
+import { PostListReadPageFilter } from '../utils';
 import { StyledCenter, StyledViewWrapper } from './styles';
 
 export interface IProps {
@@ -20,15 +20,15 @@ export interface IProps {
 
 const PaginationRead = ({ status, postList, totalCount, errorMsg }: IProps) => {
   const router = useRouter();
-  const pageFilter = useMemo(() => new PageFilter(router.query), [router]);
 
   const { filter } = useListReadPost();
 
   const handleChangePage = useCallback(
     (page: number) => {
+      const pageFilter = new PostListReadPageFilter(router.query);
       pageFilter.search({ page });
     },
-    [pageFilter],
+    [router.query],
   );
 
   return (
@@ -49,7 +49,7 @@ const PaginationRead = ({ status, postList, totalCount, errorMsg }: IProps) => {
       <StyledCenter>
         <Pagination
           showSizeChanger={false}
-          current={filter.page}
+          current={filter?.page}
           total={totalCount}
           onChange={handleChangePage}
           pageSize={filter?.pageSize}

@@ -23,7 +23,8 @@ import { Post } from '@modules/post/@types/db';
 import { useReadMyUser } from '@modules/user';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
 import requiredLogin from '@utils/requiredLogin';
-import { GET_POST_URL, PASS_HREF } from '@utils/urls';
+import { PASS_HREF } from '@utils/urls';
+import { PostReadPageFilter } from '@views/Post/Read/utils';
 
 import CommentForm from './CommentForm';
 import CommentList from './CommentList';
@@ -123,7 +124,7 @@ const PostCard = ({ data, initCommentListOpen = false }: IProps) => {
               <div role="presentation" onClick={handleToggleMorePopOver}>
                 <p>
                   <Button type="text" ghost size="small">
-                    <Link href={GET_POST_URL(data.id.toString())} passHref>
+                    <Link href={new PostReadPageFilter({ id: data.id }).url()} passHref>
                       <a href={PASS_HREF}>
                         <ExportOutlined /> 상세페이지 이동
                       </a>

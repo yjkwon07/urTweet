@@ -16,19 +16,15 @@ export default function useListReadPost() {
 
   const isInitFetch = useRef(!!data.length);
 
-  const resetFilter = useCallback(() => {
-    dispatch(postAction.resetSearchFilter());
-  }, [dispatch]);
-
   const changeFilter = useCallback(
     (filter) => {
-      dispatch(postAction.changeSearchFilter({ filter }));
+      dispatch(postAction.changeFilter({ filter }));
     },
     [dispatch],
   );
 
   const fetch = useCallback(() => {
-    if (!isInitFetch.current) {
+    if (!isInitFetch.current && filter) {
       const { mode, page, pageSize, hashtag, userId } = filter;
       const query = { page, pageSize, hashtag, userId };
       if (query.page) dispatch(postAction.fetchListReadPost.request(query, { isLoadMore: mode === 'infinite' }));
@@ -37,5 +33,5 @@ export default function useListReadPost() {
     }
   }, [dispatch, filter]);
 
-  return { status, data, error, filter, isMoreRead, totalCount, fetch, resetFilter, changeFilter };
+  return { status, data, error, filter, isMoreRead, totalCount, fetch, changeFilter };
 }

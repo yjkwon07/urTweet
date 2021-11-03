@@ -3,19 +3,23 @@ import React from 'react';
 import Head from 'next/head';
 import { END } from 'redux-saga';
 
-import SEO from '@components/SEO';
+import SEO, { IProps as ISEOProps } from '@components/SEO';
 import { postAction } from '@modules/post';
 import wrapper from '@modules/store/configStore';
-import { HOME_URL } from '@utils/urls';
 import ListReadView from '@views/Post/ListRead';
-import { PageFilter } from '@views/Post/ListRead/utils';
+import { PostListReadPageFilter } from '@views/Post/ListRead/utils';
 
-const HomePage = () => {
+export interface IProps {
+  title: string;
+  seo: ISEOProps;
+}
+
+const HomePage = ({ title, seo }: IProps) => {
   return (
     <>
       <Head>
-        <title>HOME | urTweet</title>
-        <SEO title="urTweet Home" url={HOME_URL} description="urTweet Home page" name="urTweet Home" keywords="Home" />
+        <title>{title}</title>
+        <SEO title={seo.title} url={seo.url} description={seo.description} name={seo.name} keywords={seo.keywords} />
       </Head>
       <ListReadView />
     </>
@@ -24,11 +28,24 @@ const HomePage = () => {
 
 // SSR
 export const getServerSideProps = wrapper.getServerSideProps(async ({ store, query }) => {
-  const filter = PageFilter.parseQuery(query);
+  const filter = PostListReadPageFilter.parseQuery(query);
 
-  store.dispatch(postAction.changeSearchFilter({ filter }));
+  store.dispatch(postAction.changeFilter({ filter }));
   await store.dispatch(postAction.fetchListReadPost.asyncThunk(filter));
   store.dispatch(END);
+
+  return {
+    props: {
+      title: `HOME | urTweet`,
+      seo: {
+        title: `urTweet Home`,
+        url: new PostListReadPageFilter(query).url(),
+        description: `urTweet Home page`,
+        name: `urTweet Home`,
+        keywords: `Home`,
+      },
+    },
+  };
 });
 
 export default HomePage;

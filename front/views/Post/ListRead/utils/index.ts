@@ -1,1 +1,1 @@
-export { default as PageFilter } from './PageFilter';
+export { default as PostListReadPageFilter } from './PageFilter';

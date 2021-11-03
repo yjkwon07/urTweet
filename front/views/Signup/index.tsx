@@ -13,7 +13,7 @@ import { fetchStatusSelector } from '@modules/fetchStatus';
 import { SIGNUP_SCHEMA, userAction, useReadMyUser } from '@modules/user';
 import { FormSignup } from '@modules/user/@types';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
-import { HOME_URL } from '@utils/urls';
+import { PostListReadPageFilter } from '@views/Post/ListRead/utils';
 
 import { StyledForm } from './styles';
 
@@ -36,7 +36,7 @@ const Signup = () => {
       try {
         await dispatch(userAction.fetchSignup.asyncThunk(formData));
         message.success('회원가입을 완료했습니다.');
-        Router.push(HOME_URL);
+        Router.push(new PostListReadPageFilter().url());
       } catch (error) {
         if (isCustomAxiosError(error)) {
           message.error(JSON.stringify(error.response.data.resMsg));
@@ -49,7 +49,7 @@ const Signup = () => {
   useEffect(() => {
     if (myData) {
       message.error('로그인한 상태에서는 회원가입이 불가능합니다.');
-      Router.replace(HOME_URL);
+      Router.replace(new PostListReadPageFilter().url());
     }
   }, [myData]);
 
