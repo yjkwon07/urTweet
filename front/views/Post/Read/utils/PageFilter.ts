@@ -40,7 +40,7 @@ export default class PageFilter implements Page {
     return `${this.pathname}`;
   }
 
-  search(param?: ParsedUrlQuery) {
+  search(param?: Partial<Param>) {
     const searchParam = param ? this.replaceParam(param) : this.param;
 
     Router.push({

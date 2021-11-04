@@ -1,38 +1,46 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
 import { Empty, Space, Spin } from 'antd';
 
 import PostCard from '@components/PostCard';
 import useEndReachScroll from '@hooks/useEndReachScroll';
 import BaseLayout from '@layouts/BaseLayout';
-import { ListReadPostUrlQuery, useListReadPost } from '@modules/post';
-import { useSearchFilter } from '@modules/searchFilter';
-import { ReadUserUrlQuery } from '@modules/user';
+import { useListReadPost } from '@modules/post';
 import useUser from '@modules/user/hooks/useReadUser';
 
 import { StyledCenter, StyledViewWrapper } from './styles';
 import UserInfo from './UserInfo';
 
 const UserRead = () => {
-  const { filter: readUserFilter } = useSearchFilter<ReadUserUrlQuery>('READ_USER');
-  const { filter: listReadPostFilter, changeFilter } = useSearchFilter<ListReadPostUrlQuery>('LIST_READ_POST');
-  const { data: userData } = useUser(readUserFilter);
+  const { data: userData, fetch: fetchReadUser } = useUser();
+
   const {
     status,
     data: postListData,
     error: PostListError,
     isMoreRead,
-  } = useListReadPost({ filter: listReadPostFilter, mode: 'infinite' });
+    filter: listReadPostFilter,
+    changeFilter: changeListReadPostFilter,
+    fetch: fetchListReadPost,
+  } = useListReadPost();
 
   const handleNextPage = useCallback(() => {
     if (listReadPostFilter?.page && isMoreRead) {
-      changeFilter({
+      changeListReadPostFilter({
         page: listReadPostFilter.page + 1,
       });
     }
-  }, [changeFilter, listReadPostFilter?.page, isMoreRead]);
+  }, [changeListReadPostFilter, listReadPostFilter?.page, isMoreRead]);
 
   useEndReachScroll({ callback: handleNextPage });
+
+  useEffect(() => {
+    fetchReadUser();
+  }, [fetchReadUser]);
+
+  useEffect(() => {
+    fetchListReadPost();
+  }, [fetchListReadPost]);
 
   return (
     <BaseLayout>

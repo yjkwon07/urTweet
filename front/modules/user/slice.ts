@@ -51,6 +51,7 @@ const myInfoReset = createAction(`${USER}/myInfoReset`);
 const updateMyInfo = createAction<MyUser>(`${USER}/updateMyInfo`);
 const addPostToMe = createAction<number>(`${USER}/addPostToMe`);
 const removePostToMe = createAction<number>(`${USER}/removePostToMe`);
+const changeSelectId = createAction<number>(`${USER}/changeSelectId`);
 
 // Entity
 const followerListDataAdapter = createEntityAdapter<User>({
@@ -65,6 +66,7 @@ export type PostState = EntityState<User>;
 
 // Type
 export interface UserState {
+  selectId: number | null;
   myInfo: MyUser | null;
   user: User | null;
   followerListData: EntityState<User>;
@@ -73,6 +75,7 @@ export interface UserState {
 
 // Reducer
 const initialState: UserState = {
+  selectId: null,
   myInfo: null,
   user: null,
   followerListData: followerListDataAdapter.getInitialState(),
@@ -85,6 +88,9 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (builder) =>
     builder
+      .addCase(changeSelectId, (state, { payload }) => {
+        state.selectId = payload;
+      })
       .addCase(myInfoReset, (state) => {
         state.myInfo = initialState.myInfo;
       })
@@ -143,6 +149,7 @@ const { selectAll: followingListData } = followingListDataAdapter.getSelectors(
 
 export const userReducer = slice.reducer;
 export const userSelector = {
+  state: (state: RootState) => state.USER,
   myData: (state: RootState) => state.USER.myInfo,
   userData: (state: RootState) => state.USER.user,
   followListData,
@@ -150,6 +157,7 @@ export const userSelector = {
 };
 export const userAction = {
   ...slice.actions,
+  changeSelectId,
   myInfoReset,
   updateMyInfo,
   addPostToMe,
