@@ -13,7 +13,8 @@ import { LOGIN_SCHEMA, userAction } from '@modules/user';
 import { FormLogin } from '@modules/user/@types';
 import { setUserId } from '@utils/auth';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
-import { PASS_HREF, SIGNUP_URL } from '@utils/urls';
+import { PASS_HREF } from '@utils/urls';
+import { SignupPageFilter } from '@views/Signup/utils';
 
 import { StyledForm } from './styles';
 
@@ -105,7 +106,7 @@ const LoginForm = () => {
           <span>로그인</span>
         </Button>
         or{' '}
-        <Link href={SIGNUP_URL} passHref>
+        <Link href={new SignupPageFilter().url()} passHref>
           <a href={PASS_HREF}>register now!</a>
         </Link>
       </Form.Item>
