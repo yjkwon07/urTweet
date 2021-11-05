@@ -5,8 +5,9 @@ import { Menu, Col, Layout, Row, BackTop } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
-import { PASS_HREF, PROFILE_URL } from '@utils/urls';
+import { PASS_HREF } from '@utils/urls';
 import { PostListReadPageFilter } from '@views/Post/ListRead/utils';
+import { ProfilePageFilter } from '@views/Profile/utils';
 
 import { StyledLayout } from './styles';
 import UserStatusView from './UserStatusView';
@@ -42,8 +43,8 @@ const BaseLayout: FC<IProps> = ({ filterGroup, children }) => {
                     </a>
                   </Link>
                 </Menu.Item>
-                <Menu.Item key={PROFILE_URL} className="menu-item">
-                  <Link href={PROFILE_URL} passHref>
+                <Menu.Item key={new ProfilePageFilter().url()} className="menu-item">
+                  <Link href={new ProfilePageFilter().url()} passHref>
                     <a href={PASS_HREF}>
                       <UserOutlined /> 프로필
                     </a>

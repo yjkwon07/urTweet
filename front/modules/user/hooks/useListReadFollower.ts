@@ -4,32 +4,36 @@ import { useDispatch } from 'react-redux';
 
 import { useAppSelector } from '@hooks/useAppRedux';
 import { fetchStatusSelector } from '@modules/fetchStatus';
+import { CustomAxiosError } from '@typings/type';
 
+import { ListReadFollowRes } from '../api';
 import { userAction, userSelector } from '../slice';
 
-export default function useListReadFollowing() {
+export default function useListReadFollow() {
   const dispatch = useDispatch();
 
-  const { status, error } = useAppSelector(fetchStatusSelector.byFetchAction(userAction.fetchListReadFollowing));
-  const data = useAppSelector(userSelector.followingListData);
+  const { status, error } = useAppSelector(
+    fetchStatusSelector.byType<ListReadFollowRes, CustomAxiosError>(userAction.fetchListReadFollow.TYPE),
+  );
+  const data = useAppSelector(userSelector.followListData);
   const {
-    followingFilter: filter,
-    isMoreFollowingRead: isMoreRead,
-    followingTotalCount: totalCount,
+    followerFilter: filter,
+    isMoreFollowerRead: isMoreRead,
+    followerTotalCount: totalCount,
   } = useAppSelector(userSelector.state);
 
   const isInitFetch = useRef(!!data.length);
 
   const changeFilter = useCallback(
     (filter) => {
-      dispatch(userAction.changeFollowingFilter({ filter }));
+      dispatch(userAction.changeFollowerFilter({ filter }));
     },
     [dispatch],
   );
 
   const fetch = useCallback(() => {
     if (!isInitFetch.current && filter) {
-      dispatch(userAction.fetchListReadFollowing.request(filter));
+      dispatch(userAction.fetchListReadFollow.request(filter));
     } else {
       isInitFetch.current = false;
     }

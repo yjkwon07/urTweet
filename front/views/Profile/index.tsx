@@ -6,14 +6,8 @@ import Router from 'next/router';
 import { useDispatch } from 'react-redux';
 
 import BaseLayout from '@layouts/BaseLayout';
-import { useSearchFilter } from '@modules/searchFilter';
-import {
-  ListReadFollowingUrlQuery,
-  useListReadFollow,
-  useListReadFollowing,
-  userAction,
-  useReadMyUser,
-} from '@modules/user';
+import { useListReadFollower, useListReadFollowing, userAction, useReadMyUser } from '@modules/user';
+import { getUserId } from '@utils/auth';
 
 import EditMyDataForm from './EditMyUserForm';
 import FollowUserCard from './FollowUserCard';
@@ -21,35 +15,28 @@ import { StyledButton, StyledCenter } from './styles';
 
 const { confirm } = Modal;
 
-const DEFAULT_CUR_PAGE = 1;
-const DEFAULT_PAGE_SIZE = 10;
-
 const ProfileView = () => {
   const dispatch = useDispatch();
 
   const { data: myData, status: myDataStatus } = useReadMyUser();
 
-  const { filter: listReadFollowingFilter, changeFilter: listReadFollowingChangeFilter } =
-    useSearchFilter<ListReadFollowingUrlQuery>('LIST_READ_FOLLOWING', {
-      page: DEFAULT_CUR_PAGE,
-      pageSize: DEFAULT_PAGE_SIZE,
-    });
   const {
     data: followingListData,
     status: followingListStatus,
+    filter: listReadFollowingFilter,
+    changeFilter: listReadFollowingChangeFilter,
     isMoreRead: isMoreReadFollowingList,
-  } = useListReadFollowing(listReadFollowingFilter);
+    fetch: fetchListReadFollowing,
+  } = useListReadFollowing();
 
-  const { filter: listReadFollowFilter, changeFilter: listReadFollowChangeFilter } =
-    useSearchFilter<ListReadFollowingUrlQuery>('LIST_READ_FOLLOW', {
-      page: DEFAULT_CUR_PAGE,
-      pageSize: DEFAULT_PAGE_SIZE,
-    });
   const {
     data: followListData,
     status: followStatus,
+    filter: listReadFollowerFilter,
+    changeFilter: listReadFollowerChangeFilter,
     isMoreRead: isMoreReadFollowList,
-  } = useListReadFollow(listReadFollowFilter);
+    fetch: fetchListReadFollower,
+  } = useListReadFollower();
 
   const handleLoadMoreFollowingList = useCallback(() => {
     if (listReadFollowingFilter?.page && isMoreReadFollowingList) {
@@ -74,12 +61,12 @@ const ProfileView = () => {
   );
 
   const handleLoadMoreFollowerList = useCallback(() => {
-    if (listReadFollowingFilter?.page && isMoreReadFollowList) {
-      listReadFollowChangeFilter({
-        page: listReadFollowingFilter.page + 1,
+    if (listReadFollowerFilter?.page && isMoreReadFollowList) {
+      listReadFollowerChangeFilter({
+        page: listReadFollowerFilter.page + 1,
       });
     }
-  }, [isMoreReadFollowList, listReadFollowChangeFilter, listReadFollowingFilter?.page]);
+  }, [isMoreReadFollowList, listReadFollowerChangeFilter, listReadFollowerFilter?.page]);
 
   const handleCancelFollower = useCallback(
     (userId) => {
@@ -96,11 +83,19 @@ const ProfileView = () => {
   );
 
   useEffect(() => {
-    if (myDataStatus === 'FAIL' && !myData) {
+    if (!getUserId() || (myDataStatus === 'FAIL' && !myData)) {
       message.warn('로그인 후 이용해 주시길 바랍니다.');
       Router.push('/');
     }
   }, [myData, myDataStatus]);
+
+  useEffect(() => {
+    fetchListReadFollowing();
+  }, [fetchListReadFollowing]);
+
+  useEffect(() => {
+    fetchListReadFollower();
+  }, [fetchListReadFollower]);
 
   return (
     <BaseLayout>

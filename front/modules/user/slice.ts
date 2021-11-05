@@ -52,6 +52,8 @@ const updateMyInfo = createAction<MyUser>(`${USER}/updateMyInfo`);
 const addPostToMe = createAction<number>(`${USER}/addPostToMe`);
 const removePostToMe = createAction<number>(`${USER}/removePostToMe`);
 const changeSelectId = createAction<number>(`${USER}/changeSelectId`);
+const changeFollowerFilter = createAction<{ filter: ListReadFollowUrlQuery }>(`${USER}/changeFollowerFilter`);
+const changeFollowingFilter = createAction<{ filter: ListReadFollowingUrlQuery }>(`${USER}/changeFollowingFilter`);
 
 // Entity
 const followerListDataAdapter = createEntityAdapter<User>({
@@ -67,6 +69,12 @@ export type PostState = EntityState<User>;
 // Type
 export interface UserState {
   selectId: number | null;
+  followerFilter: ListReadFollowUrlQuery | null;
+  isMoreFollowerRead: boolean;
+  followerTotalCount: number;
+  followingFilter: ListReadFollowingUrlQuery | null;
+  isMoreFollowingRead: boolean;
+  followingTotalCount: number;
   myInfo: MyUser | null;
   user: User | null;
   followerListData: EntityState<User>;
@@ -76,6 +84,12 @@ export interface UserState {
 // Reducer
 const initialState: UserState = {
   selectId: null,
+  followerFilter: { page: 1, pageSize: 10 },
+  isMoreFollowerRead: false,
+  followerTotalCount: 0,
+  followingFilter: { page: 1, pageSize: 10 },
+  isMoreFollowingRead: false,
+  followingTotalCount: 0,
   myInfo: null,
   user: null,
   followerListData: followerListDataAdapter.getInitialState(),
@@ -90,6 +104,12 @@ const slice = createSlice({
     builder
       .addCase(changeSelectId, (state, { payload }) => {
         state.selectId = payload;
+      })
+      .addCase(changeFollowerFilter, (state, { payload: { filter } }) => {
+        state.followerFilter = { ...state.followerFilter, ...filter };
+      })
+      .addCase(changeFollowingFilter, (state, { payload: { filter } }) => {
+        state.followingFilter = { ...state.followingFilter, ...filter };
       })
       .addCase(myInfoReset, (state) => {
         state.myInfo = initialState.myInfo;
@@ -113,11 +133,15 @@ const slice = createSlice({
         }
       })
       .addCase(fetchListReadFollow.success, (state, { payload: { resData } }) => {
-        const { list } = resData;
+        const { list, totalCount, nextPage } = resData;
+        state.followerTotalCount = totalCount;
+        state.isMoreFollowerRead = !!nextPage;
         followerListDataAdapter.addMany(state.followerListData, list);
       })
       .addCase(fetchListReadFollowing.success, (state, { payload: { resData } }) => {
-        const { list } = resData;
+        const { list, totalCount, nextPage } = resData;
+        state.followingTotalCount = totalCount;
+        state.isMoreFollowingRead = !!nextPage;
         followingListDataAdapter.addMany(state.followingListData, list);
       })
       .addCase(fetchFollow.success, (state, { payload: { resData } }) => {
@@ -158,6 +182,8 @@ export const userSelector = {
 export const userAction = {
   ...slice.actions,
   changeSelectId,
+  changeFollowerFilter,
+  changeFollowingFilter,
   myInfoReset,
   updateMyInfo,
   addPostToMe,
