@@ -23,7 +23,19 @@ export const axios = Axios.create({
 
 // Add a response interceptor
 axios.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const { resCode, resMsg } = response.data;
+
+    if (resCode !== 201) {
+      if (!resMsg) {
+        // eslint-disable-next-line no-param-reassign
+        response.data.resMsg = '네트워크 오류';
+      }
+      const error = { response };
+      return Promise.reject(error);
+    }
+    return response;
+  },
   (error) => {
     console.error(`error`, error);
 
