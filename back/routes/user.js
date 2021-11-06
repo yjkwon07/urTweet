@@ -5,7 +5,7 @@ const passport = require('passport');
 const { findUserWithoutPassword, findUser } = require('../query/user');
 const { User } = require('../models');
 const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
-const { SUCCESS, CLIENT_ERROR, CLIENT_ERROR, INFO_EMPTY_ERROR } = require('../constant');
+const { SUCCESS, CLIENT_ERROR, INFO_EMPTY_ERROR } = require('../constant');
 const { resErrorDataFormat, resDataFormat, resListDataFormat, resItemDataFormat } = require('../utils/resFormat');
 
 const router = express.Router();
@@ -194,8 +194,8 @@ router.post('/logout', (req, res) => {
   res.status(SUCCESS).send(resDataFormat(SUCCESS, '로그아웃 완료', null));
 });
 
-// PATCH /user/follow/:userIdx (팔로우)
-router.patch('/follow/:userIdx', isLoggedIn, async (req, res, next) => {
+// PATCH /user/follow/:userId (팔로우)
+router.patch('/follow/:userId', isLoggedIn, async (req, res, next) => {
   try {
     const myId = req.user.id;
     const userId = req.params.userId;
