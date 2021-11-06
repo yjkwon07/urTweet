@@ -21,7 +21,7 @@ const PostListReadView = () => {
   const postListReadPageFilter = useMemo(() => new PostListReadPageFilter(router.query), [router.query]);
   const { query } = postListReadPageFilter;
 
-  const { totalCount } = useListReadPost();
+  const { curPage, totalCount } = useListReadPost();
 
   const handleRefreshPostListData = useCallback(() => {
     postListReadPageFilter.search({
@@ -49,10 +49,10 @@ const PostListReadView = () => {
           mode,
         });
       } else {
-        postListReadPageFilter.search({ page: query.page, mode });
+        postListReadPageFilter.search({ page: curPage, mode });
       }
     },
-    [postListReadPageFilter, query.page],
+    [postListReadPageFilter, curPage],
   );
 
   return (
