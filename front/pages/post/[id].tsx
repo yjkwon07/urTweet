@@ -1,5 +1,3 @@
-import React from 'react';
-
 import Head from 'next/head';
 import { END } from 'redux-saga';
 
@@ -28,10 +26,9 @@ const PostReadPage = ({ title, seo }: IProps) => {
 
 // SSR
 export const getServerSideProps = wrapper.getServerSideProps(async ({ store, params }) => {
-  const postId = new PostReadPageFilter(params).param.id;
+  const postId = PostReadPageFilter.parseParam(params).id;
 
   if (postId) {
-    store.dispatch(postAction.changeSelectId(postId));
     const {
       resData: { item: postData },
     } = await store.dispatch(postAction.fetchReadPost.asyncThunk({ postId }));
@@ -42,7 +39,7 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, par
         title: `${postData.User.nickname}님의 글 | urTweet`,
         seo: {
           title: `${postData.User.nickname}님의 게시글`,
-          url: new PostReadPageFilter({ id: postId }).url(),
+          url: new PostReadPageFilter({ id: postId }).url,
           description: `${postData.content}님의 게시글`,
           name: `${postData.User.nickname}님의 게시글`,
           keywords: `${postData.User.nickname}`,

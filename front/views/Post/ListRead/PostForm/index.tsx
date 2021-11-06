@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
 import { FileImageTwoTone } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';

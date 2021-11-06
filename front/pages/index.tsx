@@ -1,5 +1,3 @@
-import React from 'react';
-
 import Head from 'next/head';
 import { END } from 'redux-saga';
 
@@ -28,10 +26,9 @@ const HomePage = ({ title, seo }: IProps) => {
 
 // SSR
 export const getServerSideProps = wrapper.getServerSideProps(async ({ store, query }) => {
-  const filter = PostListReadPageFilter.parseQuery(query);
+  const { page, pageSize, hashtag } = PostListReadPageFilter.parseQuery(query);
 
-  store.dispatch(postAction.changeFilter({ filter }));
-  await store.dispatch(postAction.fetchListReadPost.asyncThunk(filter));
+  await store.dispatch(postAction.fetchListReadPost.asyncThunk({ page, pageSize, hashtag }));
   store.dispatch(END);
 
   return {
@@ -39,7 +36,7 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, que
       title: `HOME | urTweet`,
       seo: {
         title: `urTweet Home`,
-        url: new PostListReadPageFilter(query).url(),
+        url: new PostListReadPageFilter(query).url,
         description: `urTweet Home page`,
         name: `urTweet Home`,
         keywords: `Home`,

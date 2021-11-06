@@ -1,4 +1,4 @@
-import { createAction, createEntityAdapter, createSlice, EntityState, isAnyOf } from '@reduxjs/toolkit';
+import { createEntityAdapter, createSlice, EntityState, isAnyOf } from '@reduxjs/toolkit';
 
 import { createFetchAction } from '@modules/helper';
 
@@ -37,13 +37,6 @@ const fetchLikePost = createFetchAction<LikePostUrlQuery, LikePostRes>(`${POST}/
 const fetchUnlikePost = createFetchAction<UnLikePostUrlQuery, UnlikePostRes>(`${POST}/fetchUnlikePost`);
 const fetchCreateComment = createFetchAction<CreateCommentReq, CreateCommentRes>(`${POST}/fetchCreateComment`);
 
-// Action
-export interface Filter extends ListReadPostUrlQuery {
-  mode: ViewMode;
-}
-const changeFilter = createAction<{ filter: Filter }>(`${POST}/changeFilter`);
-const changeSelectId = createAction<number>(`${POST}/changeSelectId`);
-
 // Entity
 const postListDataAdapter = createEntityAdapter<Post>({
   selectId: (data) => data.id,
@@ -51,16 +44,16 @@ const postListDataAdapter = createEntityAdapter<Post>({
 
 // Type
 export interface PostState extends EntityState<Post> {
-  selectId: number | null;
-  filter: Filter | null;
+  curPage: number;
+  rowsPerPage: number;
   isMoreRead: boolean;
   totalCount: number;
 }
 
 // Reducer
 const initialState: PostState = postListDataAdapter.getInitialState({
-  selectId: null,
-  filter: null,
+  curPage: 0,
+  rowsPerPage: 0,
   isMoreRead: false,
   totalCount: 0,
 });
@@ -71,14 +64,10 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (builder) =>
     builder
-      .addCase(changeSelectId, (state, { payload }) => {
-        state.selectId = payload;
-      })
-      .addCase(changeFilter, (state, { payload: { filter } }) => {
-        state.filter = { ...state.filter, ...filter };
-      })
       .addCase(fetchListReadPost.success, (state, { payload: { resData }, meta }) => {
-        const { list, totalCount, nextPage } = resData;
+        const { list, curPage, rowsPerPage, totalCount, nextPage } = resData;
+        state.curPage = curPage;
+        state.rowsPerPage = rowsPerPage;
         state.totalCount = totalCount;
         state.isMoreRead = !!nextPage;
 
@@ -135,12 +124,10 @@ export const postReducer = slice.reducer;
 export const postSelector = {
   state: (state: RootState) => state.POST,
   listData,
-  selectById,
+  data: (state: RootState) => selectById(state, state.POST.ids[0]),
 };
 export const postAction = {
   ...slice.actions,
-  changeSelectId,
-  changeFilter,
   fetchCreateRetweet,
   fetchCreatePost,
   fetchListReadPost,

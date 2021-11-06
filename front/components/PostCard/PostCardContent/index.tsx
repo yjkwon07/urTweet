@@ -23,7 +23,7 @@ const PostCardContent = ({ postContent, imageList }: IProps) => {
         decorator(word, index) {
           if (word.match(/(#[^\s#]+)/)) {
             return (
-              <Link href={new PostListReadPageFilter({ hashtag: word.slice(1) }).url()} key={index} passHref>
+              <Link href={new PostListReadPageFilter({ hashtag: word.slice(1) }).url} key={index} passHref>
                 <a href={PASS_HREF}>{word}</a>
               </Link>
             );

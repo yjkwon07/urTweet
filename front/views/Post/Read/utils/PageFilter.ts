@@ -30,14 +30,14 @@ export default class PageFilter implements Page {
     this.param = PageFilter.parseParam(param);
   }
 
-  replaceParam({ id }: Partial<Param>) {
+  get url() {
+    return `${this.pathname}`;
+  }
+
+  private replaceParam({ id }: Partial<Param>) {
     const param = cloneDeep(this.param);
     if (id) param.id = id;
     return param;
-  }
-
-  url() {
-    return `${this.pathname}`;
   }
 
   search(param?: Partial<Param>) {

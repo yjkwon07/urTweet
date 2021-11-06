@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { SearchOutlined } from '@ant-design/icons';
 import { AutoComplete, Input } from 'antd';
@@ -6,14 +6,15 @@ import { debounce } from 'lodash';
 import { useRouter } from 'next/router';
 
 import { useListReadHashtag, useListReadHashtagFilter } from '@modules/hashtag';
-import { useListReadPost } from '@modules/post';
 
 import { PostListReadPageFilter } from '../utils';
 
-function AutoCompleteHashTag() {
-  const router = useRouter();
+export interface IProps {
+  hashtag?: string;
+}
 
-  const { filter: listReadPostFilter } = useListReadPost();
+function AutoCompleteHashTag({ hashtag }: IProps) {
+  const router = useRouter();
 
   const [hashtagKeyword, setHashtagKeyword] = useState('');
   const { filter: listReadHashtagFilter, changeFilter: changeListReadHashtagFilter } = useListReadHashtagFilter();
@@ -45,8 +46,8 @@ function AutoCompleteHashTag() {
   );
 
   useEffect(() => {
-    setHashtagKeyword(listReadPostFilter?.hashtag || '');
-  }, [listReadPostFilter?.hashtag]);
+    setHashtagKeyword(hashtag || '');
+  }, [hashtag]);
 
   useEffect(() => {
     debounce(() => {

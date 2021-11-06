@@ -124,7 +124,7 @@ const PostCard = ({ data, initCommentListOpen = false }: IProps) => {
               <div role="presentation" onClick={handleToggleMorePopOver}>
                 <p>
                   <Button type="text" ghost size="small">
-                    <Link href={new PostReadPageFilter({ id: data.id }).url()} passHref>
+                    <Link href={new PostReadPageFilter({ id: data.id }).url} passHref>
                       <a href={PASS_HREF}>
                         <ExportOutlined /> 상세페이지 이동
                       </a>

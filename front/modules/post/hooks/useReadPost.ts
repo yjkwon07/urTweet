@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 
 import { useDispatch } from 'react-redux';
 
@@ -10,25 +10,16 @@ import { postSelector, postAction } from '../slice';
 export default function useReadPost() {
   const dispatch = useDispatch();
   const { status, error } = useAppSelector(fetchStatusSelector.byFetchAction(postAction.fetchReadPost));
-  const { selectId } = useAppSelector(postSelector.state);
-  const data = useAppSelector((state) => selectId && postSelector.selectById(state, selectId));
+  const data = useAppSelector(postSelector.data);
 
-  const isInitFetch = useRef(!!data);
-
-  const changeSelectId = useCallback(
-    (selectId) => {
-      dispatch(postAction.changeSelectId(selectId));
+  const fetch = useCallback(
+    (postId: number) => {
+      if (postId) {
+        dispatch(postAction.fetchReadPost.request({ postId }));
+      }
     },
     [dispatch],
   );
 
-  const fetch = useCallback(() => {
-    if (!isInitFetch.current && selectId) {
-      dispatch(postAction.fetchReadPost.request({ postId: selectId }));
-    } else {
-      isInitFetch.current = false;
-    }
-  }, [dispatch, selectId]);
-
-  return { status, data, error, selectId, fetch, changeSelectId };
+  return { status, data, error, fetch };
 }

@@ -3,7 +3,7 @@ import qs, { ParsedUrlQuery } from 'querystring';
 import { cloneDeep } from 'lodash';
 import Router from 'next/router';
 
-import { Page, QueryFilter } from '@typings/type';
+import { Page } from '@typings/type';
 
 const PATH_NAME = '/';
 
@@ -14,7 +14,7 @@ export interface Query {
   mode: ViewMode;
 }
 
-export default class PageFilter implements Page, QueryFilter<Query> {
+export default class PageFilter implements Page {
   pathname: string;
 
   query: Query;
@@ -45,22 +45,22 @@ export default class PageFilter implements Page, QueryFilter<Query> {
     this.query = PageFilter.parseQuery(query);
   }
 
-  replaceQuery({ page, pageSize, hashtag, mode }: Partial<Query>) {
+  get url() {
+    return `${this.pathname}${this.queryString}`;
+  }
+
+  private queryString() {
+    const { page, pageSize, hashtag, mode } = this.query;
+    return `?${qs.stringify({ page, pageSize, hashtag, mode })}`;
+  }
+
+  private replaceQuery({ page, pageSize, hashtag, mode }: Partial<Query>) {
     const query = cloneDeep(this.query);
     if (page) query.page = page;
     if (pageSize) query.pageSize = pageSize;
     if (hashtag !== undefined) query.hashtag = hashtag;
     if (mode) query.mode = mode;
     return query;
-  }
-
-  queryString() {
-    const { page, pageSize, hashtag, mode } = this.query;
-    return `?${qs.stringify({ page, pageSize, hashtag, mode })}`;
-  }
-
-  url() {
-    return `${this.pathname}${this.queryString()}`;
   }
 
   search(query?: Partial<Query>) {

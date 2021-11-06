@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { InsertRowBelowOutlined, InsertRowRightOutlined, RedoOutlined } from '@ant-design/icons';
 import { Button, Select, Space, Tooltip, Typography } from 'antd';
@@ -18,55 +18,42 @@ const { Option } = Select;
 
 const PostListReadView = () => {
   const router = useRouter();
+  const postListReadPageFilter = useMemo(() => new PostListReadPageFilter(router.query), [router.query]);
+  const { query } = postListReadPageFilter;
 
-  const {
-    status,
-    data: postListData,
-    error: PostListError,
-    isMoreRead,
-    totalCount,
-    filter: listReadPostFilter,
-    fetch: fetchListReadPost,
-  } = useListReadPost();
+  const { totalCount } = useListReadPost();
 
   const handleRefreshPostListData = useCallback(() => {
-    const postListReadPageFilter = new PostListReadPageFilter(router.query);
     postListReadPageFilter.search({
       page: PostListReadPageFilter.defaultOption.DEFAULT_CUR_PAGE,
       pageSize: PostListReadPageFilter.defaultOption.DEFAULT_PER_PAGE,
       hashtag: '',
     });
-  }, [router.query]);
+  }, [postListReadPageFilter]);
 
   const handleChangePageSize = useCallback(
     (pageSize: number) => {
-      const postListReadPageFilter = new PostListReadPageFilter(router.query);
       postListReadPageFilter.search({
         page: PostListReadPageFilter.defaultOption.DEFAULT_CUR_PAGE,
         pageSize,
       });
     },
-    [router.query],
+    [postListReadPageFilter],
   );
 
   const handleChangeMode = useCallback(
     (mode: ViewMode) => () => {
-      const postListReadPageFilter = new PostListReadPageFilter(router.query);
       if (mode === 'infinite') {
         postListReadPageFilter.search({
           page: PostListReadPageFilter.defaultOption.DEFAULT_CUR_PAGE,
           mode,
         });
       } else {
-        postListReadPageFilter.search({ page: listReadPostFilter?.page, mode });
+        postListReadPageFilter.search({ page: query.page, mode });
       }
     },
-    [listReadPostFilter?.page, router.query],
+    [postListReadPageFilter, query.page],
   );
-
-  useEffect(() => {
-    fetchListReadPost();
-  }, [fetchListReadPost]);
 
   return (
     <BaseLayout
@@ -88,7 +75,7 @@ const PostListReadView = () => {
                 <Tooltip title="새로고침">
                   <Button shape="circle" icon={<RedoOutlined />} onClick={handleRefreshPostListData} />
                 </Tooltip>
-                <Select className="select" value={listReadPostFilter?.pageSize} onChange={handleChangePageSize}>
+                <Select className="select" value={query.pageSize} onChange={handleChangePageSize}>
                   <Option value={10}>10개씩 보기</Option>
                   <Option value={20}>20개씩 보기</Option>
                   <Option value={30}>30개씩 보기</Option>
@@ -103,23 +90,9 @@ const PostListReadView = () => {
         </StyledFilter>
       }
     >
-      {listReadPostFilter?.hashtag && <Title>#{listReadPostFilter.hashtag}</Title>}
-      {listReadPostFilter?.mode === 'infinite' && (
-        <InfiniteMode
-          status={status}
-          postList={postListData}
-          isMoreRead={isMoreRead}
-          errorMsg={PostListError?.resMsg}
-        />
-      )}
-      {listReadPostFilter?.mode === 'page' && (
-        <PaginationMode
-          status={status}
-          postList={postListData}
-          totalCount={totalCount}
-          errorMsg={PostListError?.resMsg}
-        />
-      )}
+      {query.hashtag && <Title>#{query.hashtag}</Title>}
+      {query.mode === 'infinite' && <InfiniteMode />}
+      {query.mode === 'page' && <PaginationMode />}
     </BaseLayout>
   );
 };
