@@ -22,7 +22,7 @@ const PostCardMeta = ({ userId, nickname, createdAt, actions, description }: IPr
   return (
     <StyledCardMeta
       avatar={
-        <Link href={new UserReadPageFilter({ id: userId }, { userId }).url()} passHref>
+        <Link href={new UserReadPageFilter({ id: userId }, { userId }).url} passHref>
           <a href={PASS_HREF}>
             <Avatar>{nickname[0]}</Avatar>
           </a>

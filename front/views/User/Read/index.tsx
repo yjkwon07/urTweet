@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useMemo } from 'react';
 
 import { Empty, Space, Spin } from 'antd';
+import { useRouter } from 'next/router';
 
 import PostCard from '@components/PostCard';
 import useEndReachScroll from '@hooks/useEndReachScroll';
@@ -10,37 +11,31 @@ import useUser from '@modules/user/hooks/useReadUser';
 
 import { StyledCenter, StyledViewWrapper } from './styles';
 import UserInfo from './UserInfo';
+import { UserReadPageFilter } from './utils';
 
 const UserRead = () => {
-  const { data: userData, fetch: fetchReadUser } = useUser();
+  const router = useRouter();
+  const { data: userData } = useUser();
+  const postListReadPageFilter = useMemo(() => new UserReadPageFilter(router.query), [router.query]);
+  const { query } = postListReadPageFilter;
 
   const {
     status,
     data: postListData,
     error: PostListError,
+    curPage,
     isMoreRead,
-    filter: listReadPostFilter,
-    changeFilter: changeListReadPostFilter,
-    fetch: fetchListReadPost,
+    fetch: fetchListPost,
   } = useListReadPost();
 
   const handleNextPage = useCallback(() => {
-    if (listReadPostFilter?.page && isMoreRead) {
-      changeListReadPostFilter({
-        page: listReadPostFilter.page + 1,
-      });
+    if (isMoreRead) {
+      const { pageSize, userId, mode } = query;
+      fetchListPost({ page: curPage + 1, pageSize, userId }, mode);
     }
-  }, [changeListReadPostFilter, listReadPostFilter?.page, isMoreRead]);
+  }, [curPage, fetchListPost, isMoreRead, query]);
 
   useEndReachScroll({ callback: handleNextPage });
-
-  useEffect(() => {
-    fetchReadUser();
-  }, [fetchReadUser]);
-
-  useEffect(() => {
-    fetchListReadPost();
-  }, [fetchListReadPost]);
 
   return (
     <BaseLayout>

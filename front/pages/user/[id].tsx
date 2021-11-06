@@ -33,8 +33,6 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, par
   const filter = UserReadPageFilter.parseQuery(query);
 
   if (userId) {
-    store.dispatch(userAction.changeSelectId(userId));
-    store.dispatch(postAction.changeFilter({ filter }));
     const {
       resData: { item: userData },
     } = await store.dispatch(userAction.fetchReadUser.asyncThunk({ userId }));
@@ -46,7 +44,7 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, par
         title: `${userData?.nickname} | urTweet`,
         seo: {
           title: `${userData?.nickname}님의 게시글`,
-          url: new UserReadPageFilter(params, query).url(),
+          url: new UserReadPageFilter(params, query).url,
           description: `${userData?.nickname}님의 게시글`,
           name: `${userData?.nickname}님의 게시글`,
           keywords: `${userData?.nickname}`,

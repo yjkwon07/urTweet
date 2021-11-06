@@ -21,7 +21,7 @@ const CommentList = ({ commentList }: IProps) => (
         <Comment
           author={item.User.nickname}
           avatar={
-            <Link href={new UserReadPageFilter({ id: item.User.id }, { userId: item.User.id }).url()} passHref>
+            <Link href={new UserReadPageFilter({ id: item.User.id }, { userId: item.User.id }).url} passHref>
               <a href={PASS_HREF}>
                 <Avatar>{item.User.nickname[0]}</Avatar>
               </a>

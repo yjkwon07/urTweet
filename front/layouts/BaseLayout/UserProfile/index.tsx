@@ -46,7 +46,7 @@ const UserProfile = () => {
     >
       <StyledCardMeta
         avatar={
-          <Link href={new UserReadPageFilter({ id: myData.id }, { userId: myData.id }).url()} passHref>
+          <Link href={new UserReadPageFilter({ id: myData.id }, { userId: myData.id }).url} passHref>
             <a href={PASS_HREF}>
               <Avatar>{myData.nickname?.[0]}</Avatar>
             </a>

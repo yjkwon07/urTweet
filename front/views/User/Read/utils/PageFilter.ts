@@ -3,7 +3,7 @@ import qs, { ParsedUrlQuery } from 'querystring';
 import { cloneDeep } from 'lodash';
 import Router from 'next/router';
 
-import { Page, QueryFilter } from '@typings/type';
+import { Page } from '@typings/type';
 import urlParamReplace from '@utils/urlParamReplace';
 
 const PATH_NAME = '/user/:id';
@@ -19,7 +19,7 @@ export interface Query {
   mode: ViewMode;
 }
 
-export default class PageFilter implements Page, QueryFilter<Query> {
+export default class PageFilter implements Page {
   pathname: string;
 
   param: Param;
@@ -61,28 +61,28 @@ export default class PageFilter implements Page, QueryFilter<Query> {
     this.query = PageFilter.parseQuery(query);
   }
 
-  replaceParam({ id }: Partial<Param>) {
+  get url() {
+    return `${this.pathname}${this.queryString()}`;
+  }
+
+  private queryString() {
+    const { page, pageSize, userId, mode } = this.query;
+    return `?${qs.stringify({ page, pageSize, userId, mode })}`;
+  }
+
+  private replaceParam({ id }: Partial<Param>) {
     const param = cloneDeep(this.param);
     if (id) param.id = id;
     return param;
   }
 
-  replaceQuery({ page, pageSize, userId, mode }: Partial<Query>) {
+  private replaceQuery({ page, pageSize, userId, mode }: Partial<Query>) {
     const query = cloneDeep(this.query);
     if (page) query.page = page;
     if (pageSize) query.pageSize = pageSize;
     if (userId !== undefined) query.userId = userId;
     if (mode) query.mode = mode;
     return query;
-  }
-
-  queryString() {
-    const { page, pageSize, userId, mode } = this.query;
-    return `?${qs.stringify({ page, pageSize, userId, mode })}`;
-  }
-
-  url() {
-    return `${this.pathname}${this.queryString()}`;
   }
 
   search(param?: Partial<Param>, query?: Partial<Query>) {

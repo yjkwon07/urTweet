@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 
 import { useDispatch } from 'react-redux';
 
@@ -10,25 +10,14 @@ import { userAction, userSelector } from '../slice';
 export default function useReadUser() {
   const dispatch = useDispatch();
   const { status, error } = useAppSelector(fetchStatusSelector.byFetchAction(userAction.fetchReadUser));
-  const { selectId } = useAppSelector(userSelector.state);
   const data = useAppSelector(userSelector.userData);
 
-  const isInitFetch = useRef(!!data);
-
-  const changeSelectId = useCallback(
-    (selectId) => {
-      dispatch(userAction.changeSelectId(selectId));
+  const fetch = useCallback(
+    (userId: number) => {
+      dispatch(userAction.fetchReadUser.request({ userId }));
     },
     [dispatch],
   );
 
-  const fetch = useCallback(() => {
-    if (!isInitFetch.current && selectId) {
-      dispatch(userAction.fetchReadUser.request({ userId: selectId }));
-    } else {
-      isInitFetch.current = false;
-    }
-  }, [dispatch, selectId]);
-
-  return { status, data, error, selectId, fetch, changeSelectId };
+  return { status, data, error, fetch };
 }

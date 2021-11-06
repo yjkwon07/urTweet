@@ -51,7 +51,6 @@ const myInfoReset = createAction(`${USER}/myInfoReset`);
 const updateMyInfo = createAction<MyUser>(`${USER}/updateMyInfo`);
 const addPostToMe = createAction<number>(`${USER}/addPostToMe`);
 const removePostToMe = createAction<number>(`${USER}/removePostToMe`);
-const changeSelectId = createAction<number>(`${USER}/changeSelectId`);
 const changeFollowerFilter = createAction<{ filter: ListReadFollowUrlQuery }>(`${USER}/changeFollowerFilter`);
 const changeFollowingFilter = createAction<{ filter: ListReadFollowingUrlQuery }>(`${USER}/changeFollowingFilter`);
 
@@ -68,7 +67,6 @@ export type PostState = EntityState<User>;
 
 // Type
 export interface UserState {
-  selectId: number | null;
   followerFilter: ListReadFollowUrlQuery | null;
   isMoreFollowerRead: boolean;
   followerTotalCount: number;
@@ -83,7 +81,6 @@ export interface UserState {
 
 // Reducer
 const initialState: UserState = {
-  selectId: null,
   followerFilter: { page: 1, pageSize: 10 },
   isMoreFollowerRead: false,
   followerTotalCount: 0,
@@ -102,9 +99,6 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (builder) =>
     builder
-      .addCase(changeSelectId, (state, { payload }) => {
-        state.selectId = payload;
-      })
       .addCase(changeFollowerFilter, (state, { payload: { filter } }) => {
         state.followerFilter = { ...state.followerFilter, ...filter };
       })
@@ -181,7 +175,6 @@ export const userSelector = {
 };
 export const userAction = {
   ...slice.actions,
-  changeSelectId,
   changeFollowerFilter,
   changeFollowingFilter,
   myInfoReset,
