@@ -10,7 +10,7 @@ module.exports = {
     port: 3065,
   },
   production: {
-    port: 3065,
+    port: 3066,
     origin: true,
     domain: '',
   },
