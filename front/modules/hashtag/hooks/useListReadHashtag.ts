@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useCallback } from 'react';
 
 import { useDispatch } from 'react-redux';
 
@@ -8,26 +8,20 @@ import { fetchStatusSelector } from '@modules/fetchStatus';
 import { ListReadHashtagUrlQuery } from '../api';
 import { hashtagAction, hashtagSelector } from '../slice';
 
-export default function useListReadHashtag(filter?: ListReadHashtagUrlQuery) {
+export default function useListReadHashtag() {
   const dispatch = useDispatch();
-  const {
-    status,
-    data: result,
-    error,
-  } = useAppSelector(fetchStatusSelector.byFetchAction(hashtagAction.fetchListReadHashtag));
+  const { status, error } = useAppSelector(fetchStatusSelector.byFetchAction(hashtagAction.fetchListReadHashtag));
   const data = useAppSelector(hashtagSelector.listData);
+  const { curPage, rowsPerPage, isMoreRead, totalCount } = useAppSelector(hashtagSelector.state);
 
-  const isInitFetch = useRef(!!data.length);
-  const isMoreRead = useMemo(() => !!result?.resData?.nextPage || false, [result?.resData?.nextPage]);
-  const totalCount = useMemo(() => result?.resData?.totalCount || 0, [result?.resData?.totalCount]);
+  const fetch = useCallback(
+    (query: ListReadHashtagUrlQuery) => {
+      if (query.keyword) {
+        dispatch(hashtagAction.fetchListReadHashtag.request(query));
+      }
+    },
+    [dispatch],
+  );
 
-  useEffect(() => {
-    if (!isInitFetch.current) {
-      if (filter) dispatch(hashtagAction.fetchListReadHashtag.request(filter));
-    } else {
-      isInitFetch.current = false;
-    }
-  }, [dispatch, filter]);
-
-  return { status, data, error, isMoreRead, totalCount };
+  return { status, data, error, curPage, rowsPerPage, isMoreRead, totalCount, fetch };
 }

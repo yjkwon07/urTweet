@@ -84,7 +84,7 @@ const PostListReadView = () => {
               </Space>
             </div>
             <div>
-              <AutoCompleteHashTag />
+              <AutoCompleteHashTag hashtag={query.hashtag} />
             </div>
           </Space>
         </StyledFilter>

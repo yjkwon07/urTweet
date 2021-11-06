@@ -5,20 +5,19 @@ import { AutoComplete, Input } from 'antd';
 import { debounce } from 'lodash';
 import { useRouter } from 'next/router';
 
-import { useListReadHashtag, useListReadHashtagFilter } from '@modules/hashtag';
+import { useListReadHashtag } from '@modules/hashtag';
 
 import { PostListReadPageFilter } from '../utils';
 
 export interface IProps {
-  hashtag?: string;
+  hashtag: string;
 }
 
 function AutoCompleteHashTag({ hashtag }: IProps) {
   const router = useRouter();
 
   const [hashtagKeyword, setHashtagKeyword] = useState('');
-  const { filter: listReadHashtagFilter, changeFilter: changeListReadHashtagFilter } = useListReadHashtagFilter();
-  const { data: hashtagListData, error: hashtagListError } = useListReadHashtag(listReadHashtagFilter);
+  const { data: hashtagListData, error: hashtagListError, fetch: fetchListHashtag } = useListReadHashtag();
 
   const hashTagOptions = useMemo(() => {
     if (!hashtagListError) {
@@ -46,14 +45,14 @@ function AutoCompleteHashTag({ hashtag }: IProps) {
   );
 
   useEffect(() => {
-    setHashtagKeyword(hashtag || '');
+    setHashtagKeyword(hashtag);
   }, [hashtag]);
 
   useEffect(() => {
     debounce(() => {
-      if (hashtagKeyword) changeListReadHashtagFilter({ keyword: hashtagKeyword });
+      if (hashtagKeyword) fetchListHashtag({ keyword: hashtagKeyword });
     }, 300)();
-  }, [changeListReadHashtagFilter, hashtagKeyword]);
+  }, [fetchListHashtag, hashtagKeyword]);
 
   return (
     <AutoComplete
