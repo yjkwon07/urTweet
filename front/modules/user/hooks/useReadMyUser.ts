@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback } from 'react';
 
 import { useDispatch } from 'react-redux';
 
@@ -13,15 +13,9 @@ export default function useReadMyUser() {
   const { status, error } = useAppSelector(fetchStatusSelector.byFetchAction(userAction.fetchReadMyUser));
   const data = useAppSelector(userSelector.myData);
 
-  const isInitFetch = useRef(!!data);
-
-  useEffect(() => {
-    if (!isInitFetch.current) {
-      if (getUserId()) dispatch(userAction.fetchReadMyUser.request());
-    } else {
-      isInitFetch.current = false;
-    }
+  const fetch = useCallback(() => {
+    if (getUserId()) dispatch(userAction.fetchReadMyUser.request());
   }, [dispatch]);
 
-  return { status, data, error };
+  return { status, data, error, fetch };
 }

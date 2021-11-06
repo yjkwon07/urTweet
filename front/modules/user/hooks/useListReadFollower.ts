@@ -13,14 +13,14 @@ export default function useListReadFollower() {
   const dispatch = useDispatch();
 
   const { status, error } = useAppSelector(
-    fetchStatusSelector.byType<ListReadFollowerRes, CustomAxiosError>(userAction.fetchListReadFollow.TYPE),
+    fetchStatusSelector.byType<ListReadFollowerRes, CustomAxiosError>(userAction.fetchListReadFollower.TYPE),
   );
   const data = useAppSelector(userSelector.followerListData);
   const { curPage, rowsPerPage, isMoreRead, totalCount } = useAppSelector(userSelector.follower);
 
   const fetch = useCallback(
     (query: ListReadFollowerUrlQuery) => {
-      dispatch(userAction.fetchListReadFollow.request(query));
+      dispatch(userAction.fetchListReadFollower.request(query));
     },
     [dispatch],
   );

@@ -63,8 +63,8 @@ function* watchModifyNickname() {
 
 function* watchListReadFollow() {
   yield takeLatest(
-    userAction.fetchListReadFollow.request,
-    createFetchSaga(userAction.fetchListReadFollow, requestListReadFollower),
+    userAction.fetchListReadFollower.request,
+    createFetchSaga(userAction.fetchListReadFollower, requestListReadFollower),
   );
 }
 

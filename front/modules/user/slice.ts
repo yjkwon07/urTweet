@@ -9,8 +9,8 @@ import {
   FollowUrlQuery,
   ListReadFollowingRes,
   ListReadFollowingUrlQuery,
-  ListReadFollowRes,
-  ListReadFollowUrlQuery,
+  ListReadFollowerRes,
+  ListReadFollowerUrlQuery,
   LoginBodyQuery,
   LoginRes,
   LogoutRes,
@@ -36,7 +36,9 @@ const fetchSignup = createFetchAction<SignupBodyQuery, SignupRes>(`${USER}/fetch
 const fetchReadMyUser = createFetchAction<void, ReadMyUserRes>(`${USER}/fetchReadMyUser`);
 const fetchReadUser = createFetchAction<ReadUserUrlQuery, ReadUserRes>(`${USER}/fetchReadUser`);
 const fetchUpdateMyUser = createFetchAction<UpdateMyUserBodyQuery, UpdateMyUserRes>(`${USER}/fetchUpdateMyUser`);
-const fetchListReadFollow = createFetchAction<ListReadFollowUrlQuery, ListReadFollowRes>(`${USER}/fetchListReadFollow`);
+const fetchListReadFollower = createFetchAction<ListReadFollowerUrlQuery, ListReadFollowerRes>(
+  `${USER}/fetchListReadFollower`,
+);
 const fetchListReadFollowing = createFetchAction<ListReadFollowingUrlQuery, ListReadFollowingRes>(
   `${USER}/fetchListReadFollowing`,
 );
@@ -67,6 +69,7 @@ export interface FollowerState extends EntityState<User> {
   isMoreRead: boolean;
   totalCount: number;
 }
+
 export interface FollowingState extends EntityState<User> {
   curPage: number;
   rowsPerPage: number;
@@ -74,7 +77,6 @@ export interface FollowingState extends EntityState<User> {
   totalCount: number;
 }
 
-// Type
 export interface UserState {
   myInfo: MyUser | null;
   user: User | null;
@@ -127,7 +129,7 @@ const slice = createSlice({
           state.myInfo.nickname = nickname;
         }
       })
-      .addCase(fetchListReadFollow.success, (state, { payload: { resData } }) => {
+      .addCase(fetchListReadFollower.success, (state, { payload: { resData } }) => {
         const { list, curPage, rowsPerPage, totalCount, nextPage } = resData;
         state.follower.curPage = curPage;
         state.follower.rowsPerPage = rowsPerPage;
@@ -187,7 +189,7 @@ export const userAction = {
   fetchReadMyUser,
   fetchReadUser,
   fetchUpdateMyUser,
-  fetchListReadFollow,
+  fetchListReadFollower,
   fetchListReadFollowing,
   fetchFollow,
   fetchUnFollow,
