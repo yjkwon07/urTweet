@@ -5,7 +5,7 @@ const passport = require('passport');
 const { findUserWithoutPassword, findUser } = require('../query/user');
 const { User } = require('../models');
 const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
-const { SUCCESS, CLIENT_ERROR, USER_ERROR } = require('../constant');
+const { SUCCESS, CLIENT_ERROR, CLIENT_ERROR, INFO_EMPTY_ERROR } = require('../constant');
 const { resErrorDataFormat, resDataFormat, resListDataFormat, resItemDataFormat } = require('../utils/resFormat');
 
 const router = express.Router();
@@ -19,7 +19,7 @@ router.get('/', async (req, res, next) => {
       const fullUserWithoutPassword = await findUserWithoutPassword({ id: myId });
       res.status(SUCCESS).send(resItemDataFormat(SUCCESS, '', fullUserWithoutPassword));
     } else {
-      return res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '존재하지 않는 사용자입니다.'));
+      return res.status(INFO_EMPTY_ERROR).send(resErrorDataFormat(INFO_EMPTY_ERROR, '존재하지 않는 사용자입니다.'));
     }
   } catch (error) {
     console.error(error);
@@ -66,12 +66,12 @@ router.get('/followers', isLoggedIn, async (req, res, next) => {
     });
     const totalCount = await user.countFollowers();
     const list = followers;
-    const totalPage = totalCount / limit;
+    const totalPage = Math.ceil(totalCount / limit);
 
     const result = {
       list,
       curPage: page,
-      nextPage: totalPage >= page + 1 ? page + 1 : 0,
+      nextPage: totalPage > page ? page + 1 : 0,
       rowsPerPage: limit,
       totalCount,
     };
@@ -101,12 +101,12 @@ router.get('/followings', isLoggedIn, async (req, res, next) => {
     });
     const totalCount = await user.countFollowings();
     const list = followings;
-    const totalPage = totalCount / limit;
+    const totalPage = Math.ceil(totalCount / limit);
 
     const result = {
       list,
       curPage: page,
-      nextPage: totalPage >= page + 1 ? page + 1 : 0,
+      nextPage: totalPage > page ? page + 1 : 0,
       rowsPerPage: limit,
       totalCount,
     };
@@ -132,7 +132,7 @@ router.get('/:userId', async (req, res, next) => {
       data.Followings = data.Followings.length;
       res.status(SUCCESS).send(resItemDataFormat(SUCCESS, '', data));
     } else {
-      return res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '존재하지 않는 사용자입니다.'));
+      return res.status(INFO_EMPTY_ERROR).send(resErrorDataFormat(INFO_EMPTY_ERROR, '존재하지 않는 사용자입니다.'));
     }
   } catch (error) {
     console.error(error);
@@ -173,7 +173,7 @@ router.post('/login', isNotLoggedIn, (req, res, next) => {
       return next(err);
     }
     if (info) {
-      return res.status(USER_ERROR).send(resErrorDataFormat(CLIENT_ERROR, info.reason));
+      return res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, info.reason));
     }
     // req.login()시에 serializeUser 호출
     return req.login(user, async (loginErr) => {
@@ -202,7 +202,7 @@ router.patch('/follow/:userIdx', isLoggedIn, async (req, res, next) => {
 
     const user = await User.findOne({ where: { id: userId } });
     if (!user) {
-      res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '존재하지 않는 사용자입니다.'));
+      res.status(INFO_EMPTY_ERROR).send(resErrorDataFormat(INFO_EMPTY_ERROR, '존재하지 않는 사용자입니다.'));
     }
     await user.addFollowers(myId);
 
@@ -221,7 +221,7 @@ router.delete('/follow/:userId', isLoggedIn, async (req, res, next) => {
 
     const user = await User.findOne({ where: { id: userId } });
     if (!user) {
-      res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '존재하지 않는 사용자입니다.'));
+      res.status(INFO_EMPTY_ERROR).send(resErrorDataFormat(INFO_EMPTY_ERROR, '존재하지 않는 사용자입니다.'));
     }
     await user.removeFollowers(myId);
 
@@ -240,7 +240,7 @@ router.delete('/follower/:userId', isLoggedIn, async (req, res, next) => {
 
     const user = await User.findOne({ where: { id: userId } });
     if (!user) {
-      res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '존재하지 않는 사용자입니다.'));
+      res.status(INFO_EMPTY_ERROR).send(resErrorDataFormat(INFO_EMPTY_ERROR, '존재하지 않는 사용자입니다.'));
     }
     await user.removeFollowings(myId);
 

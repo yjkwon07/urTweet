@@ -2,8 +2,8 @@ const express = require('express');
 const { Op } = require('sequelize');
 
 const { findHashtagList } = require('../query/hashtag');
-const { SUCCESS, CLIENT_ERROR } = require('../constant');
-const { resListDataFormat, resErrorDataFormat } = require('../utils/resFormat');
+const { SUCCESS } = require('../constant');
+const { resListDataFormat } = require('../utils/resFormat');
 
 const router = express.Router();
 
@@ -31,11 +31,7 @@ router.get('/', async (req, res, next) => {
       totalCount,
     };
 
-    if (list.length) {
-      res.status(SUCCESS).send(resListDataFormat(SUCCESS, '', result));
-    } else {
-      res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '조회하신 결과가 없습니다.'));
-    }
+    res.status(SUCCESS).send(resListDataFormat(SUCCESS, '', result));
   } catch (error) {
     console.error(error);
     next(error);

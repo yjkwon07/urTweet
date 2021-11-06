@@ -5,7 +5,7 @@ const { findPost, findRetweetPost, findPostWithoutUserPassword } = require('../q
 const { findCommentWithoutUserPassword } = require('../query/comment');
 const { isLoggedIn } = require('./middlewares');
 const { resDataFormat, resErrorDataFormat, resItemDataFormat } = require('../utils/resFormat');
-const { SUCCESS, CLIENT_ERROR } = require('../constant');
+const { SUCCESS, CLIENT_ERROR, INFO_EMPTY_ERROR } = require('../constant');
 
 const router = express.Router();
 
@@ -49,7 +49,7 @@ router.post('/:postId/retweet', isLoggedIn, async (req, res, next) => {
 
     const post = await findRetweetPost({ id: postId });
     if (!post) {
-      return res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '존재하지 않는 게시글입니다.'));
+      return res.status(INFO_EMPTY_ERROR).send(resErrorDataFormat(INFO_EMPTY_ERROR, '존재하지 않는 게시글입니다.'));
     }
     if (myId === post.UserId || post.Retweet?.UserId === myId) {
       return res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '자신의 글은 리트윗할 수 없습니다.'));
@@ -81,7 +81,7 @@ router.get('/:postId', async (req, res, next) => {
 
     const post = await findPost({ id: postId });
     if (!post) {
-      return res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '존재하지 않는 게시글입니다.'));
+      return res.status(SUCCESS).send(resErrorDataFormat(INFO_EMPTY_ERROR, '존재하지 않는 게시글입니다.'));
     }
 
     const postWithoutUserPassword = await findPostWithoutUserPassword({ id: postId });
@@ -140,7 +140,7 @@ router.delete('/:postId', isLoggedIn, async (req, res, next) => {
 
     const post = await findPost({ id: postId });
     if (!post) {
-      return res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '게시글이 존재하지 않습니다.'));
+      return res.status(INFO_EMPTY_ERROR).send(resErrorDataFormat(INFO_EMPTY_ERROR, '게시글이 존재하지 않습니다.'));
     }
     await Post.destroy({
       where: {
@@ -164,7 +164,7 @@ router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {
 
     const post = await findPost({ id: postId });
     if (!post) {
-      return res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '게시글이 존재하지 않습니다.'));
+      return res.status(INFO_EMPTY_ERROR).send(resErrorDataFormat(INFO_EMPTY_ERROR, '게시글이 존재하지 않습니다.'));
     }
     const comment = await Comment.create({
       content: req.body.content,
@@ -189,7 +189,7 @@ router.patch('/:postId/like', isLoggedIn, async (req, res, next) => {
 
     const post = await findPost({ id: postId });
     if (!post) {
-      return res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '게시글이 존재하지 않습니다.'));
+      return res.status(INFO_EMPTY_ERROR).send(resErrorDataFormat(INFO_EMPTY_ERROR, '게시글이 존재하지 않습니다.'));
     }
     await post.addLikers(myId);
 
@@ -208,7 +208,7 @@ router.delete('/:postId/like', isLoggedIn, async (req, res, next) => {
 
     const post = await findPost({ id: postId });
     if (!post) {
-      return res.status(CLIENT_ERROR).send(resErrorDataFormat(CLIENT_ERROR, '게시글이 존재하지 않습니다.'));
+      return res.status(INFO_EMPTY_ERROR).send(resErrorDataFormat(INFO_EMPTY_ERROR, '게시글이 존재하지 않습니다.'));
     }
     await post.removeLikers(myId);
 
