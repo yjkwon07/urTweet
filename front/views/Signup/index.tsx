@@ -36,7 +36,7 @@ const Signup = () => {
       try {
         await dispatch(userAction.fetchSignup.asyncThunk(formData));
         message.success('회원가입을 완료했습니다.');
-        Router.push(new PostListReadPageFilter().url());
+        Router.push(new PostListReadPageFilter().url);
       } catch (error) {
         if (isCustomAxiosError(error)) {
           message.error(JSON.stringify(error.response.data.resMsg));
@@ -49,7 +49,7 @@ const Signup = () => {
   useEffect(() => {
     if (myData) {
       message.error('로그인한 상태에서는 회원가입이 불가능합니다.');
-      Router.replace(new PostListReadPageFilter().url());
+      Router.replace(new PostListReadPageFilter().url);
     }
   }, [myData]);
 

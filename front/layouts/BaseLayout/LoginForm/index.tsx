@@ -106,7 +106,7 @@ const LoginForm = () => {
           <span>로그인</span>
         </Button>
         or{' '}
-        <Link href={new SignupPageFilter().url()} passHref>
+        <Link href={new SignupPageFilter().url} passHref>
           <a href={PASS_HREF}>register now!</a>
         </Link>
       </Form.Item>

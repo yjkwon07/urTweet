@@ -11,7 +11,7 @@ export default class PageFilter implements Page {
     this.pathname = PATH_NAME;
   }
 
-  url() {
+  get url() {
     return `${this.pathname}`;
   }
 
