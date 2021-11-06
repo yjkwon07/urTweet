@@ -5,7 +5,8 @@ import dayjs from 'dayjs';
 import Link from 'next/link';
 
 import { Comment as IComment } from '@modules/post/@types/db';
-import { GET_USER_URL, PASS_HREF } from '@utils/urls';
+import { PASS_HREF } from '@utils/urls';
+import { UserReadPageFilter } from '@views/User/Read/utils';
 
 interface IProps {
   commentList: IComment[];
@@ -20,7 +21,7 @@ const CommentList = ({ commentList }: IProps) => (
         <Comment
           author={item.User.nickname}
           avatar={
-            <Link href={GET_USER_URL(item.User.id.toString())} passHref>
+            <Link href={new UserReadPageFilter({ id: item.User.id }, { userId: item.User.id }).url} passHref>
               <a href={PASS_HREF}>
                 <Avatar>{item.User.nickname[0]}</Avatar>
               </a>

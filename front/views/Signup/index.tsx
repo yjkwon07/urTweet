@@ -1,24 +1,25 @@
 import { useCallback, useEffect } from 'react';
 
 import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Form, Input, Checkbox, Button, Typography, message } from 'antd';
 import Router from 'next/router';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 
+import { useAppSelector } from '@hooks/useAppRedux';
 import BaseLayout from '@layouts/BaseLayout';
-import { useFetchStatus } from '@modules/fetchStatus';
-import { signup, SIGNUP_SCHEMA, useReadMyUser } from '@modules/user';
+import { fetchStatusSelector } from '@modules/fetchStatus';
+import { SIGNUP_SCHEMA, userAction, useReadMyUser } from '@modules/user';
 import { FormSignup } from '@modules/user/@types';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
-import { HOME_URL } from '@utils/urls';
+import { PostListReadPageFilter } from '@views/Post/ListRead/utils';
 
 import { StyledForm } from './styles';
 
 const Signup = () => {
   const dispatch = useDispatch();
-  const { status } = useFetchStatus(signup.TYPE);
+  const { status } = useAppSelector(fetchStatusSelector.byFetchAction(userAction.fetchSignup));
   const { data: myData } = useReadMyUser();
 
   const {
@@ -33,9 +34,9 @@ const Signup = () => {
   const handleSubmitCreateUser = useCallback(
     async (formData: FormSignup) => {
       try {
-        await dispatch(signup.asyncThunk(formData));
+        await dispatch(userAction.fetchSignup.asyncThunk(formData));
         message.success('회원가입을 완료했습니다.');
-        Router.push(HOME_URL);
+        Router.push(new PostListReadPageFilter().url);
       } catch (error) {
         if (isCustomAxiosError(error)) {
           message.error(JSON.stringify(error.response.data.resMsg));
@@ -48,7 +49,7 @@ const Signup = () => {
   useEffect(() => {
     if (myData) {
       message.error('로그인한 상태에서는 회원가입이 불가능합니다.');
-      Router.replace(HOME_URL);
+      Router.replace(new PostListReadPageFilter().url);
     }
   }, [myData]);
 

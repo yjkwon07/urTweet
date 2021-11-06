@@ -1,14 +1,11 @@
-import React from 'react';
-
 import Head from 'next/head';
 import { END } from 'redux-saga';
 
 import SEO, { IProps as ISEOProps } from '@components/SEO';
 import { postAction } from '@modules/post';
-import { searchFilterAction } from '@modules/searchFilter';
 import wrapper from '@modules/store/configStore';
-import { GET_POST_URL } from '@utils/urls';
 import PostReadView from '@views/Post/Read';
+import { PostReadPageFilter } from '@views/Post/Read/utils';
 
 export interface IProps {
   title: string;
@@ -29,14 +26,12 @@ const PostReadPage = ({ title, seo }: IProps) => {
 
 // SSR
 export const getServerSideProps = wrapper.getServerSideProps(async ({ store, params }) => {
-  const postId = Number(params?.id) || 0;
-  const filter = { postId };
+  const postId = PostReadPageFilter.parseParam(params).id;
 
   if (postId) {
-    store.dispatch(searchFilterAction.changeSearchFilter({ key: 'READ_POST', filter }));
     const {
       resData: { item: postData },
-    } = await store.dispatch(postAction.readPost.asyncThunk({ postId }));
+    } = await store.dispatch(postAction.fetchReadPost.asyncThunk({ postId }));
     store.dispatch(END);
 
     return {
@@ -44,7 +39,7 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, par
         title: `${postData.User.nickname}님의 글 | urTweet`,
         seo: {
           title: `${postData.User.nickname}님의 게시글`,
-          url: GET_POST_URL(postId.toString()),
+          url: new PostReadPageFilter({ id: postId }).url,
           description: `${postData.content}님의 게시글`,
           name: `${postData.User.nickname}님의 게시글`,
           keywords: `${postData.User.nickname}`,

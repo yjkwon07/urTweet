@@ -4,21 +4,23 @@ import { Avatar, Button } from 'antd';
 import Link from 'next/link';
 import { useDispatch } from 'react-redux';
 
-import { useFetchStatus } from '@modules/fetchStatus';
-import { logout, useReadMyUser } from '@modules/user';
+import { useAppSelector } from '@hooks/useAppRedux';
+import { fetchStatusSelector } from '@modules/fetchStatus';
+import { userAction, useReadMyUser } from '@modules/user';
 import { removeUserId } from '@utils/auth';
-import { GET_USER_URL, PASS_HREF } from '@utils/urls';
+import { PASS_HREF } from '@utils/urls';
+import { UserReadPageFilter } from '@views/User/Read/utils';
 
 import { StyledCard, StyledCardMeta } from './styles';
 
 const UserProfile = () => {
   const dispatch = useDispatch();
-  const { status: logoutStatus } = useFetchStatus(logout.TYPE);
+  const { status: logoutStatus } = useAppSelector(fetchStatusSelector.byFetchAction(userAction.fetchLogout));
   const { data: myData } = useReadMyUser();
 
   const handleLogout = useCallback(() => {
     removeUserId();
-    dispatch(logout.request({}));
+    dispatch(userAction.fetchLogout.request());
   }, [dispatch]);
 
   if (!myData) return null;
@@ -44,7 +46,7 @@ const UserProfile = () => {
     >
       <StyledCardMeta
         avatar={
-          <Link href={GET_USER_URL(myData.id.toString())} passHref>
+          <Link href={new UserReadPageFilter({ id: myData.id }, { userId: myData.id }).url} passHref>
             <a href={PASS_HREF}>
               <Avatar>{myData.nickname?.[0]}</Avatar>
             </a>

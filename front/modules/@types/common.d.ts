@@ -1,3 +1,7 @@
+declare type ErrorCommonRes = {
+  resMsg: string;
+};
+
 declare type CommonRes = {
   resCode: string;
   resMsg: string;

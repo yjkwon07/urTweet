@@ -1,24 +1,26 @@
 import React, { useCallback } from 'react';
 
 import { LockOutlined, MailOutlined } from '@ant-design/icons';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Input, Button, Form, message } from 'antd';
 import Link from 'next/link';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 
-import { useFetchStatus } from '@modules/fetchStatus';
-import { login, LOGIN_SCHEMA } from '@modules/user';
+import { useAppSelector } from '@hooks/useAppRedux';
+import { fetchStatusSelector } from '@modules/fetchStatus';
+import { LOGIN_SCHEMA, userAction } from '@modules/user';
 import { FormLogin } from '@modules/user/@types';
 import { setUserId } from '@utils/auth';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
-import { PASS_HREF, SIGNUP_URL } from '@utils/urls';
+import { PASS_HREF } from '@utils/urls';
+import { SignupPageFilter } from '@views/Signup/utils';
 
 import { StyledForm } from './styles';
 
 const LoginForm = () => {
   const dispatch = useDispatch();
-  const { status } = useFetchStatus(login.TYPE);
+  const { status } = useAppSelector(fetchStatusSelector.byFetchAction(userAction.fetchLogin));
 
   const {
     control,
@@ -30,9 +32,9 @@ const LoginForm = () => {
   });
 
   const handleSubmit = useCallback(
-    async (formData) => {
+    async (formData: FormLogin) => {
       try {
-        const { resData } = await dispatch(login.asyncThunk(formData));
+        const { resData } = await dispatch(userAction.fetchLogin.asyncThunk(formData));
         setUserId(resData.id.toString());
       } catch (error) {
         if (isCustomAxiosError(error)) {
@@ -104,7 +106,7 @@ const LoginForm = () => {
           <span>로그인</span>
         </Button>
         or{' '}
-        <Link href={SIGNUP_URL} passHref>
+        <Link href={new SignupPageFilter().url} passHref>
           <a href={PASS_HREF}>register now!</a>
         </Link>
       </Form.Item>

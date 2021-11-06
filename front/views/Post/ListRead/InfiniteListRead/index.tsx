@@ -1,49 +1,51 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { Empty, Space, Spin } from 'antd';
+import { useRouter } from 'next/router';
 
 import PostCard from '@components/PostCard';
 import useEndReachScroll from '@hooks/useEndReachScroll';
-import { FetchStatus } from '@modules/fetchStatus';
-import { ListReadPostUrlQuery } from '@modules/post';
-import { Post } from '@modules/post/@types';
-import { useSearchFilter } from '@modules/searchFilter';
+import { useListReadPost } from '@modules/post';
 import { useReadMyUser } from '@modules/user';
 
 import PostForm from '../PostForm';
+import { PostListReadPageFilter } from '../utils';
 import { StyledCenter, StyledFormBlock, StyledViewWrapper } from './styles';
 
-export interface IProps {
-  status: FetchStatus;
-  postList: Post[];
-  isMoreRead: boolean;
-  errorMsg?: string;
-}
+const InfiniteListRead = () => {
+  const router = useRouter();
+  const postListReadPageFilter = useMemo(() => new PostListReadPageFilter(router.query), [router.query]);
+  const { query } = postListReadPageFilter;
 
-const InfiniteListRead = ({ status, postList, isMoreRead, errorMsg }: IProps) => {
-  const { filter, changeFilter } = useSearchFilter<ListReadPostUrlQuery>('LIST_READ_POST');
   const { data: myData } = useReadMyUser();
+  const {
+    status,
+    data: postListData,
+    error: PostListError,
+    curPage,
+    isMoreRead,
+    fetch: fetchListPost,
+  } = useListReadPost();
 
   const handleNextPage = useCallback(() => {
-    if (filter?.page && isMoreRead) {
-      changeFilter({
-        page: filter.page + 1,
-      });
+    if (isMoreRead) {
+      const { pageSize, hashtag, mode } = query;
+      fetchListPost({ page: curPage + 1, pageSize, hashtag }, mode);
     }
-  }, [changeFilter, filter?.page, isMoreRead]);
+  }, [curPage, fetchListPost, isMoreRead, query]);
 
   useEndReachScroll({ callback: handleNextPage });
 
   return (
     <StyledViewWrapper>
       <Space className="wrapper" direction="vertical" size={10}>
-        {myData && !filter?.hashtag && (
+        {myData && !query.hashtag && (
           <>
             <PostForm />
             <StyledFormBlock />
           </>
         )}
-        {status !== 'FAIL' && postList.map((data) => <PostCard key={data.id} data={data} />)}
+        {status !== 'FAIL' && postListData.map((post) => <PostCard key={post.id} data={post} />)}
         {status === 'LOADING' && (
           <StyledCenter>
             <Spin />
@@ -51,7 +53,7 @@ const InfiniteListRead = ({ status, postList, isMoreRead, errorMsg }: IProps) =>
         )}
         {status === 'FAIL' && (
           <StyledCenter>
-            <Empty description={errorMsg} />
+            <Empty description={PostListError?.resMsg} />
           </StyledCenter>
         )}
       </Space>

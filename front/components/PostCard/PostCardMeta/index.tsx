@@ -5,7 +5,8 @@ import Avatar from 'antd/lib/avatar/avatar';
 import dayjs from 'dayjs';
 import Link from 'next/link';
 
-import { GET_USER_URL, PASS_HREF } from '@utils/urls';
+import { PASS_HREF } from '@utils/urls';
+import { UserReadPageFilter } from '@views/User/Read/utils';
 
 import { StyledCardMeta, StyledTitle } from './styles';
 
@@ -21,7 +22,7 @@ const PostCardMeta = ({ userId, nickname, createdAt, actions, description }: IPr
   return (
     <StyledCardMeta
       avatar={
-        <Link href={GET_USER_URL(userId)} passHref>
+        <Link href={new UserReadPageFilter({ id: userId }, { userId }).url} passHref>
           <a href={PASS_HREF}>
             <Avatar>{nickname[0]}</Avatar>
           </a>

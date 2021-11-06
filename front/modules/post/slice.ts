@@ -1,35 +1,41 @@
-import { createAction, createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit';
+import { createEntityAdapter, createSlice, EntityState, isAnyOf } from '@reduxjs/toolkit';
 
-import { createRequestAction } from '@modules/helper';
+import { createFetchAction } from '@modules/helper';
 
 import { Post } from './@types';
 import {
-  requestCreateComment,
-  requestCreatePost,
-  requestCreateRetweet,
-  requestLikePost,
-  requestListReadPost,
-  requestUpdatePost,
-  requestReadPost,
-  requestRemovePost,
-  requestUnlikePost,
+  CreateRetweetUrlQuery,
+  CreateRetweetRes,
+  CreatePostBodyQuery,
+  CreatePostRes,
+  ListReadPostUrlQuery,
+  ListReadPostRes,
+  ReadPostUrlQuery,
+  ReadPostRes,
+  UpdatePostReq,
+  RemovePostUrlQuery,
+  UpdatePostRes,
+  RemovePostRes,
+  LikePostUrlQuery,
+  LikePostRes,
+  UnLikePostUrlQuery,
+  UnlikePostRes,
+  CreateCommentReq,
+  CreateCommentRes,
 } from './api';
 
 export const POST = 'POST';
 
 // Action - API
-const createRetweet = createRequestAction(`${POST}/createRetweet`, requestCreateRetweet);
-const createPost = createRequestAction(`${POST}/createPost`, requestCreatePost);
-const listReadPost = createRequestAction(`${POST}listReadPost`, requestListReadPost);
-const readPost = createRequestAction(`${POST}/readPost`, requestReadPost);
-const updatePost = createRequestAction(`${POST}/updatePost`, requestUpdatePost);
-const removePost = createRequestAction(`${POST}/removePost`, requestRemovePost);
-const likePost = createRequestAction(`${POST}/likePost`, requestLikePost);
-const unlikePost = createRequestAction(`${POST}/unlikePost`, requestUnlikePost);
-const createComment = createRequestAction(`${POST}/createComment`, requestCreateComment);
-
-// Action
-const listDataReset = createAction(`${POST}/listDataReset`);
+const fetchCreateRetweet = createFetchAction<CreateRetweetUrlQuery, CreateRetweetRes>(`${POST}/fetchCreateRetweet`);
+const fetchCreatePost = createFetchAction<CreatePostBodyQuery, CreatePostRes>(`${POST}/fetchCreatePost`);
+const fetchListReadPost = createFetchAction<ListReadPostUrlQuery, ListReadPostRes>(`${POST}fetchListReadPost`);
+const fetchReadPost = createFetchAction<ReadPostUrlQuery, ReadPostRes>(`${POST}/fetchReadPost`);
+const fetchUpdatePost = createFetchAction<UpdatePostReq, UpdatePostRes>(`${POST}/fetchUpdatePost`);
+const fetchRemovePost = createFetchAction<RemovePostUrlQuery, RemovePostRes>(`${POST}/fetchRemovePost`);
+const fetchLikePost = createFetchAction<LikePostUrlQuery, LikePostRes>(`${POST}/fetchLikePost`);
+const fetchUnlikePost = createFetchAction<UnLikePostUrlQuery, UnlikePostRes>(`${POST}/fetchUnlikePost`);
+const fetchCreateComment = createFetchAction<CreateCommentReq, CreateCommentRes>(`${POST}/fetchCreateComment`);
 
 // Entity
 const postListDataAdapter = createEntityAdapter<Post>({
@@ -37,10 +43,20 @@ const postListDataAdapter = createEntityAdapter<Post>({
 });
 
 // Type
-export type PostState = EntityState<Post>;
+export interface PostState extends EntityState<Post> {
+  curPage: number;
+  rowsPerPage: number;
+  isMoreRead: boolean;
+  totalCount: number;
+}
 
 // Reducer
-const initialState: PostState = postListDataAdapter.getInitialState();
+const initialState: PostState = postListDataAdapter.getInitialState({
+  curPage: 0,
+  rowsPerPage: 0,
+  isMoreRead: false,
+  totalCount: 0,
+});
 
 const slice = createSlice({
   name: POST,
@@ -48,19 +64,13 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (builder) =>
     builder
-      .addCase(listDataReset, (state) => {
-        postListDataAdapter.removeAll(state);
-      })
-      .addCase(createRetweet.success, (state, { payload: { resData } }) => {
-        const list = postListDataAdapter.getSelectors().selectAll(state);
-        postListDataAdapter.setAll(state, [resData].concat(list));
-      })
-      .addCase(createPost.success, (state, { payload: { resData } }) => {
-        const list = postListDataAdapter.getSelectors().selectAll(state);
-        postListDataAdapter.setAll(state, [resData].concat(list));
-      })
-      .addCase(listReadPost.success, (state, { payload: { resData }, meta }) => {
-        const { list } = resData;
+      .addCase(fetchListReadPost.success, (state, { payload: { resData }, meta }) => {
+        const { list, curPage, rowsPerPage, totalCount, nextPage } = resData;
+        state.curPage = curPage;
+        state.rowsPerPage = rowsPerPage;
+        state.totalCount = totalCount;
+        state.isMoreRead = !!nextPage;
+
         if (meta?.isLoadMore) {
           postListDataAdapter.removeMany(
             state,
@@ -71,53 +81,60 @@ const slice = createSlice({
           postListDataAdapter.setAll(state, list);
         }
       })
-      .addCase(readPost.success, (state, { payload: { resData } }) => {
+      .addCase(fetchReadPost.success, (state, { payload: { resData } }) => {
         const { item } = resData;
         postListDataAdapter.setAll(state, [item]);
       })
-      .addCase(updatePost.success, (state, { payload: { resData } }) => {
+      .addCase(fetchUpdatePost.success, (state, { payload: { resData } }) => {
         postListDataAdapter.updateOne(state, {
           id: resData.id,
           changes: resData,
         });
       })
-      .addCase(removePost.success, (state, { payload: { resData } }) => {
+      .addCase(fetchRemovePost.success, (state, { payload: { resData } }) => {
         postListDataAdapter.removeOne(state, resData.PostId);
       })
-      .addCase(likePost.success, (state, { payload: { resData } }) => {
+      .addCase(fetchLikePost.success, (state, { payload: { resData } }) => {
         postListDataAdapter.updateOne(state, {
           id: resData.PostId,
           changes: { Likers: state.entities[resData.PostId]?.Likers.concat({ id: resData.UserId }) },
         });
       })
-      .addCase(unlikePost.success, (state, { payload: { resData } }) => {
+      .addCase(fetchUnlikePost.success, (state, { payload: { resData } }) => {
         postListDataAdapter.updateOne(state, {
           id: resData.PostId,
           changes: { Likers: state.entities[resData.PostId]?.Likers.filter((liker) => liker.id !== resData.UserId) },
         });
       })
-      .addCase(createComment.success, (state, { payload: { resData } }) => {
+      .addCase(fetchCreateComment.success, (state, { payload: { resData } }) => {
         postListDataAdapter.updateOne(state, {
           id: resData.PostId,
           changes: { Comments: state.entities[resData.PostId]?.Comments.concat(resData) },
         });
+      })
+      .addMatcher(isAnyOf(fetchCreatePost.success, fetchCreateRetweet.success), (state, { payload: { resData } }) => {
+        const list = postListDataAdapter.getSelectors().selectAll(state);
+        postListDataAdapter.setAll(state, [resData].concat(list));
       }),
 });
 
 const { selectAll: listData, selectById } = postListDataAdapter.getSelectors((state: RootState) => state.POST);
 
 export const postReducer = slice.reducer;
-export const postSelector = { listData, selectById };
+export const postSelector = {
+  state: (state: RootState) => state.POST,
+  listData,
+  data: (state: RootState) => selectById(state, state.POST.ids[0]),
+};
 export const postAction = {
   ...slice.actions,
-  createRetweet,
-  createPost,
-  listReadPost,
-  readPost,
-  updatePost,
-  removePost,
-  likePost,
-  unlikePost,
-  createComment,
-  listDataReset,
+  fetchCreateRetweet,
+  fetchCreatePost,
+  fetchListReadPost,
+  fetchReadPost,
+  fetchUpdatePost,
+  fetchRemovePost,
+  fetchLikePost,
+  fetchUnlikePost,
+  fetchCreateComment,
 };
