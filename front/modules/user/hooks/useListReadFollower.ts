@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 
 import { useDispatch } from 'react-redux';
 
@@ -6,38 +6,24 @@ import { useAppSelector } from '@hooks/useAppRedux';
 import { fetchStatusSelector } from '@modules/fetchStatus';
 import { CustomAxiosError } from '@typings/type';
 
-import { ListReadFollowRes } from '../api';
+import { ListReadFollowerUrlQuery, ListReadFollowerRes } from '../api';
 import { userAction, userSelector } from '../slice';
 
-export default function useListReadFollow() {
+export default function useListReadFollower() {
   const dispatch = useDispatch();
 
   const { status, error } = useAppSelector(
-    fetchStatusSelector.byType<ListReadFollowRes, CustomAxiosError>(userAction.fetchListReadFollow.TYPE),
+    fetchStatusSelector.byType<ListReadFollowerRes, CustomAxiosError>(userAction.fetchListReadFollow.TYPE),
   );
-  const data = useAppSelector(userSelector.followListData);
-  const {
-    followerFilter: filter,
-    isMoreFollowerRead: isMoreRead,
-    followerTotalCount: totalCount,
-  } = useAppSelector(userSelector.state);
+  const data = useAppSelector(userSelector.followerListData);
+  const { curPage, rowsPerPage, isMoreRead, totalCount } = useAppSelector(userSelector.follower);
 
-  const isInitFetch = useRef(!!data.length);
-
-  const changeFilter = useCallback(
-    (filter) => {
-      dispatch(userAction.changeFollowerFilter({ filter }));
+  const fetch = useCallback(
+    (query: ListReadFollowerUrlQuery) => {
+      dispatch(userAction.fetchListReadFollow.request(query));
     },
     [dispatch],
   );
 
-  const fetch = useCallback(() => {
-    if (!isInitFetch.current && filter) {
-      dispatch(userAction.fetchListReadFollow.request(filter));
-    } else {
-      isInitFetch.current = false;
-    }
-  }, [dispatch, filter]);
-
-  return { status, data, error, filter, isMoreRead, totalCount, fetch, changeFilter };
+  return { status, data, error, curPage, rowsPerPage, isMoreRead, totalCount, fetch };
 }

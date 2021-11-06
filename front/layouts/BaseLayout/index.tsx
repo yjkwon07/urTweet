@@ -43,8 +43,8 @@ const BaseLayout: FC<IProps> = ({ filterGroup, children }) => {
                     </a>
                   </Link>
                 </Menu.Item>
-                <Menu.Item key={new ProfilePageFilter().url()} className="menu-item">
-                  <Link href={new ProfilePageFilter().url()} passHref>
+                <Menu.Item key={new ProfilePageFilter().url} className="menu-item">
+                  <Link href={new ProfilePageFilter().url} passHref>
                     <a href={PASS_HREF}>
                       <UserOutlined /> 프로필
                     </a>

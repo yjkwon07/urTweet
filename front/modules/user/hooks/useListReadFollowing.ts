@@ -1,10 +1,11 @@
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 
 import { useDispatch } from 'react-redux';
 
 import { useAppSelector } from '@hooks/useAppRedux';
 import { fetchStatusSelector } from '@modules/fetchStatus';
 
+import { ListReadFollowingUrlQuery } from '..';
 import { userAction, userSelector } from '../slice';
 
 export default function useListReadFollowing() {
@@ -12,28 +13,14 @@ export default function useListReadFollowing() {
 
   const { status, error } = useAppSelector(fetchStatusSelector.byFetchAction(userAction.fetchListReadFollowing));
   const data = useAppSelector(userSelector.followingListData);
-  const {
-    followingFilter: filter,
-    isMoreFollowingRead: isMoreRead,
-    followingTotalCount: totalCount,
-  } = useAppSelector(userSelector.state);
+  const { curPage, rowsPerPage, isMoreRead, totalCount } = useAppSelector(userSelector.following);
 
-  const isInitFetch = useRef(!!data.length);
-
-  const changeFilter = useCallback(
-    (filter) => {
-      dispatch(userAction.changeFollowingFilter({ filter }));
+  const fetch = useCallback(
+    (query: ListReadFollowingUrlQuery) => {
+      dispatch(userAction.fetchListReadFollowing.request(query));
     },
     [dispatch],
   );
 
-  const fetch = useCallback(() => {
-    if (!isInitFetch.current && filter) {
-      dispatch(userAction.fetchListReadFollowing.request(filter));
-    } else {
-      isInitFetch.current = false;
-    }
-  }, [dispatch, filter]);
-
-  return { status, data, error, filter, isMoreRead, totalCount, fetch, changeFilter };
+  return { status, data, error, curPage, rowsPerPage, isMoreRead, totalCount, fetch };
 }

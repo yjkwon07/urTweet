@@ -24,7 +24,7 @@ const FollowUserCard = ({ data, loading, onCancel }: IProps) => {
     <StyledCard>
       <Card.Meta
         avatar={
-          <Link href={new UserReadPageFilter({ id: data.id }, { userId: data.id }).url()} passHref>
+          <Link href={new UserReadPageFilter({ id: data.id }, { userId: data.id }).url} passHref>
             <a href={PASS_HREF}>
               <Avatar>{data.nickname[0]}</Avatar>
             </a>

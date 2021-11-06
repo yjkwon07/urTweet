@@ -153,21 +153,21 @@ export const requestListReadFollowing = (url: ListReadFollowingUrlQuery) => {
  * * body: empty
  * * res: ListReadFollowRes
  */
-export type ListReadFollowUrlQuery = {
+export type ListReadFollowerUrlQuery = {
   page: number;
   pageSize: number;
 };
-export interface ListReadFollowResData extends ListReadCommonRes {
+export interface ListReadFollowerResData extends ListReadCommonRes {
   list: User[];
 }
-export interface ListReadFollowRes extends CommonRes {
-  resData: ListReadFollowResData;
+export interface ListReadFollowerRes extends CommonRes {
+  resData: ListReadFollowerResData;
 }
-export const GET_LIST_READ_FOLLOW_API = (url: ListReadFollowUrlQuery) => {
+export const GET_LIST_READ_FOLLOWER_API = (url: ListReadFollowerUrlQuery) => {
   return `/user/followers?page=${url.page}&pageSize=${url.pageSize}`;
 };
-export const requestListReadFollow = (url: ListReadFollowUrlQuery) => {
-  return axios.get<ListReadFollowRes>(GET_LIST_READ_FOLLOW_API(url));
+export const requestListReadFollower = (url: ListReadFollowerUrlQuery) => {
+  return axios.get<ListReadFollowerRes>(GET_LIST_READ_FOLLOWER_API(url));
 };
 
 /**

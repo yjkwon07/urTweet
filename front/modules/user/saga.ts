@@ -5,7 +5,7 @@ import { createFetchSaga } from '@modules/helper';
 
 import {
   requestFollow,
-  requestListReadFollow,
+  requestListReadFollower,
   requestListReadFollowing,
   requestLogin,
   requestLogout,
@@ -64,7 +64,7 @@ function* watchModifyNickname() {
 function* watchListReadFollow() {
   yield takeLatest(
     userAction.fetchListReadFollow.request,
-    createFetchSaga(userAction.fetchListReadFollow, requestListReadFollow),
+    createFetchSaga(userAction.fetchListReadFollow, requestListReadFollower),
   );
 }
 

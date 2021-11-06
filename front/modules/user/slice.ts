@@ -51,8 +51,6 @@ const myInfoReset = createAction(`${USER}/myInfoReset`);
 const updateMyInfo = createAction<MyUser>(`${USER}/updateMyInfo`);
 const addPostToMe = createAction<number>(`${USER}/addPostToMe`);
 const removePostToMe = createAction<number>(`${USER}/removePostToMe`);
-const changeFollowerFilter = createAction<{ filter: ListReadFollowUrlQuery }>(`${USER}/changeFollowerFilter`);
-const changeFollowingFilter = createAction<{ filter: ListReadFollowingUrlQuery }>(`${USER}/changeFollowingFilter`);
 
 // Entity
 const followerListDataAdapter = createEntityAdapter<User>({
@@ -63,34 +61,43 @@ const followingListDataAdapter = createEntityAdapter<User>({
 });
 
 // Type
-export type PostState = EntityState<User>;
+export interface FollowerState extends EntityState<User> {
+  curPage: number;
+  rowsPerPage: number;
+  isMoreRead: boolean;
+  totalCount: number;
+}
+export interface FollowingState extends EntityState<User> {
+  curPage: number;
+  rowsPerPage: number;
+  isMoreRead: boolean;
+  totalCount: number;
+}
 
 // Type
 export interface UserState {
-  followerFilter: ListReadFollowUrlQuery | null;
-  isMoreFollowerRead: boolean;
-  followerTotalCount: number;
-  followingFilter: ListReadFollowingUrlQuery | null;
-  isMoreFollowingRead: boolean;
-  followingTotalCount: number;
   myInfo: MyUser | null;
   user: User | null;
-  followerListData: EntityState<User>;
-  followingListData: EntityState<User>;
+  follower: FollowerState;
+  following: FollowingState;
 }
 
 // Reducer
 const initialState: UserState = {
-  followerFilter: { page: 1, pageSize: 10 },
-  isMoreFollowerRead: false,
-  followerTotalCount: 0,
-  followingFilter: { page: 1, pageSize: 10 },
-  isMoreFollowingRead: false,
-  followingTotalCount: 0,
   myInfo: null,
   user: null,
-  followerListData: followerListDataAdapter.getInitialState(),
-  followingListData: followingListDataAdapter.getInitialState(),
+  follower: followerListDataAdapter.getInitialState({
+    curPage: 0,
+    rowsPerPage: 0,
+    isMoreRead: false,
+    totalCount: 0,
+  }),
+  following: followingListDataAdapter.getInitialState({
+    curPage: 0,
+    rowsPerPage: 0,
+    isMoreRead: false,
+    totalCount: 0,
+  }),
 };
 
 const slice = createSlice({
@@ -99,12 +106,6 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (builder) =>
     builder
-      .addCase(changeFollowerFilter, (state, { payload: { filter } }) => {
-        state.followerFilter = { ...state.followerFilter, ...filter };
-      })
-      .addCase(changeFollowingFilter, (state, { payload: { filter } }) => {
-        state.followingFilter = { ...state.followingFilter, ...filter };
-      })
       .addCase(myInfoReset, (state) => {
         state.myInfo = initialState.myInfo;
       })
@@ -127,16 +128,20 @@ const slice = createSlice({
         }
       })
       .addCase(fetchListReadFollow.success, (state, { payload: { resData } }) => {
-        const { list, totalCount, nextPage } = resData;
-        state.followerTotalCount = totalCount;
-        state.isMoreFollowerRead = !!nextPage;
-        followerListDataAdapter.addMany(state.followerListData, list);
+        const { list, curPage, rowsPerPage, totalCount, nextPage } = resData;
+        state.follower.curPage = curPage;
+        state.follower.rowsPerPage = rowsPerPage;
+        state.follower.totalCount = totalCount;
+        state.follower.isMoreRead = !!nextPage;
+        followerListDataAdapter.addMany(state.follower, list);
       })
       .addCase(fetchListReadFollowing.success, (state, { payload: { resData } }) => {
-        const { list, totalCount, nextPage } = resData;
-        state.followingTotalCount = totalCount;
-        state.isMoreFollowingRead = !!nextPage;
-        followingListDataAdapter.addMany(state.followingListData, list);
+        const { list, curPage, rowsPerPage, totalCount, nextPage } = resData;
+        state.following.curPage = curPage;
+        state.following.rowsPerPage = rowsPerPage;
+        state.following.totalCount = totalCount;
+        state.following.isMoreRead = !!nextPage;
+        followingListDataAdapter.addMany(state.following, list);
       })
       .addCase(fetchFollow.success, (state, { payload: { resData } }) => {
         const { userId } = resData;
@@ -158,11 +163,9 @@ const slice = createSlice({
       }),
 });
 
-const { selectAll: followListData } = followerListDataAdapter.getSelectors(
-  (state: RootState) => state.USER.followerListData,
-);
+const { selectAll: followerListData } = followerListDataAdapter.getSelectors((state: RootState) => state.USER.follower);
 const { selectAll: followingListData } = followingListDataAdapter.getSelectors(
-  (state: RootState) => state.USER.followingListData,
+  (state: RootState) => state.USER.following,
 );
 
 export const userReducer = slice.reducer;
@@ -170,13 +173,13 @@ export const userSelector = {
   state: (state: RootState) => state.USER,
   myData: (state: RootState) => state.USER.myInfo,
   userData: (state: RootState) => state.USER.user,
-  followListData,
+  followerListData,
+  follower: (state: RootState) => state.USER.follower,
   followingListData,
+  following: (state: RootState) => state.USER.following,
 };
 export const userAction = {
   ...slice.actions,
-  changeFollowerFilter,
-  changeFollowingFilter,
   myInfoReset,
   updateMyInfo,
   addPostToMe,
