@@ -9,19 +9,19 @@ import UserProfile from '../UserProfile';
 import UserSkeleton from '../UserSkeleton';
 
 const isShowUserSkeleton = (status: FetchStatus) => status === 'LOADING';
-const isShowUserProfile = (status: FetchStatus, isLogin: boolean) => status !== 'LOADING' && isLogin;
-const isShowLoginForm = (status: FetchStatus, isLogin: boolean, isPrevLogin: boolean) =>
-  status !== 'LOADING' && !isLogin && !isPrevLogin;
+const isShowUserProfile = (status: FetchStatus) => status === 'SUCCESS';
+const isShowLoginForm = (status: FetchStatus, isPrevLogin: boolean) =>
+  (status === 'INIT' && !isPrevLogin) || status === 'FAIL';
 
 const UserStatusView = () => {
-  const { status: myDataStatus, data: myData } = useReadMyUser();
+  const { status: myDataStatus } = useReadMyUser();
   const userId = getUserId();
 
   return (
     <>
       {isShowUserSkeleton(myDataStatus) && <UserSkeleton />}
-      {isShowUserProfile(myDataStatus, !!myData) && <UserProfile />}
-      {isShowLoginForm(myDataStatus, !!myData, !!userId) && <LoginForm />}
+      {isShowUserProfile(myDataStatus) && <UserProfile />}
+      {isShowLoginForm(myDataStatus, !!userId) && <LoginForm />}
     </>
   );
 };
