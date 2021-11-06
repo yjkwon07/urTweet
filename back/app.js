@@ -59,6 +59,7 @@ app.use(
     resave: false, // 세션에 저장할 내역이 없더라도 세션을 저장할지 대한 설정 (보통 방문자를 추적할 때 사용된다.)
     secret: process.env.COOKIE_SECRET,
     cookie: {
+      sameSite: 'none',
       httpOnly: true,
       secure: env === 'production',
       domain: env === 'production' && config.domain,
