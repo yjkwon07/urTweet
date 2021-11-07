@@ -82,7 +82,9 @@ export interface ListReadPostRes extends CommonRes {
   resData: ListReadPostResData;
 }
 export function GET_LIST_READ_POST_API(url: ListReadPostUrlQuery) {
-  return `/posts?page=${url.page}&pageSize=${url.pageSize}&hashtag=${url.hashtag || ''}&userId=${url.userId}`;
+  return `/posts?page=${url.page}&pageSize=${url.pageSize}&hashtag=${
+    url.hashtag ? encodeURIComponent(url.hashtag) : ''
+  }&userId=${url.userId}`;
 }
 export const requestListReadPost = (url: ListReadPostUrlQuery) => {
   return axios.get<ListReadPostRes>(GET_LIST_READ_POST_API(url));

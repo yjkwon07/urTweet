@@ -30,7 +30,7 @@ export default class PageFilter implements Page {
     const page =
       Number(query?.page) && mode !== 'infinite' ? Number(query?.page) : PageFilter.defaultOption.DEFAULT_CUR_PAGE;
     const pageSize = Number(query?.pageSize) || PageFilter.defaultOption.DEFAULT_PER_PAGE;
-    const hashtag = (query?.hashtag as string) || '';
+    const hashtag = query?.hashtag ? decodeURIComponent(query.hashtag as string) : '';
 
     return {
       mode,
@@ -45,13 +45,13 @@ export default class PageFilter implements Page {
     this.query = PageFilter.parseQuery(query);
   }
 
-  get url() {
-    return `${this.pathname}${this.queryString}`;
+  get queryString() {
+    const { page, pageSize, hashtag, mode } = this.query;
+    return `?${qs.stringify({ page, pageSize, hashtag: encodeURIComponent(hashtag), mode })}`;
   }
 
-  private queryString() {
-    const { page, pageSize, hashtag, mode } = this.query;
-    return `?${qs.stringify({ page, pageSize, hashtag, mode })}`;
+  get url() {
+    return `${this.pathname}${this.queryString}`;
   }
 
   private replaceQuery({ page, pageSize, hashtag, mode }: Partial<Query>) {
