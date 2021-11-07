@@ -7,11 +7,11 @@ export const StyledLayout = styled(Layout)`
 
   .header {
     height: 45px;
-    background-color: rgb(112 119 158);
+    background: #fff;
+    box-shadow: 0 0 15px 0 rgb(0 0 0 / 10%);
     position: sticky;
     top: 0;
     z-index: 1;
-    color: rgb(255 255 255 / 85%);
     display: flex;
     align-items: center;
     padding-left: 15px;
@@ -20,7 +20,7 @@ export const StyledLayout = styled(Layout)`
         font-size: 25px;
       }
       .title {
-        color: rgb(255 255 255 / 85%) !important;
+        color: #000 !important;
         font-weight: 500;
       }
     }

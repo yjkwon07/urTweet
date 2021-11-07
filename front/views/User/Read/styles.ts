@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 
 export const StyledViewWrapper = styled.div`
+  margin-top: 4px;
   & > .wrapper {
     width: 100%;
   }

@@ -18,14 +18,7 @@ const InfiniteListRead = () => {
   const { query } = postListReadPageFilter;
 
   const { data: myData } = useReadMyUser();
-  const {
-    status,
-    data: postListData,
-    error: PostListError,
-    curPage,
-    isMoreRead,
-    fetch: fetchListPost,
-  } = useListReadPost();
+  const { status, data: postListData, curPage, isMoreRead, fetch: fetchListPost } = useListReadPost();
 
   const handleNextPage = useCallback(() => {
     if (isMoreRead) {
@@ -45,15 +38,17 @@ const InfiniteListRead = () => {
             <StyledFormBlock />
           </>
         )}
-        {status !== 'FAIL' && postListData.map((post) => <PostCard key={post.id} data={post} />)}
+        {postListData.map((post) => (
+          <PostCard key={post.id} data={post} />
+        ))}
+        {status === 'SUCCESS' && !postListData.length && (
+          <StyledCenter>
+            <Empty description="조회하신 결과가 없습니다." />
+          </StyledCenter>
+        )}
         {status === 'LOADING' && (
           <StyledCenter>
             <Spin />
-          </StyledCenter>
-        )}
-        {status === 'FAIL' && (
-          <StyledCenter>
-            <Empty description={PostListError?.resMsg} />
           </StyledCenter>
         )}
       </Space>

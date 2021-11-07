@@ -1,5 +1,3 @@
-import React from 'react';
-
 import Head from 'next/head';
 import { END } from 'redux-saga';
 
@@ -7,6 +5,7 @@ import SEO, { IProps as ISEOProps } from '@components/SEO';
 import { postAction } from '@modules/post';
 import wrapper from '@modules/store/configStore';
 import { userAction } from '@modules/user';
+import { Custom404PageFilter } from '@views/404/utils';
 import UserRead from '@views/User/Read';
 import { UserReadPageFilter } from '@views/User/Read/utils';
 
@@ -29,10 +28,10 @@ const UserReadPages = ({ title, seo }: IProps) => {
 
 // SSR
 export const getServerSideProps = wrapper.getServerSideProps(async ({ store, params, query }) => {
-  const userId = UserReadPageFilter.parseParam(params).id;
-  const filter = UserReadPageFilter.parseQuery(query);
+  try {
+    const userId = UserReadPageFilter.parseParam(params).id;
+    const filter = UserReadPageFilter.parseQuery(query);
 
-  if (userId) {
     const {
       resData: { item: userData },
     } = await store.dispatch(userAction.fetchReadUser.asyncThunk({ userId }));
@@ -51,8 +50,14 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, par
         },
       },
     };
+  } catch (error) {
+    return {
+      redirect: {
+        destination: new Custom404PageFilter().pathname,
+        permanent: false,
+      },
+    };
   }
-  return {};
 });
 
 export default UserReadPages;

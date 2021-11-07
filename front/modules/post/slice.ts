@@ -71,14 +71,18 @@ const slice = createSlice({
         state.totalCount = totalCount;
         state.isMoreRead = !!nextPage;
 
-        if (meta?.isLoadMore) {
-          postListDataAdapter.removeMany(
-            state,
-            list.map((data) => data.id),
-          );
-          postListDataAdapter.addMany(state, list);
+        if (list.length) {
+          if (meta?.isLoadMore) {
+            postListDataAdapter.removeMany(
+              state,
+              list.map((data) => data.id),
+            );
+            postListDataAdapter.addMany(state, list);
+          } else {
+            postListDataAdapter.setAll(state, list);
+          }
         } else {
-          postListDataAdapter.setAll(state, list);
+          postListDataAdapter.removeAll(state);
         }
       })
       .addCase(fetchReadPost.success, (state, { payload: { resData } }) => {
