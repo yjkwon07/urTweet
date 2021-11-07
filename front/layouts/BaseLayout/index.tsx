@@ -55,7 +55,7 @@ const BaseLayout: FC<IProps> = ({ filterGroup, children }) => {
           </Col>
           {filterGroup ? (
             <>
-              <Col xs={24} sm={24} md={9} lg={9}>
+              <Col className="view" xs={24} sm={24} md={9} lg={9}>
                 {children}
               </Col>
               <Col className="filter" xs={0} sm={0} md={7} lg={7}>
