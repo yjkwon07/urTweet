@@ -4,6 +4,7 @@ import { END } from 'redux-saga';
 import SEO, { IProps as ISEOProps } from '@components/SEO';
 import { postAction } from '@modules/post';
 import wrapper from '@modules/store/configStore';
+import { Custom404PageFilter } from '@views/404/utils';
 import PostReadView from '@views/Post/Read';
 import { PostReadPageFilter } from '@views/Post/Read/utils';
 
@@ -26,9 +27,9 @@ const PostReadPage = ({ title, seo }: IProps) => {
 
 // SSR
 export const getServerSideProps = wrapper.getServerSideProps(async ({ store, params }) => {
-  const postId = PostReadPageFilter.parseParam(params).id;
+  try {
+    const postId = PostReadPageFilter.parseParam(params).id;
 
-  if (postId) {
     const {
       resData: { item: postData },
     } = await store.dispatch(postAction.fetchReadPost.asyncThunk({ postId }));
@@ -46,8 +47,14 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, par
         },
       },
     };
+  } catch (error) {
+    return {
+      redirect: {
+        destination: new Custom404PageFilter().pathname,
+        permanent: false,
+      },
+    };
   }
-  return {};
 });
 
 export default PostReadPage;

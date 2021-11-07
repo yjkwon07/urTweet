@@ -33,7 +33,6 @@ const App = ({ Component, pageProps }: AppProps) => {
   return (
     <>
       <Head>
-        <Global styles={globalStyles} />
         <meta charSet="utf-8" />
         <meta
           name="viewport"
@@ -43,6 +42,7 @@ const App = ({ Component, pageProps }: AppProps) => {
         <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
         <title>urTweet</title>
       </Head>
+      <Global styles={globalStyles} />
       <AuthCheck>
         <Component {...pageProps} />
       </AuthCheck>
