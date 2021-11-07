@@ -60,8 +60,11 @@ export const StyledLayout = styled(Layout)`
     }
   }
 
+  .view {
+    padding-top: 4px;
+  }
+
   .filter {
-    padding-right: 180px !important;
     & {
       .content {
         position: sticky;

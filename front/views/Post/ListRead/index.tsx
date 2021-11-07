@@ -10,7 +10,7 @@ import { useListReadPost } from '@modules/post';
 import AutoCompleteHashTag from './AutoCompleteHashTag';
 import InfiniteMode from './InfiniteListRead';
 import PaginationMode from './PaginationRead';
-import { StyledFilter, StyledViewWrapper } from './styles';
+import { StyledFilter } from './styles';
 import { PostListReadPageFilter } from './utils';
 
 const { Title } = Typography;
@@ -90,11 +90,9 @@ const PostListReadView = () => {
         </StyledFilter>
       }
     >
-      <StyledViewWrapper>
-        {query.hashtag && <Title>#{query.hashtag}</Title>}
-        {query.mode === 'infinite' && <InfiniteMode />}
-        {query.mode === 'page' && <PaginationMode />}
-      </StyledViewWrapper>
+      {query.hashtag && <Title>#{query.hashtag}</Title>}
+      {query.mode === 'infinite' && <InfiniteMode />}
+      {query.mode === 'page' && <PaginationMode />}
     </BaseLayout>
   );
 };
