@@ -1,5 +1,3 @@
-import React from 'react';
-
 import Head from 'next/head';
 
 import Profile from '@views/Profile';

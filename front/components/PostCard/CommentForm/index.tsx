@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Form, Input, Button, message } from 'antd';

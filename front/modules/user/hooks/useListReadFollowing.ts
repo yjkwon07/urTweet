@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { useAppSelector } from '@hooks/useAppRedux';
 import { fetchStatusSelector } from '@modules/fetchStatus';
 
-import { ListReadFollowingUrlQuery } from '..';
+import { ListReadFollowingUrlQuery } from '../api';
 import { userAction, userSelector } from '../slice';
 
 export default function useListReadFollowing() {

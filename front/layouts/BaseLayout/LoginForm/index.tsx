@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
 import { LockOutlined, MailOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
