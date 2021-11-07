@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { Tooltip } from 'antd';
 import Avatar from 'antd/lib/avatar/avatar';
 import dayjs from 'dayjs';

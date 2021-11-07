@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { FetchStatus } from '@modules/fetchStatus';
 import { useReadMyUser } from '@modules/user';
 import { getUserId } from '@utils/auth';

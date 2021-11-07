@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { Empty, Space, Spin } from 'antd';
 import { useRouter } from 'next/router';

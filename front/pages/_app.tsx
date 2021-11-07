@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import { FC, useEffect } from 'react';
 
 import { Global } from '@emotion/react';
 import dayjs from 'dayjs';

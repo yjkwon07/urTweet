@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { UserDeleteOutlined } from '@ant-design/icons';
 import { Avatar, Card } from 'antd';

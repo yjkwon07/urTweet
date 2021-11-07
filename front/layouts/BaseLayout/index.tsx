@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 
 import { ArrowUpOutlined, ExperimentTwoTone, HomeOutlined, UserOutlined } from '@ant-design/icons';
 import { Menu, Col, Layout, Row, BackTop } from 'antd';

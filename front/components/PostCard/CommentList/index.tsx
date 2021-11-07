@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { Avatar, Comment, List, Tooltip } from 'antd';
 import dayjs from 'dayjs';
 import Link from 'next/link';
