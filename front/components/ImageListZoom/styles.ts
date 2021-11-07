@@ -1,5 +1,4 @@
 import { CloseOutlined } from '@ant-design/icons';
-import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
 export const Overlay = styled.div`
@@ -13,7 +12,8 @@ export const Overlay = styled.div`
 
 export const Header = styled.header`
   height: 44px;
-  background: white;
+  background: #fff;
+  box-shadow: 0 0 15px 0 rgb(0 0 0 / 10%);
   position: relative;
   padding: 0;
   text-align: center;
@@ -63,15 +63,5 @@ export const Indicator = styled.div`
     text-align: center;
     color: white;
     font-size: 15px;
-  }
-`;
-
-export const globalStyles = css`
-  .slick-slide {
-    display: inline-block;
-  }
-
-  .ant-card-cover {
-    transform: none !important;
   }
 `;
