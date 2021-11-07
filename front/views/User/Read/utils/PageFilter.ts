@@ -1,6 +1,6 @@
 import qs, { ParsedUrlQuery } from 'querystring';
 
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
 import Router from 'next/router';
 
 import { Page } from '@typings/type';

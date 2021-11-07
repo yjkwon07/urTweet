@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { SearchOutlined } from '@ant-design/icons';
 import { AutoComplete, Input } from 'antd';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import { useRouter } from 'next/router';
 
 import { useListReadHashtag } from '@modules/hashtag';
