@@ -65,7 +65,6 @@ export const StyledLayout = styled(Layout)`
   }
 
   .filter {
-    padding-right: 180px !important;
     & {
       .content {
         position: sticky;
