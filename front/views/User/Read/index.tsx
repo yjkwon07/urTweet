@@ -16,7 +16,7 @@ import { UserReadPageFilter } from './utils';
 const UserRead = () => {
   const router = useRouter();
   const { data: userData } = useUser();
-  const postListReadPageFilter = useMemo(() => new UserReadPageFilter(router.query), [router.query]);
+  const postListReadPageFilter = useMemo(() => new UserReadPageFilter(router.query, router.query), [router.query]);
   const { query } = postListReadPageFilter;
 
   const { status, data: postListData, curPage, isMoreRead, fetch: fetchListPost } = useListReadPost();
