@@ -1,12 +1,13 @@
 import { useCallback, useEffect } from 'react';
 
 import { MailOutlined, UserOutlined } from '@ant-design/icons';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Button, Form, Input, message } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 
-import { useFetchStatus } from '@modules/fetchStatus';
+import { useAppSelector } from '@hooks/useAppRedux';
+import { fetchStatusSelector } from '@modules/fetchStatus';
 import { UPDATE_MY_USER_SCHEMA, useReadMyUser, userAction } from '@modules/user';
 import { FormUpdateMyUser } from '@modules/user/@types';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
@@ -15,7 +16,7 @@ import { StyledForm } from './styles';
 
 const EditMyUserForm = () => {
   const dispatch = useDispatch();
-  const { status } = useFetchStatus(userAction.updateMyUser.TYPE);
+  const { status } = useAppSelector(fetchStatusSelector.byFetchAction(userAction.fetchUpdateMyUser));
   const { data: myData } = useReadMyUser();
 
   const {
@@ -41,7 +42,7 @@ const EditMyUserForm = () => {
     async (formData: FormUpdateMyUser) => {
       if (!myData?.id) return;
       try {
-        await dispatch(userAction.updateMyUser.asyncThunk(formData));
+        await dispatch(userAction.fetchUpdateMyUser.asyncThunk(formData));
         message.success('수정 되었습니다.');
       } catch (error) {
         if (isCustomAxiosError(error)) {

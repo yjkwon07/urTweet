@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { UserDeleteOutlined } from '@ant-design/icons';
 import { Avatar, Card } from 'antd';
@@ -6,7 +6,8 @@ import Link from 'next/link';
 
 import { StyledCard } from '@components/PostCard/styles';
 import { UserInfo } from '@modules/user/@types';
-import { GET_USER_URL, PASS_HREF } from '@utils/urls';
+import { PASS_HREF } from '@utils/urls';
+import { UserReadPageFilter } from '@views/User/Read/utils';
 
 import { StyledButton, StyledTitle } from './styles';
 
@@ -23,7 +24,7 @@ const FollowUserCard = ({ data, loading, onCancel }: IProps) => {
     <StyledCard>
       <Card.Meta
         avatar={
-          <Link href={GET_USER_URL(data.id.toString())} passHref>
+          <Link href={new UserReadPageFilter({ id: data.id }, { userId: data.id }).url} passHref>
             <a href={PASS_HREF}>
               <Avatar>{data.nickname[0]}</Avatar>
             </a>

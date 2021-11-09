@@ -1,20 +1,27 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
+const withPlugins = require('next-compose-plugins');
+const withImages = require('next-images');
 
-module.exports = withBundleAnalyzer({
+const isProduction = process.env.NODE_ENV === 'production';
+
+const nextConfig = {
+  images: {
+    disableStaticImages: true,
+  },
   compress: true,
   webpack(config, { webpack }) {
-    const prod = process.env.NODE_ENV === 'production';
     const newConfig = {
       ...config,
-      mode: prod ? 'production' : 'development',
+      mode: isProduction ? 'production' : 'development',
       plugins: [...config.plugins, new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /^\.\/ko$/)],
     };
-    if (prod) {
+    if (isProduction) {
       newConfig.devtool = 'hidden-source-map';
     }
     return newConfig;
   },
-});
+};
+
+module.exports = withPlugins([withBundleAnalyzer, withImages], nextConfig);

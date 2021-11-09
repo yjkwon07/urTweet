@@ -8,9 +8,9 @@ import { Comment, Post } from '../@types';
  * * body: empty
  * * res: CreateRetweetRes
  */
-export type CreateRetweetUrlQuery = {
+export interface CreateRetweetUrlQuery {
   postId: number;
-};
+}
 export interface CreateRetweetRes extends CommonRes {
   resData: Post;
 }
@@ -27,10 +27,10 @@ export const requestCreateRetweet = (url: CreateRetweetUrlQuery) => {
  * * body: CreatePostBodyQuery
  * * res: CreatePostRes
  */
-export type CreatePostBodyQuery = {
+export interface CreatePostBodyQuery {
   content: string;
   image?: string[];
-};
+}
 export interface CreatePostRes extends CommonRes {
   resData: Post;
 }
@@ -47,9 +47,9 @@ export const requestCreatePost = (body: CreatePostBodyQuery) => {
  * * body: empty
  * * res: ReadPostRes
  */
-export type ReadPostUrlQuery = {
+export interface ReadPostUrlQuery {
   postId: number;
-};
+}
 export interface ReadPostResData {
   item: Post;
 }
@@ -69,12 +69,12 @@ export const requestReadPost = (url: ReadPostUrlQuery) => {
  * * body: empty
  * * res: ListReadPostRes
  */
-export type ListReadPostUrlQuery = {
+export interface ListReadPostUrlQuery {
   page: number;
   pageSize: number;
   hashtag?: string;
   userId?: number;
-};
+}
 export interface ListReadPostResData extends ListReadCommonRes {
   list: Post[];
 }
@@ -82,7 +82,9 @@ export interface ListReadPostRes extends CommonRes {
   resData: ListReadPostResData;
 }
 export function GET_LIST_READ_POST_API(url: ListReadPostUrlQuery) {
-  return `/posts?page=${url.page}&pageSize=${url.pageSize}&hashtag=${url.hashtag || ''}&userId=${url.userId}`;
+  return `/posts?page=${url.page}&pageSize=${url.pageSize}&hashtag=${
+    url.hashtag ? encodeURIComponent(url.hashtag) : ''
+  }&userId=${url.userId}`;
 }
 export const requestListReadPost = (url: ListReadPostUrlQuery) => {
   return axios.get<ListReadPostRes>(GET_LIST_READ_POST_API(url));
@@ -94,17 +96,17 @@ export const requestListReadPost = (url: ListReadPostUrlQuery) => {
  * * body: UpdatePostBodyQuery
  * * res: UpdatePostRes
  */
-export type UpdatePostUrlQuery = {
+export interface UpdatePostUrlQuery {
   postId: number;
-};
-export type UpdatePostBodyQuery = {
+}
+export interface UpdatePostBodyQuery {
   content: string;
   image?: string[];
-};
-export type UpdatePostReq = {
+}
+export interface UpdatePostReq {
   url: UpdatePostUrlQuery;
   body: UpdatePostBodyQuery;
-};
+}
 export interface UpdatePostRes extends CommonRes {
   resData: Post;
 }
@@ -121,9 +123,9 @@ export const requestUpdatePost = ({ url, body }: UpdatePostReq) => {
  * * body: empty
  * * res: RemovePostRes
  */
-export type RemovePostUrlQuery = {
+export interface RemovePostUrlQuery {
   postId: number;
-};
+}
 export interface RemovePostRes extends CommonRes {
   resData: { PostId: number };
 }
@@ -140,9 +142,9 @@ export const requestRemovePost = (url: RemovePostUrlQuery) => {
  * * body: empty
  * * res: LikePostRes
  */
-export type LikePostUrlQuery = {
+export interface LikePostUrlQuery {
   postId: number;
-};
+}
 export interface LikePostRes extends CommonRes {
   resData: { PostId: number; UserId: number };
 }
@@ -159,9 +161,9 @@ export const requestLikePost = (url: LikePostUrlQuery) => {
  * * body: empty
  * * res: UnlikePostRes
  */
-export type UnLikePostUrlQuery = {
+export interface UnLikePostUrlQuery {
   postId: number;
-};
+}
 export interface UnlikePostRes extends CommonRes {
   resData: { PostId: number; UserId: number };
 }
@@ -178,17 +180,17 @@ export const requestUnlikePost = (url: UnLikePostUrlQuery) => {
  * * body: CreateCommentBodyQuery
  * * res: CreateCommentRes
  */
-export type CreateCommentUrlQuery = {
+export interface CreateCommentUrlQuery {
   postId: number;
-};
-export type CreateCommentBodyQuery = {
+}
+export interface CreateCommentBodyQuery {
   content: string;
   userId: number;
-};
-export type CreateCommentReq = {
+}
+export interface CreateCommentReq {
   url: CreateCommentUrlQuery;
   body: CreateCommentBodyQuery;
-};
+}
 export interface CreateCommentRes extends CommonRes {
   resData: Comment;
 }

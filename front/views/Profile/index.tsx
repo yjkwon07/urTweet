@@ -6,58 +6,44 @@ import Router from 'next/router';
 import { useDispatch } from 'react-redux';
 
 import BaseLayout from '@layouts/BaseLayout';
-import { useSearchFilter } from '@modules/searchFilter';
-import {
-  ListReadFollowingUrlQuery,
-  useListReadFollow,
-  useListReadFollowing,
-  userAction,
-  useReadMyUser,
-} from '@modules/user';
+import { useListReadFollower, useListReadFollowing, userAction, useReadMyUser } from '@modules/user';
+import { getUserId } from '@utils/auth';
 
 import EditMyDataForm from './EditMyUserForm';
 import FollowUserCard from './FollowUserCard';
 import { StyledButton, StyledCenter } from './styles';
+import { ProfilePageFilter } from './utils';
 
 const { confirm } = Modal;
-
-const DEFAULT_CUR_PAGE = 1;
-const DEFAULT_PAGE_SIZE = 10;
 
 const ProfileView = () => {
   const dispatch = useDispatch();
 
   const { data: myData, status: myDataStatus } = useReadMyUser();
 
-  const { filter: listReadFollowingFilter, changeFilter: listReadFollowingChangeFilter } =
-    useSearchFilter<ListReadFollowingUrlQuery>('LIST_READ_FOLLOWING', {
-      page: DEFAULT_CUR_PAGE,
-      pageSize: DEFAULT_PAGE_SIZE,
-    });
   const {
     data: followingListData,
     status: followingListStatus,
-    isMoreRead: isMoreReadFollowingList,
-  } = useListReadFollowing(listReadFollowingFilter);
+    curPage: followingListCurPage,
+    rowsPerPage: followingListRowPerPage,
+    isMoreRead: followingListIsMoreRead,
+    fetch: fetchListReadFollowing,
+  } = useListReadFollowing();
 
-  const { filter: listReadFollowFilter, changeFilter: listReadFollowChangeFilter } =
-    useSearchFilter<ListReadFollowingUrlQuery>('LIST_READ_FOLLOW', {
-      page: DEFAULT_CUR_PAGE,
-      pageSize: DEFAULT_PAGE_SIZE,
-    });
   const {
-    data: followListData,
-    status: followStatus,
-    isMoreRead: isMoreReadFollowList,
-  } = useListReadFollow(listReadFollowFilter);
+    data: followerListData,
+    status: followerStatus,
+    curPage: followerCurPage,
+    rowsPerPage: followerRowPerPage,
+    isMoreRead: followerIsMoreRead,
+    fetch: fetchListReadFollower,
+  } = useListReadFollower();
 
   const handleLoadMoreFollowingList = useCallback(() => {
-    if (listReadFollowingFilter?.page && isMoreReadFollowingList) {
-      listReadFollowingChangeFilter({
-        page: listReadFollowingFilter.page + 1,
-      });
+    if (followingListIsMoreRead) {
+      fetchListReadFollowing({ page: followingListCurPage + 1, pageSize: followingListRowPerPage });
     }
-  }, [isMoreReadFollowingList, listReadFollowingChangeFilter, listReadFollowingFilter?.page]);
+  }, [fetchListReadFollowing, followingListCurPage, followingListIsMoreRead, followingListRowPerPage]);
 
   const handleCancelFollowing = useCallback(
     (userId) => {
@@ -66,7 +52,7 @@ const ProfileView = () => {
         icon: <ExclamationCircleOutlined />,
         content: '언팔로우시 해당 멤버의 활동을 자세히 알 수 없게 됩니다.',
         onOk() {
-          dispatch(userAction.removeFollowerMe.request({ userId }));
+          dispatch(userAction.fetchRemoveFollowerMe.request({ userId }));
         },
       });
     },
@@ -74,12 +60,10 @@ const ProfileView = () => {
   );
 
   const handleLoadMoreFollowerList = useCallback(() => {
-    if (listReadFollowingFilter?.page && isMoreReadFollowList) {
-      listReadFollowChangeFilter({
-        page: listReadFollowingFilter.page + 1,
-      });
+    if (followerIsMoreRead) {
+      fetchListReadFollower({ page: followerCurPage + 1, pageSize: followerRowPerPage });
     }
-  }, [isMoreReadFollowList, listReadFollowChangeFilter, listReadFollowingFilter?.page]);
+  }, [fetchListReadFollower, followerCurPage, followerIsMoreRead, followerRowPerPage]);
 
   const handleCancelFollower = useCallback(
     (userId) => {
@@ -88,7 +72,7 @@ const ProfileView = () => {
         icon: <ExclamationCircleOutlined />,
         content: '언팔로우시 해당 멤버가 나의 활동을 자세히 알 수 없게 됩니다.',
         onOk() {
-          dispatch(userAction.removeFollowerMe.request({ userId }));
+          dispatch(userAction.fetchRemoveFollowerMe.request({ userId }));
         },
       });
     },
@@ -96,11 +80,25 @@ const ProfileView = () => {
   );
 
   useEffect(() => {
-    if (myDataStatus === 'FAIL' && !myData) {
+    if (!getUserId() || (myDataStatus === 'FAIL' && !myData)) {
       message.warn('로그인 후 이용해 주시길 바랍니다.');
       Router.push('/');
     }
   }, [myData, myDataStatus]);
+
+  useEffect(() => {
+    fetchListReadFollowing({
+      page: ProfilePageFilter.defaultOption.DEFAULT_FOLLOWER_CUR_PAGE,
+      pageSize: ProfilePageFilter.defaultOption.DEFAULT_FOLLOWER_PER_PAGE,
+    });
+  }, [fetchListReadFollowing]);
+
+  useEffect(() => {
+    fetchListReadFollower({
+      page: ProfilePageFilter.defaultOption.DEFAULT_FOLLOWING_CUR_PAGE,
+      pageSize: ProfilePageFilter.defaultOption.DEFAULT_FOLLOWING_PER_PAGE,
+    });
+  }, [fetchListReadFollower]);
 
   return (
     <BaseLayout>
@@ -111,7 +109,7 @@ const ProfileView = () => {
         size="small"
         header={<div>팔로잉</div>}
         loadMore={
-          isMoreReadFollowingList && (
+          followingListIsMoreRead && (
             <StyledCenter>
               <StyledButton
                 className="mb-10"
@@ -136,19 +134,23 @@ const ProfileView = () => {
         size="small"
         header={<div>팔로워</div>}
         loadMore={
-          isMoreReadFollowList && (
+          followerIsMoreRead && (
             <StyledCenter>
-              <StyledButton className="mb-10" onClick={handleLoadMoreFollowerList} loading={followStatus === 'LOADING'}>
+              <StyledButton
+                className="mb-10"
+                onClick={handleLoadMoreFollowerList}
+                loading={followerStatus === 'LOADING'}
+              >
                 더 보기
               </StyledButton>
             </StyledCenter>
           )
         }
         bordered
-        dataSource={followListData}
+        dataSource={followerListData}
         renderItem={(user) => (
           <List.Item>
-            <FollowUserCard data={user} loading={followStatus === 'LOADING'} onCancel={handleCancelFollower} />
+            <FollowUserCard data={user} loading={followerStatus === 'LOADING'} onCancel={handleCancelFollower} />
           </List.Item>
         )}
       />

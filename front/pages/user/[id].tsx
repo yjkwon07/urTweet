@@ -1,15 +1,13 @@
-import React from 'react';
-
 import Head from 'next/head';
 import { END } from 'redux-saga';
 
 import SEO, { IProps as ISEOProps } from '@components/SEO';
 import { postAction } from '@modules/post';
-import { searchFilterAction } from '@modules/searchFilter';
 import wrapper from '@modules/store/configStore';
-import { readUser } from '@modules/user';
-import { GET_USER_URL } from '@utils/urls';
+import { userAction } from '@modules/user';
+import { Custom404PageFilter } from '@views/404/utils';
 import UserRead from '@views/User/Read';
+import { UserReadPageFilter } from '@views/User/Read/utils';
 
 export interface IProps {
   title: string;
@@ -30,22 +28,14 @@ const UserReadPages = ({ title, seo }: IProps) => {
 
 // SSR
 export const getServerSideProps = wrapper.getServerSideProps(async ({ store, params, query }) => {
-  const page = Number(query.page) ? Number(query.page) : 1;
-  const pageSize = Number(query.pageSize) || 10;
-  const userId = Number(params?.id);
-  const filter = {
-    page,
-    pageSize,
-    userId,
-  };
+  try {
+    const userId = UserReadPageFilter.parseParam(params).id;
+    const filter = UserReadPageFilter.parseQuery(query);
 
-  if (userId) {
-    store.dispatch(searchFilterAction.changeSearchFilter({ key: 'LIST_READ_POST', filter }));
-    store.dispatch(searchFilterAction.changeSearchFilter({ key: 'READ_USER', filter: { userId } }));
     const {
       resData: { item: userData },
-    } = await store.dispatch(readUser.asyncThunk({ userId: Number(userId) }));
-    await store.dispatch(postAction.listReadPost.asyncThunk(filter));
+    } = await store.dispatch(userAction.fetchReadUser.asyncThunk({ userId }));
+    await store.dispatch(postAction.fetchListReadPost.asyncThunk(filter));
     store.dispatch(END);
 
     return {
@@ -53,15 +43,21 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, par
         title: `${userData?.nickname} | urTweet`,
         seo: {
           title: `${userData?.nickname}님의 게시글`,
-          url: GET_USER_URL(userId.toString()),
+          url: new UserReadPageFilter(params, query).url,
           description: `${userData?.nickname}님의 게시글`,
           name: `${userData?.nickname}님의 게시글`,
           keywords: `${userData?.nickname}`,
         },
       },
     };
+  } catch (error) {
+    return {
+      redirect: {
+        destination: new Custom404PageFilter().pathname,
+        permanent: false,
+      },
+    };
   }
-  return {};
 });
 
 export default UserReadPages;

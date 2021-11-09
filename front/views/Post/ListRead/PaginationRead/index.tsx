@@ -1,58 +1,52 @@
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { Empty, Pagination, Space, Spin } from 'antd';
 import { useRouter } from 'next/router';
 
 import PostCard from '@components/PostCard';
-import { FetchStatus } from '@modules/fetchStatus';
-import { ListReadPostUrlQuery } from '@modules/post';
-import { Post } from '@modules/post/@types';
-import { useSearchFilter } from '@modules/searchFilter';
+import { useListReadPost } from '@modules/post';
 
-import filterSearch from '../filterSearch';
+import { PostListReadPageFilter } from '../utils';
 import { StyledCenter, StyledViewWrapper } from './styles';
 
-export interface IProps {
-  status: FetchStatus;
-  postList: Post[];
-  totalCount: number;
-  errorMsg?: string;
-}
-
-const PaginationRead = ({ status, postList, totalCount, errorMsg }: IProps) => {
+const PaginationRead = () => {
   const router = useRouter();
+  const postListReadPageFilter = useMemo(() => new PostListReadPageFilter(router.query), [router.query]);
+  const { query } = postListReadPageFilter;
 
-  const { filter } = useSearchFilter<ListReadPostUrlQuery>('LIST_READ_POST');
+  const { status, data: postListData, totalCount } = useListReadPost();
 
   const handleChangePage = useCallback(
     (page: number) => {
-      filterSearch(router.pathname, router.query, { page });
+      postListReadPageFilter.search({ page });
     },
-    [router],
+    [postListReadPageFilter],
   );
 
   return (
     <StyledViewWrapper>
       <Space className="wrapper" direction="vertical" size={10}>
-        {status === 'SUCCESS' && postList.map((data) => <PostCard key={data.id} data={data} />)}
+        {postListData.map((post) => (
+          <PostCard key={post.id} data={post} />
+        ))}
+        {status === 'SUCCESS' && !postListData.length && (
+          <StyledCenter>
+            <Empty description="조회하신 결과가 없습니다." />
+          </StyledCenter>
+        )}
         {status === 'LOADING' && (
           <StyledCenter>
             <Spin />
-          </StyledCenter>
-        )}
-        {status === 'FAIL' && (
-          <StyledCenter>
-            <Empty description={errorMsg} />
           </StyledCenter>
         )}
       </Space>
       <StyledCenter>
         <Pagination
           showSizeChanger={false}
-          current={filter?.page}
+          current={query.page}
           total={totalCount}
           onChange={handleChangePage}
-          pageSize={filter?.pageSize}
+          pageSize={query.pageSize}
         />
       </StyledCenter>
     </StyledViewWrapper>

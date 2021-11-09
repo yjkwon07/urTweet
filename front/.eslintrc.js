@@ -20,6 +20,7 @@ module.exports = {
     'airbnb',
     'plugin:react/recommended',
     'plugin:react-hooks/recommended',
+    'plugin:@next/next/recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/eslint-recommended', // eslint에서 규칙을 비활성화 하는 호환성을 위한 규칙 모음
     'plugin:prettier/recommended',

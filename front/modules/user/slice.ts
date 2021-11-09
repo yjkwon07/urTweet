@@ -1,41 +1,58 @@
 import { createAction, createEntityAdapter, createSlice, EntityState } from '@reduxjs/toolkit';
 import _remove from 'lodash/remove';
 
-import { createRequestAction } from '@modules/helper';
+import { createFetchAction } from '@modules/helper';
 
 import { MyUser, User } from './@types/db';
 import {
-  requestFollow,
-  requestListReadFollow,
-  requestListReadFollowing,
-  requestLogin,
-  requestLogout,
-  requestUpdateMyUser,
-  requestReadMyUser,
-  requestReadUser,
-  requestRemoveFollowerMe,
-  requestSignup,
-  requestUnfollow,
+  FollowRes,
+  FollowUrlQuery,
+  ListReadFollowingRes,
+  ListReadFollowingUrlQuery,
+  ListReadFollowerRes,
+  ListReadFollowerUrlQuery,
+  LoginBodyQuery,
+  LoginRes,
+  LogoutRes,
+  ReadMyUserRes,
+  ReadUserRes,
+  ReadUserUrlQuery,
+  RemoveFollowerMeRes,
+  RemoveFollowerMeUrlQuery,
+  SignupBodyQuery,
+  SignupRes,
+  UnFollowRes,
+  UnFollowUrlQuery,
+  UpdateMyUserBodyQuery,
+  UpdateMyUserRes,
 } from './api';
 
 export const USER = 'USER';
 
 // Action - API
-export const login = createRequestAction(`${USER}/login`, requestLogin);
-export const logout = createRequestAction(`${USER}/logout`, requestLogout);
-export const signup = createRequestAction(`${USER}/signup`, requestSignup);
-export const readMyUser = createRequestAction(`${USER}/readMyUser`, requestReadMyUser);
-export const readUser = createRequestAction(`${USER}/readUser`, requestReadUser);
-export const updateMyUser = createRequestAction(`${USER}/updateMyUser`, requestUpdateMyUser);
-export const listReadFollow = createRequestAction(`${USER}/listReadFollow`, requestListReadFollow);
-export const listReadFollowing = createRequestAction(`${USER}/listReadFollowing`, requestListReadFollowing);
-export const follow = createRequestAction(`${USER}/follow`, requestFollow);
-export const unFollow = createRequestAction(`${USER}/unFollow`, requestUnfollow);
-export const removeFollowerMe = createRequestAction(`${USER}/removeFollowerMe`, requestRemoveFollowerMe);
+const fetchLogin = createFetchAction<LoginBodyQuery, LoginRes>(`${USER}/fetchLogin`);
+const fetchLogout = createFetchAction<void, LogoutRes>(`${USER}/fetchLogout`);
+const fetchSignup = createFetchAction<SignupBodyQuery, SignupRes>(`${USER}/fetchSignup`);
+const fetchReadMyUser = createFetchAction<void, ReadMyUserRes>(`${USER}/fetchReadMyUser`);
+const fetchReadUser = createFetchAction<ReadUserUrlQuery, ReadUserRes>(`${USER}/fetchReadUser`);
+const fetchUpdateMyUser = createFetchAction<UpdateMyUserBodyQuery, UpdateMyUserRes>(`${USER}/fetchUpdateMyUser`);
+const fetchListReadFollower = createFetchAction<ListReadFollowerUrlQuery, ListReadFollowerRes>(
+  `${USER}/fetchListReadFollower`,
+);
+const fetchListReadFollowing = createFetchAction<ListReadFollowingUrlQuery, ListReadFollowingRes>(
+  `${USER}/fetchListReadFollowing`,
+);
+const fetchFollow = createFetchAction<FollowUrlQuery, FollowRes>(`${USER}/fetchFollow`);
+const fetchUnFollow = createFetchAction<UnFollowUrlQuery, UnFollowRes>(`${USER}/fetchUnFollow`);
+const fetchRemoveFollowerMe = createFetchAction<RemoveFollowerMeUrlQuery, RemoveFollowerMeRes>(
+  `${USER}/fetchRemoveFollowerMe`,
+);
 
 // Action
-export const addPostToMe = createAction<number>(`${USER}/addPostToMe`);
-export const removePostToMe = createAction<number>(`${USER}/removePostToMe`);
+const myInfoReset = createAction(`${USER}/myInfoReset`);
+const updateMyInfo = createAction<MyUser>(`${USER}/updateMyInfo`);
+const addPostToMe = createAction<number>(`${USER}/addPostToMe`);
+const removePostToMe = createAction<number>(`${USER}/removePostToMe`);
 
 // Entity
 const followerListDataAdapter = createEntityAdapter<User>({
@@ -46,22 +63,43 @@ const followingListDataAdapter = createEntityAdapter<User>({
 });
 
 // Type
-export type PostState = EntityState<User>;
+export interface FollowerState extends EntityState<User> {
+  curPage: number;
+  rowsPerPage: number;
+  isMoreRead: boolean;
+  totalCount: number;
+}
 
-// Type
+export interface FollowingState extends EntityState<User> {
+  curPage: number;
+  rowsPerPage: number;
+  isMoreRead: boolean;
+  totalCount: number;
+}
+
 export interface UserState {
   myInfo: MyUser | null;
   user: User | null;
-  followerListData: EntityState<User>;
-  followingListData: EntityState<User>;
+  follower: FollowerState;
+  following: FollowingState;
 }
 
 // Reducer
 const initialState: UserState = {
   myInfo: null,
   user: null,
-  followerListData: followerListDataAdapter.getInitialState(),
-  followingListData: followingListDataAdapter.getInitialState(),
+  follower: followerListDataAdapter.getInitialState({
+    curPage: 0,
+    rowsPerPage: 0,
+    isMoreRead: false,
+    totalCount: 0,
+  }),
+  following: followingListDataAdapter.getInitialState({
+    curPage: 0,
+    rowsPerPage: 0,
+    isMoreRead: false,
+    totalCount: 0,
+  }),
 };
 
 const slice = createSlice({
@@ -70,38 +108,52 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (builder) =>
     builder
-      .addCase(readMyUser.success, (state, { payload: { resData } }) => {
+      .addCase(myInfoReset, (state) => {
+        state.myInfo = initialState.myInfo;
+      })
+      .addCase(updateMyInfo, (state, { payload }) => {
+        state.myInfo = payload;
+      })
+      .addCase(fetchReadMyUser.success, (state, { payload: { resData } }) => {
         const { item } = resData;
         state.myInfo = item;
       })
-      .addCase(readUser.success, (state, { payload: { resData } }) => {
+      .addCase(fetchReadUser.success, (state, { payload: { resData } }) => {
         const { item } = resData;
         state.user = item;
       })
-      .addCase(updateMyUser.success, (state, { payload: { resData } }) => {
+      .addCase(fetchUpdateMyUser.success, (state, { payload: { resData } }) => {
         const { email, nickname } = resData;
         if (state.myInfo) {
           state.myInfo.email = email;
           state.myInfo.nickname = nickname;
         }
       })
-      .addCase(listReadFollow.success, (state, { payload: { resData } }) => {
-        const { list } = resData;
-        followerListDataAdapter.addMany(state.followerListData, list);
+      .addCase(fetchListReadFollower.success, (state, { payload: { resData } }) => {
+        const { list, curPage, rowsPerPage, totalCount, nextPage } = resData;
+        state.follower.curPage = curPage;
+        state.follower.rowsPerPage = rowsPerPage;
+        state.follower.totalCount = totalCount;
+        state.follower.isMoreRead = !!nextPage;
+        followerListDataAdapter.addMany(state.follower, list);
       })
-      .addCase(listReadFollowing.success, (state, { payload: { resData } }) => {
-        const { list } = resData;
-        followingListDataAdapter.addMany(state.followingListData, list);
+      .addCase(fetchListReadFollowing.success, (state, { payload: { resData } }) => {
+        const { list, curPage, rowsPerPage, totalCount, nextPage } = resData;
+        state.following.curPage = curPage;
+        state.following.rowsPerPage = rowsPerPage;
+        state.following.totalCount = totalCount;
+        state.following.isMoreRead = !!nextPage;
+        followingListDataAdapter.addMany(state.following, list);
       })
-      .addCase(follow.success, (state, { payload: { resData } }) => {
+      .addCase(fetchFollow.success, (state, { payload: { resData } }) => {
         const { userId } = resData;
         if (state.myInfo) state.myInfo.Followings.push({ id: userId });
       })
-      .addCase(unFollow.success, (state, { payload: { resData } }) => {
+      .addCase(fetchUnFollow.success, (state, { payload: { resData } }) => {
         const { userId } = resData;
         if (state.myInfo) _remove(state.myInfo.Followings, { id: userId });
       })
-      .addCase(removeFollowerMe.success, (state, { payload: { resData } }) => {
+      .addCase(fetchRemoveFollowerMe.success, (state, { payload: { resData } }) => {
         const { userId } = resData;
         if (state.myInfo) _remove(state.myInfo.Followers, { id: userId });
       })
@@ -110,41 +162,39 @@ const slice = createSlice({
       })
       .addCase(removePostToMe, (state, { payload: id }) => {
         if (state.myInfo) _remove(state.myInfo.Posts, { id });
-      })
-      .addCase(login.success, (state, { payload: { resData } }) => {
-        state.myInfo = resData;
-      })
-      .addCase(logout.success, (state) => {
-        state.myInfo = null;
       }),
 });
 
-const { selectAll: followListData } = followerListDataAdapter.getSelectors(
-  (state: RootState) => state.USER.followerListData,
-);
+const { selectAll: followerListData } = followerListDataAdapter.getSelectors((state: RootState) => state.USER.follower);
 const { selectAll: followingListData } = followingListDataAdapter.getSelectors(
-  (state: RootState) => state.USER.followingListData,
+  (state: RootState) => state.USER.following,
 );
 
 export const userReducer = slice.reducer;
 export const userSelector = {
+  state: (state: RootState) => state.USER,
   myData: (state: RootState) => state.USER.myInfo,
   userData: (state: RootState) => state.USER.user,
-  followListData,
+  followerListData,
+  follower: (state: RootState) => state.USER.follower,
   followingListData,
+  following: (state: RootState) => state.USER.following,
 };
 export const userAction = {
   ...slice.actions,
-  readMyUser,
-  readUser,
-  updateMyUser,
-  listReadFollow,
-  listReadFollowing,
-  follow,
-  unFollow,
-  removeFollowerMe,
+  myInfoReset,
+  updateMyInfo,
   addPostToMe,
   removePostToMe,
-  login,
-  logout,
+  fetchReadMyUser,
+  fetchReadUser,
+  fetchUpdateMyUser,
+  fetchListReadFollower,
+  fetchListReadFollowing,
+  fetchFollow,
+  fetchUnFollow,
+  fetchRemoveFollowerMe,
+  fetchLogin,
+  fetchLogout,
+  fetchSignup,
 };

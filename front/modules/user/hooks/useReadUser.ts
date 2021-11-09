@@ -1,27 +1,23 @@
-import { useEffect, useRef } from 'react';
+import { useCallback } from 'react';
 
 import { useDispatch } from 'react-redux';
 
 import { useAppSelector } from '@hooks/useAppRedux';
-import { useFetchStatus } from '@modules/fetchStatus';
+import { fetchStatusSelector } from '@modules/fetchStatus';
 
-import { ReadUserRes, ReadUserUrlQuery } from '../api';
 import { userAction, userSelector } from '../slice';
 
-export default function useReadUser(filter?: ReadUserUrlQuery) {
+export default function useReadUser() {
   const dispatch = useDispatch();
-  const { status, error } = useFetchStatus<ReadUserRes>(userAction.readUser.TYPE);
+  const { status, error } = useAppSelector(fetchStatusSelector.byFetchAction(userAction.fetchReadUser));
   const data = useAppSelector(userSelector.userData);
 
-  const isInitFetch = useRef(!!data);
+  const fetch = useCallback(
+    (userId: number) => {
+      dispatch(userAction.fetchReadUser.request({ userId }));
+    },
+    [dispatch],
+  );
 
-  useEffect(() => {
-    if (!isInitFetch.current) {
-      if (filter) dispatch(userAction.readUser.request(filter));
-    } else {
-      isInitFetch.current = false;
-    }
-  }, [dispatch, filter]);
-
-  return { status, data, error };
+  return { status, data, error, fetch };
 }

@@ -1,12 +1,12 @@
-import React, { useCallback, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
 import { FileImageTwoTone } from '@ant-design/icons';
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Button, Form, Input, message, Image } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 
-import { fileUpload, imageDownloadLink } from '@modules/file';
+import { fileUpload, fileDownloadLink } from '@modules/file';
 import { postAction, EDIT_POST_SCHEMA } from '@modules/post';
 import { FormEditPost } from '@modules/post/@types';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
@@ -37,7 +37,7 @@ const PostForm = () => {
   const handleSubmitCreatePost = useCallback(
     async (formData: FormEditPost) => {
       try {
-        await dispatch(postAction.createPost.asyncThunk(formData));
+        await dispatch(postAction.fetchCreatePost.asyncThunk(formData));
       } catch (error) {
         if (isCustomAxiosError(error)) {
           message.error(JSON.stringify(error.response.data.resMsg));
@@ -127,7 +127,7 @@ const PostForm = () => {
           <Image.PreviewGroup>
             {imagePathList?.map((filePath) => (
               <div key={filePath} className="wrapper">
-                <Image width={150} height={150} src={imageDownloadLink(filePath, true)} alt="" />
+                <Image width={150} height={150} src={fileDownloadLink(filePath, true)} alt="" />
                 <div className="button_wrapper">
                   <Button type="primary" danger onClick={handleRemoveImage(filePath)}>
                     제거

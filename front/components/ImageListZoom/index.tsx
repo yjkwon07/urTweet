@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-import { Global } from '@emotion/react';
 import Slick from 'react-slick';
 
 import usePreventBodyScroll from '@hooks/usePreventBodyScroll';
-import imageDownloadLink from '@modules/file/utils/imageDownloadLink';
+import { fileDownloadLink } from '@modules/file';
 import { Image } from '@modules/post/@types/db';
 
-import { Overlay, Header, CloseBtn, ImgWrapper, Indicator, SlickWrapper, globalStyles } from './styles';
+import { Overlay, Header, CloseBtn, ImgWrapper, Indicator, SlickWrapper } from './styles';
 
 export interface IProps {
   imageList: Image[];
@@ -20,7 +19,6 @@ const ImageListZoom = ({ imageList, onClose }: IProps) => {
 
   return (
     <Overlay>
-      <Global styles={globalStyles} />
       <Header>
         <h1>상세 이미지</h1>
         <CloseBtn onClick={onClose}>X</CloseBtn>
@@ -37,7 +35,7 @@ const ImageListZoom = ({ imageList, onClose }: IProps) => {
           >
             {imageList.map((image) => (
               <ImgWrapper key={image.src}>
-                <img src={imageDownloadLink(image.src, true)} alt={image.src} />
+                <img src={fileDownloadLink(image.src, true)} alt={image.src} />
               </ImgWrapper>
             ))}
           </Slick>

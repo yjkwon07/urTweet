@@ -1,11 +1,12 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 
-import { yupResolver } from '@hookform/resolvers/yup';
+import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Form, Input, Button, message } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 
-import { useFetchStatus } from '@modules/fetchStatus';
+import { useAppSelector } from '@hooks/useAppRedux';
+import { fetchStatusSelector } from '@modules/fetchStatus';
 import { postAction } from '@modules/post';
 import { FormCreateComment } from '@modules/post/@types';
 import { CREATE_COMMENT_SCHEMA } from '@modules/post/config';
@@ -20,7 +21,7 @@ interface IProps {
 
 const CommentForm = ({ userId, postId }: IProps) => {
   const dispatch = useDispatch();
-  const { status } = useFetchStatus(postAction.createComment.TYPE, postId);
+  const { status } = useAppSelector(fetchStatusSelector.byFetchAction(postAction.fetchCreateComment, postId));
 
   const {
     control,
@@ -36,7 +37,7 @@ const CommentForm = ({ userId, postId }: IProps) => {
     async (formData: FormCreateComment) => {
       try {
         await dispatch(
-          postAction.createComment.asyncThunk(
+          postAction.fetchCreateComment.asyncThunk(
             {
               url: { postId },
               body: { content: formData.content, userId },
