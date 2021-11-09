@@ -1,15 +1,18 @@
 import { createAction, createSlice } from '@reduxjs/toolkit';
 
-// Type
-interface ItypePayload {
-  type: string;
-  data?: any;
-}
+import { FetchAction } from '@modules/helper/type';
 
-export interface IFetchReducer {
-  [key: string]: {
-    status: 'INIT' | 'LOADING' | 'SUCCESS' | 'FAIL';
+import { FetchStatusActionPayload } from './@types';
+
+// Type
+export type FetchStatus = 'INIT' | 'LOADING' | 'SUCCESS' | 'FAIL';
+
+export interface FetchStatusState {
+  [type: string]: {
+    status: FetchStatus;
+    actionList: any[];
     data?: any;
+    error?: any;
   };
 }
 
@@ -17,44 +20,90 @@ export interface IFetchReducer {
 export const FETCH_STATUS = 'FETCH_STATUS';
 
 // Action
-export const initFetch = createAction<ItypePayload>(`${FETCH_STATUS}/initFetch`);
-export const request = createAction<ItypePayload>(`${FETCH_STATUS}/request`);
-export const success = createAction<ItypePayload>(`${FETCH_STATUS}/success`);
-export const fail = createAction<ItypePayload>(`${FETCH_STATUS}/fail`);
+const initFetchStatus = createAction<Pick<FetchStatusActionPayload, 'type'>>(`${FETCH_STATUS}/init`);
+const requestFetchStatus = createAction<FetchStatusActionPayload>(`${FETCH_STATUS}/request`);
+const successFetchStatus = createAction<FetchStatusActionPayload>(`${FETCH_STATUS}/success`);
+const failureFetchStatus = createAction<FetchStatusActionPayload>(`${FETCH_STATUS}/fail`);
 
 // Reducer
-const initialState: IFetchReducer = {};
+const initialState: FetchStatusState = {};
 const slice = createSlice({
   name: FETCH_STATUS,
   initialState,
   reducers: {},
   extraReducers: (builder) =>
     builder
-      .addCase(initFetch, (state, { payload: { type } }) => {
+      .addCase(initFetchStatus, (state, { payload: { type } }) => {
         state[type] = {
           status: 'INIT',
+          actionList: [],
+          data: null,
+          error: null,
         };
       })
-      .addCase(request, (state, { payload: { type } }) => {
+      .addCase(requestFetchStatus, (state, { payload: { type, actionList = [] } }) => {
         state[type] = {
           status: 'LOADING',
-          data: null,
+          actionList: state[type]?.actionList.concat(actionList) || actionList,
+          data: state[type]?.data,
+          error: state[type]?.error,
         };
       })
-      .addCase(success, (state, { payload: { type, data } }) => {
+      .addCase(successFetchStatus, (state, { payload: { type, actionList = [], response } }) => {
         state[type] = {
           status: 'SUCCESS',
-          data,
+          actionList: state[type]?.actionList.filter((action) => !actionList?.includes(action)) || [],
+          data: response,
+          error: null,
         };
       })
-      .addCase(fail, (state, { payload: { type, data } }) => {
+      .addCase(failureFetchStatus, (state, { payload: { type, actionList = [], response } }) => {
         state[type] = {
           status: 'FAIL',
-          data,
+          actionList: state[type]?.actionList.filter((action) => !actionList?.includes(action)) || [],
+          data: null,
+          error: response,
         };
       })
-      .addDefaultCase(() => {}),
+      .addDefaultCase((state) => state),
 });
 
 export const fetchStatusReducer = slice.reducer;
-export const fetchStatusAction = slice.actions;
+export const fetchStatusSelector = {
+  byType:
+    <S = any, F = any>(type: string, actionId?: any) =>
+    (state: RootState): { status: FetchStatus; data: S | null; error: F | null; actionList: any[] } => {
+      let result = state.FETCH_STATUS[type] || {
+        status: 'INIT',
+        actionList: [],
+        data: null,
+        error: null,
+      };
+      if (actionId && !result.actionList.includes(actionId)) {
+        result = { status: 'INIT', actionList: [], data: null, error: null };
+      }
+      return { status: result.status, actionList: result.actionList, data: result.data, error: result.error };
+    },
+  byFetchAction:
+    <R, S, F, M>(fetchAction: FetchAction<R, S, F, M>, actionId?: any) =>
+    (state: RootState): { status: FetchStatus; data: S | null; error: F | null; actionList: any[] } => {
+      let result = state.FETCH_STATUS[fetchAction.TYPE] || {
+        status: 'INIT',
+        actionList: [],
+        data: null,
+        error: null,
+      };
+      if (actionId && !result.actionList.includes(actionId)) {
+        result = { status: 'INIT', actionList: [], data: null, error: null };
+      }
+      return { status: result.status, actionList: result.actionList, data: result.data, error: result.error };
+    },
+};
+
+export const fetchStatusAction = {
+  ...slice.actions,
+  initFetchStatus,
+  requestFetchStatus,
+  successFetchStatus,
+  failureFetchStatus,
+};

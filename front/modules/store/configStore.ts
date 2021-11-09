@@ -1,39 +1,30 @@
-import { configureStore, EnhancedStore } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import { createWrapper, MakeStore } from 'next-redux-wrapper';
-import { TypedUseSelectorHook, useSelector } from 'react-redux';
-import { Store } from 'redux';
-import createSagaMiddleware, { Task } from 'redux-saga';
-import thunkMiddleware from 'redux-thunk';
+import createSagaMiddleware from 'redux-saga';
 
-import rootSaga from './sagas';
-import rootReducer from './slices';
-
-// Next Redux Toolkit Saga를 사용할때는
-// confugureStore에서 강제로 sagaTask를 만들어주기 위함
-interface SagaStore extends Store {
-  sagaTask?: Task;
-}
+import rootReducer from './rootReducer';
+import rootSaga from './rootSaga';
 
 const devMode = process.env.NODE_ENV === 'development';
-const sagaMiddleware = createSagaMiddleware();
-const store = configureStore({
-  reducer: rootReducer,
-  middleware: [thunkMiddleware, sagaMiddleware],
-  devTools: devMode,
-});
 
-// Next Redux Toolkit 에서 saga를 사용해야할 때
-(store as SagaStore).sagaTask = sagaMiddleware.run(rootSaga);
+// Next.js를 사용하게 되면 유저가 요청할 때 마다 redux store를 새로(configureStore) 생성하게 되므로 redux store가 여러 개가 될 수 있다.
+// makeStore로 하나의 스토어를 다루도록 설정
+const makeStore: MakeStore = () => {
+  const sagaMiddleware = createSagaMiddleware();
+  const store = configureStore({
+    reducer: rootReducer,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: false,
+      }).concat(sagaMiddleware),
+    devTools: devMode,
+  });
+  store.sagaTask = sagaMiddleware.run(rootSaga);
+  return store;
+};
 
-const setupStore = (context: any): EnhancedStore => store;
-
-const makeStore: MakeStore = (context) => setupStore(context);
-
-export const wrapper = createWrapper(makeStore, {
+const wrapper = createWrapper(makeStore, {
   debug: devMode,
 });
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
-export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 export default wrapper;
