@@ -12,7 +12,7 @@ const router = express.Router();
 // POST /post (게시글 등록)
 router.post('/', isLoggedIn, async (req, res, next) => {
   try {
-    const myId = req.user.id;
+    const myId = parseInt(req.user.id, 10);
     const content = req.body.content;
     const image = req.body.image;
     const hashtagList = Array.from(new Set(content.match(/#[^\s#]+/g)?.map((tag) => tag.slice(1).toLowerCase())));
@@ -44,8 +44,8 @@ router.post('/', isLoggedIn, async (req, res, next) => {
 // POST /post/:postId/retweet (리트윗)
 router.post('/:postId/retweet', isLoggedIn, async (req, res, next) => {
   try {
-    const myId = req.user.id;
-    const postId = req.params.postId;
+    const myId = parseInt(req.user.id, 10);
+    const postId = parseInt(req.params.postId, 10);
 
     const post = await findRetweetPost({ id: postId });
     if (!post) {
@@ -77,7 +77,7 @@ router.post('/:postId/retweet', isLoggedIn, async (req, res, next) => {
 // GET /post/:postId (게시글 조회)
 router.get('/:postId', async (req, res, next) => {
   try {
-    const postId = req.params.postId;
+    const postId = parseInt(req.params.postId, 10);
 
     const post = await findPost({ id: postId });
     if (!post) {
@@ -96,8 +96,8 @@ router.get('/:postId', async (req, res, next) => {
 // PATCH /post/:postId (게시글 수정)
 router.patch('/:postId', isLoggedIn, async (req, res, next) => {
   try {
-    const myId = req.user.id;
-    const postId = req.params.postId;
+    const myId = parseInt(req.user.id, 10);
+    const postId = parseInt(req.params.postId, 10);
     const content = req.body.content;
     const image = req.body.image;
     const hashtagList = Array.from(new Set(content.match(/#[^\s#]+/g)?.map((tag) => tag.slice(1).toLowerCase())));
@@ -135,8 +135,8 @@ router.patch('/:postId', isLoggedIn, async (req, res, next) => {
 // DELETE /post/:postId (게시글 삭제)
 router.delete('/:postId', isLoggedIn, async (req, res, next) => {
   try {
-    const myId = req.user.id;
-    const postId = req.params.postId;
+    const myId = parseInt(req.user.id, 10);
+    const postId = parseInt(req.params.postId, 10);
 
     const post = await findPost({ id: postId });
     if (!post) {
@@ -159,8 +159,8 @@ router.delete('/:postId', isLoggedIn, async (req, res, next) => {
 // POST /post/:postId/comment (댓글 작성)
 router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {
   try {
-    const myId = req.user.id;
-    const postId = req.params.postId;
+    const myId = parseInt(req.user.id, 10);
+    const postId = parseInt(req.params.postId, 10);
 
     const post = await findPost({ id: postId });
     if (!post) {
@@ -184,8 +184,8 @@ router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {
 // PATCH /post/:postId/like (좋아요)
 router.patch('/:postId/like', isLoggedIn, async (req, res, next) => {
   try {
-    const myId = req.user.id;
-    const postId = req.params.postId;
+    const myId = parseInt(req.user.id, 10);
+    const postId = parseInt(req.params.postId, 10);
 
     const post = await findPost({ id: postId });
     if (!post) {
@@ -203,8 +203,8 @@ router.patch('/:postId/like', isLoggedIn, async (req, res, next) => {
 // DELETE /post/:postId/like (좋아요 삭제)
 router.delete('/:postId/like', isLoggedIn, async (req, res, next) => {
   try {
-    const myId = req.user.id;
-    const postId = req.params.postId;
+    const myId = parseInt(req.user.id, 10);
+    const postId = parseInt(req.params.postId, 10);
 
     const post = await findPost({ id: postId });
     if (!post) {

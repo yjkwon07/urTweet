@@ -13,7 +13,7 @@ const router = express.Router();
 // GET /user (나의 정보 가져오기)
 router.get('/', async (req, res, next) => {
   try {
-    const myId = req.user?.id;
+    const myId = parseInt(req.user.id, 10);
 
     if (myId) {
       const fullUserWithoutPassword = await findUserWithoutPassword({ id: myId });
@@ -32,7 +32,7 @@ router.patch('/', isLoggedIn, async (req, res, next) => {
   try {
     const email = req.body.email;
     const nickname = req.body.nickname;
-    const myId = req.user.id;
+    const myId = parseInt(req.user.id, 10);
 
     await User.update(
       { email, nickname },
@@ -121,7 +121,7 @@ router.get('/followings', isLoggedIn, async (req, res, next) => {
 // GET /user/:userId (유저정보 조회)
 router.get('/:userId', async (req, res, next) => {
   try {
-    const userId = req.params.userId;
+    const userId = parseInt(req.params.userId, 10);
 
     const fullUserWithoutPassword = await findUserWithoutPassword({ id: userId });
 
@@ -197,8 +197,8 @@ router.post('/logout', (req, res) => {
 // PATCH /user/follow/:userId (팔로우)
 router.patch('/follow/:userId', isLoggedIn, async (req, res, next) => {
   try {
-    const myId = req.user.id;
-    const userId = req.params.userId;
+    const myId = parseInt(req.user.id, 10);
+    const userId = parseInt(req.params.userId, 10);
 
     const user = await User.findOne({ where: { id: userId } });
     if (!user) {
@@ -216,8 +216,8 @@ router.patch('/follow/:userId', isLoggedIn, async (req, res, next) => {
 // DELETE /user/follow/:userId (팔로우 삭제)
 router.delete('/follow/:userId', isLoggedIn, async (req, res, next) => {
   try {
-    const myId = req.user.id;
-    const userId = req.params.userId;
+    const myId = parseInt(req.user.id, 10);
+    const userId = parseInt(req.params.userId, 10);
 
     const user = await User.findOne({ where: { id: userId } });
     if (!user) {
@@ -235,8 +235,8 @@ router.delete('/follow/:userId', isLoggedIn, async (req, res, next) => {
 // DELETE /user/follower/:userId (팔로워 삭제)
 router.delete('/follower/:userId', isLoggedIn, async (req, res, next) => {
   try {
-    const myId = req.user.id;
-    const userId = req.params.userId;
+    const myId = parseInt(req.user.id, 10);
+    const userId = parseInt(req.params.userId, 10);
 
     const user = await User.findOne({ where: { id: userId } });
     if (!user) {
