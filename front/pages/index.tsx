@@ -1,35 +1,37 @@
+import { GetServerSideProps } from 'next';
 import Head from 'next/head';
-import { END } from 'redux-saga';
+import { SWRConfig } from 'swr';
 
 import SEO, { IProps as ISEOProps } from '@components/SEO';
-import { postAction } from '@modules/post';
-import wrapper from '@modules/store/configStore';
+import { GET_LIST_READ_POST_API, ListReadPostResData, requestListReadPost } from '@modules/post';
 import ListReadView from '@views/Post/ListRead';
 import { PostListReadPageFilter } from '@views/Post/ListRead/utils';
 
 export interface IProps {
   title: string;
   seo: ISEOProps;
+  fallback: { string: ListReadPostResData };
 }
 
-const HomePage = ({ title, seo }: IProps) => {
+const HomePage = ({ title, seo, fallback }: IProps) => {
   return (
-    <>
+    <SWRConfig value={{ fallback }}>
       <Head>
         <title>{title}</title>
         <SEO title={seo.title} url={seo.url} description={seo.description} name={seo.name} keywords={seo.keywords} />
       </Head>
       <ListReadView />
-    </>
+    </SWRConfig>
   );
 };
 
 // SSR
-export const getServerSideProps = wrapper.getServerSideProps(async ({ store, query }) => {
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
   const { page, pageSize, hashtag } = PostListReadPageFilter.parseQuery(query);
 
-  await store.dispatch(postAction.fetchListReadPost.asyncThunk({ page, pageSize, hashtag }));
-  store.dispatch(END);
+  const {
+    data: { resData },
+  } = await requestListReadPost({ page, pageSize, hashtag });
 
   return {
     props: {
@@ -41,8 +43,11 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, que
         name: `urTweet Home`,
         keywords: `Home`,
       },
+      fallback: {
+        [GET_LIST_READ_POST_API({ page, pageSize, hashtag })]: resData,
+      },
     },
   };
-});
+};
 
 export default HomePage;

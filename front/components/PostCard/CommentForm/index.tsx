@@ -1,13 +1,10 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Form, Input, Button, message } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
 
-import { useAppSelector } from '@hooks/useAppRedux';
-import { fetchStatusSelector } from '@modules/fetchStatus';
-import { postAction } from '@modules/post';
+import { requestCreateComment, useFetchCreateCommentMutate } from '@modules/post';
 import { FormCreateComment } from '@modules/post/@types';
 import { CREATE_COMMENT_SCHEMA } from '@modules/post/config';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
@@ -20,8 +17,8 @@ interface IProps {
 }
 
 const CommentForm = ({ userId, postId }: IProps) => {
-  const dispatch = useDispatch();
-  const { status } = useAppSelector(fetchStatusSelector.byFetchAction(postAction.fetchCreateComment, postId));
+  const { successMutate } = useFetchCreateCommentMutate();
+  const [isFetchCreateComment, setIsFetchCreateComment] = useState(false);
 
   const {
     control,
@@ -36,24 +33,24 @@ const CommentForm = ({ userId, postId }: IProps) => {
   const handleSubmit = useCallback(
     async (formData: FormCreateComment) => {
       try {
-        await dispatch(
-          postAction.fetchCreateComment.asyncThunk(
-            {
-              url: { postId },
-              body: { content: formData.content, userId },
-            },
-            { actionList: [postId] },
-          ),
-        );
+        setIsFetchCreateComment(true);
+        const {
+          data: { resData },
+        } = await requestCreateComment({
+          url: { postId },
+          body: { content: formData.content, userId },
+        });
+        await successMutate(resData, postId);
       } catch (error) {
         if (isCustomAxiosError(error)) {
           message.error(JSON.stringify(error.response.data.resMsg));
         }
       } finally {
+        setIsFetchCreateComment(false);
         reset();
       }
     },
-    [dispatch, postId, reset, userId],
+    [successMutate, postId, reset, userId],
   );
 
   return (
@@ -80,7 +77,7 @@ const CommentForm = ({ userId, postId }: IProps) => {
         />
       </Form.Item>
       <div className="btn-group">
-        <Button className="submit-button" type="primary" htmlType="submit" shape="round" loading={status === 'LOADING'}>
+        <Button className="submit-button" type="primary" htmlType="submit" shape="round" loading={isFetchCreateComment}>
           댓글달기
         </Button>
       </div>

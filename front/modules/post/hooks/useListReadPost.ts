@@ -1,28 +1,16 @@
-import { useCallback } from 'react';
+import useSWR from 'swr';
 
-import { useDispatch } from 'react-redux';
+import { getDataFetcher } from '@utils/fetcher';
 
-import { useAppSelector } from '@hooks/useAppRedux';
-import { fetchStatusSelector } from '@modules/fetchStatus';
+import { GET_LIST_READ_POST_API, ListReadPostResData, ListReadPostUrlQuery } from '../api';
 
-import { ListReadPostUrlQuery } from '../api';
-import { postAction, postSelector } from '../slice';
+export default function useListReadPost(query: ListReadPostUrlQuery) {
+  const result = useSWR<ListReadPostResData>(GET_LIST_READ_POST_API(query), getDataFetcher);
 
-export default function useListReadPost() {
-  const dispatch = useDispatch();
-
-  const { status, error } = useAppSelector(fetchStatusSelector.byFetchAction(postAction.fetchListReadPost));
-  const data = useAppSelector(postSelector.listData);
-  const { curPage, rowsPerPage, isMoreRead, totalCount } = useAppSelector(postSelector.state);
-
-  const fetch = useCallback(
-    (query: ListReadPostUrlQuery, mode: ViewMode) => {
-      if (query.page) {
-        dispatch(postAction.fetchListReadPost.request(query, { isLoadMore: mode === 'infinite' }));
-      }
-    },
-    [dispatch],
-  );
-
-  return { status, data, error, curPage, rowsPerPage, isMoreRead, totalCount, fetch };
+  return {
+    ...result,
+    data: result.data?.list,
+    curPage: result.data?.curPage,
+    totalCount: result.data?.totalCount || 0,
+  };
 }

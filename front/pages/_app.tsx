@@ -7,6 +7,7 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import { SWRConfig } from 'swr';
 
 import wrapper from '@modules/store/configStore';
 import { useReadMyUser } from '@modules/user';
@@ -43,9 +44,16 @@ const App = ({ Component, pageProps }: AppProps) => {
         <title>urTweet</title>
       </Head>
       <Global styles={globalStyles} />
-      <AuthCheck>
-        <Component {...pageProps} />
-      </AuthCheck>
+      <SWRConfig
+        value={{
+          revalidateOnFocus: false,
+          shouldRetryOnError: false,
+        }}
+      >
+        <AuthCheck>
+          <Component {...pageProps} />
+        </AuthCheck>
+      </SWRConfig>
     </>
   );
 };

@@ -14,11 +14,17 @@ import {
 import { Popover, Button, Divider, message, Tooltip, Modal } from 'antd';
 import cls from 'classnames';
 import Link from 'next/link';
-import { useDispatch } from 'react-redux';
 
-import { useAppSelector } from '@hooks/useAppRedux';
-import { fetchStatusSelector } from '@modules/fetchStatus';
-import { postAction } from '@modules/post';
+import {
+  requestCreateRetweet,
+  requestLikePost,
+  requestRemovePost,
+  requestUnlikePost,
+  useFetchCreatePostMutate,
+  useFetchLikePostMutate,
+  useFetchRemovePostMutate,
+  useFetchUnLikePostMutate,
+} from '@modules/post';
 import { Post } from '@modules/post/@types/db';
 import { useReadMyUser } from '@modules/user';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
@@ -41,10 +47,10 @@ export interface IProps {
 }
 
 const PostCard = ({ data, initCommentListOpen = false }: IProps) => {
-  const dispatch = useDispatch();
-  const { status: removePostStatus } = useAppSelector(
-    fetchStatusSelector.byFetchAction(postAction.fetchRemovePost, data.id),
-  );
+  const { successMutate: fetchCreatePostSuccessMutate } = useFetchCreatePostMutate();
+  const { successMutate: fetchLikePostSuccessMutate } = useFetchLikePostMutate();
+  const { successMutate: fetchUnLikePPostSuccessMutate } = useFetchUnLikePostMutate();
+  const { successMutate: fetchRemovePostSuccessMutate } = useFetchRemovePostMutate();
   const { data: myData } = useReadMyUser();
 
   const [morePopOverOpen, setMorePopOverOpen] = useState(false);
@@ -55,19 +61,31 @@ const PostCard = ({ data, initCommentListOpen = false }: IProps) => {
   const handleRetweet = useCallback(async () => {
     try {
       if (!requiredLogin()) return;
-      await dispatch(postAction.fetchCreateRetweet.asyncThunk({ postId: data.id }));
+      const {
+        data: { resData },
+      } = await requestCreateRetweet({ postId: data.id });
+      await fetchCreatePostSuccessMutate(resData);
     } catch (error) {
       if (isCustomAxiosError(error)) {
         message.error(JSON.stringify(error.response.data.resMsg));
       }
     }
-  }, [data.id, dispatch]);
+  }, [data.id, fetchCreatePostSuccessMutate]);
 
-  const handleToggleLike = useCallback(() => {
+  const handleToggleLike = useCallback(async () => {
     if (!requiredLogin()) return;
-    if (!isLike) dispatch(postAction.fetchLikePost.request({ postId: data.id }));
-    else dispatch(postAction.fetchUnlikePost.request({ postId: data.id }));
-  }, [data.id, dispatch, isLike]);
+    if (!isLike) {
+      const {
+        data: { resData },
+      } = await requestLikePost({ postId: data.id });
+      await fetchLikePostSuccessMutate(resData.PostId, resData.UserId);
+    } else {
+      const {
+        data: { resData },
+      } = await requestUnlikePost({ postId: data.id });
+      await fetchUnLikePPostSuccessMutate(resData.PostId, resData.UserId);
+    }
+  }, [data.id, fetchLikePostSuccessMutate, fetchUnLikePPostSuccessMutate, isLike]);
 
   const handleToggleCommentList = useCallback(() => {
     setCommentListOpen((prev) => !prev);
@@ -91,10 +109,19 @@ const PostCard = ({ data, initCommentListOpen = false }: IProps) => {
       icon: <ExclamationCircleOutlined />,
       content: '삭제시 해당 컨텐츠는 복구 불가 합니다.',
       async onOk() {
-        dispatch(postAction.fetchRemovePost.request({ postId: data.id }, { actionList: [data.id] }));
+        try {
+          const {
+            data: { resData },
+          } = await requestRemovePost({ postId: data.id });
+          await fetchRemovePostSuccessMutate(resData.PostId);
+        } catch (error) {
+          if (isCustomAxiosError(error)) {
+            message.error(JSON.stringify(error.response.data.resMsg));
+          }
+        }
       },
     });
-  }, [data.id, dispatch]);
+  }, [data.id, fetchRemovePostSuccessMutate]);
 
   return (
     <StyledCard
@@ -123,7 +150,7 @@ const PostCard = ({ data, initCommentListOpen = false }: IProps) => {
             content={
               <div role="presentation" onClick={handleToggleMorePopOver}>
                 <p>
-                  <Button type="text" ghost size="small">
+                  <Button type="text" size="small">
                     <Link href={new PostReadPageFilter({ id: data.id }).url} passHref>
                       <a href={PASS_HREF}>
                         <ExportOutlined /> 상세페이지 이동
@@ -133,20 +160,14 @@ const PostCard = ({ data, initCommentListOpen = false }: IProps) => {
                 </p>
                 {data.User.id === myData?.id && !data.RetweetId && (
                   <p>
-                    <Button type="text" ghost size="small" onClick={handleEditMode}>
+                    <Button type="text" size="small" onClick={handleEditMode}>
                       <EditOutlined /> 수정
                     </Button>
                   </p>
                 )}
                 {data.User.id === myData?.id && (
                   <p>
-                    <Button
-                      type="text"
-                      ghost
-                      size="small"
-                      loading={removePostStatus === 'LOADING'}
-                      onClick={handleRemoveConfirmPost}
-                    >
+                    <Button type="text" size="small" onClick={handleRemoveConfirmPost}>
                       <DeleteOutlined /> 삭제
                     </Button>
                   </p>

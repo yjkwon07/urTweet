@@ -1,15 +1,12 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import { FileImageTwoTone } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Button, Input, Form, message, Image } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
 
-import { useAppSelector } from '@hooks/useAppRedux';
-import { fetchStatusSelector } from '@modules/fetchStatus';
 import { fileDownloadLink, fileUpload } from '@modules/file';
-import { postAction } from '@modules/post';
+import { requestUpdatePost, useFetchUpdatePostMutate } from '@modules/post';
 import { FormEditPost, Image as IImage } from '@modules/post/@types';
 import { EDIT_POST_SCHEMA } from '@modules/post/config';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
@@ -25,8 +22,8 @@ export interface IProps {
 }
 
 const EditPostCardContent = ({ postId, postContent, imageList, onCancel }: IProps) => {
-  const dispatch = useDispatch();
-  const { status } = useAppSelector(fetchStatusSelector.byFetchAction(postAction.fetchUpdatePost, postId));
+  const { successMutate } = useFetchUpdatePostMutate();
+  const [isFetchUpdatePost, setIsFetchUpdatePost] = useState(false);
 
   const {
     control,
@@ -85,22 +82,25 @@ const EditPostCardContent = ({ postId, postContent, imageList, onCancel }: IProp
   const handleChangePost = useCallback(
     async (formData) => {
       try {
-        await dispatch(
-          postAction.fetchUpdatePost.asyncThunk(
-            { url: { postId }, body: { content: formData.content, image: formData.image } },
-            { actionList: [postId] },
-          ),
-        );
+        setIsFetchUpdatePost(true);
+        const {
+          data: { resData },
+        } = await requestUpdatePost({
+          url: { postId },
+          body: { content: formData.content, image: formData.image },
+        });
+        await successMutate(resData, postId);
       } catch (error) {
         if (isCustomAxiosError(error)) {
           message.error(JSON.stringify(error.response.data.resMsg));
         }
       } finally {
+        setIsFetchUpdatePost(false);
         reset({});
         onCancel();
       }
     },
-    [dispatch, onCancel, postId, reset],
+    [onCancel, postId, reset, successMutate],
   );
 
   return (
@@ -148,7 +148,7 @@ const EditPostCardContent = ({ postId, postContent, imageList, onCancel }: IProp
         </Image.PreviewGroup>
       </div>
       <div className="btn-group">
-        <Button className="submit-button mr-5" type="primary" htmlType="submit" loading={status === 'LOADING'}>
+        <Button className="submit-button mr-5" type="primary" htmlType="submit" loading={isFetchUpdatePost}>
           수정
         </Button>
         <Button className="cancel-button" onClick={onCancel}>
