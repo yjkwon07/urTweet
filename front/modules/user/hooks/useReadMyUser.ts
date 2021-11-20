@@ -8,7 +8,6 @@ import { GET_READ_MY_USER_API } from '../api';
 
 export default function useReadMyUser() {
   return useSWR<MyUser | null>(GET_READ_MY_USER_API(), (url) => {
-    console.trace(`object`);
     if (!getUserId()) return null;
     return getItemDataFetcher(url);
   });
