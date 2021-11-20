@@ -1,21 +1,15 @@
-import { useCallback } from 'react';
+import useSWR from 'swr';
 
-import { useDispatch } from 'react-redux';
-
-import { useAppSelector } from '@hooks/useAppRedux';
-import { fetchStatusSelector } from '@modules/fetchStatus';
 import { getUserId } from '@utils/auth';
+import { getItemDataFetcher } from '@utils/fetcher';
 
-import { userAction, userSelector } from '../slice';
+import { MyUser } from '../@types';
+import { GET_READ_MY_USER_API } from '../api';
 
 export default function useReadMyUser() {
-  const dispatch = useDispatch();
-  const { status, error } = useAppSelector(fetchStatusSelector.byFetchAction(userAction.fetchReadMyUser));
-  const data = useAppSelector(userSelector.myData);
-
-  const fetch = useCallback(() => {
-    if (getUserId()) dispatch(userAction.fetchReadMyUser.request());
-  }, [dispatch]);
-
-  return { status, data, error, fetch };
+  return useSWR<MyUser | null>(GET_READ_MY_USER_API(), (url) => {
+    console.trace(`object`);
+    if (!getUserId()) return null;
+    return getItemDataFetcher(url);
+  });
 }

@@ -1,10 +1,11 @@
+import { GetServerSideProps } from 'next';
 import Head from 'next/head';
-import { END } from 'redux-saga';
+import { SWRConfig } from 'swr';
 
 import SEO, { IProps as ISEOProps } from '@components/SEO';
-import { postAction } from '@modules/post';
-import wrapper from '@modules/store/configStore';
-import { userAction } from '@modules/user';
+import { GET_LIST_READ_POST_API, requestListReadPost } from '@modules/post';
+import { GET_READ_USER_API, requestReadUser } from '@modules/user';
+import { getInfiniteKey } from '@utils/swrHelper';
 import { Custom404PageFilter } from '@views/404/utils';
 import UserRead from '@views/User/Read';
 import { UserReadPageFilter } from '@views/User/Read/utils';
@@ -12,31 +13,35 @@ import { UserReadPageFilter } from '@views/User/Read/utils';
 export interface IProps {
   title: string;
   seo: ISEOProps;
+  fallback: { [key: string]: any };
 }
 
-const UserReadPages = ({ title, seo }: IProps) => {
+const UserReadPages = ({ title, seo, fallback }: IProps) => {
   return (
-    <>
+    <SWRConfig value={{ fallback }}>
       <Head>
         <title>{title}</title>
         <SEO title={seo.title} url={seo.url} description={seo.description} name={seo.name} keywords={seo.keywords} />
       </Head>
       <UserRead />
-    </>
+    </SWRConfig>
   );
 };
 
 // SSR
-export const getServerSideProps = wrapper.getServerSideProps(async ({ store, params, query }) => {
+export const getServerSideProps: GetServerSideProps = async ({ params, query }) => {
   try {
     const userId = UserReadPageFilter.parseParam(params).id;
     const filter = UserReadPageFilter.parseQuery(query);
 
     const {
-      resData: { item: userData },
-    } = await store.dispatch(userAction.fetchReadUser.asyncThunk({ userId }));
-    await store.dispatch(postAction.fetchListReadPost.asyncThunk(filter));
-    store.dispatch(END);
+      data: {
+        resData: { item: userData },
+      },
+    } = await requestReadUser({ userId });
+    const {
+      data: { resData },
+    } = await requestListReadPost(filter);
 
     return {
       props: {
@@ -48,6 +53,10 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, par
           name: `${userData?.nickname}님의 게시글`,
           keywords: `${userData?.nickname}`,
         },
+        fallback: {
+          [GET_READ_USER_API({ userId })]: userData,
+          [`${getInfiniteKey()}${GET_LIST_READ_POST_API(filter)}`]: [resData],
+        },
       },
     };
   } catch (error) {
@@ -58,6 +67,6 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, par
       },
     };
   }
-});
+};
 
 export default UserReadPages;

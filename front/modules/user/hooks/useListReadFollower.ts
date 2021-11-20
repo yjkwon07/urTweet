@@ -1,29 +1,18 @@
-import { useCallback } from 'react';
+import useSWR from 'swr';
 
-import { useDispatch } from 'react-redux';
+import { getDataFetcher } from '@utils/fetcher';
 
-import { useAppSelector } from '@hooks/useAppRedux';
-import { fetchStatusSelector } from '@modules/fetchStatus';
-import { CustomAxiosError } from '@typings/type';
+import { ListReadFollowerUrlQuery, ListReadFollowerResData, GET_LIST_READ_FOLLOWER_API } from '../api';
 
-import { ListReadFollowerUrlQuery, ListReadFollowerRes } from '../api';
-import { userAction, userSelector } from '../slice';
+export default function useListReadFollower(query: ListReadFollowerUrlQuery) {
+  const result = useSWR<ListReadFollowerResData>(GET_LIST_READ_FOLLOWER_API(query), getDataFetcher);
 
-export default function useListReadFollower() {
-  const dispatch = useDispatch();
-
-  const { status, error } = useAppSelector(
-    fetchStatusSelector.byType<ListReadFollowerRes, CustomAxiosError>(userAction.fetchListReadFollower.TYPE),
-  );
-  const data = useAppSelector(userSelector.followerListData);
-  const { curPage, rowsPerPage, isMoreRead, totalCount } = useAppSelector(userSelector.follower);
-
-  const fetch = useCallback(
-    (query: ListReadFollowerUrlQuery) => {
-      dispatch(userAction.fetchListReadFollower.request(query));
-    },
-    [dispatch],
-  );
-
-  return { status, data, error, curPage, rowsPerPage, isMoreRead, totalCount, fetch };
+  return {
+    ...result,
+    data: result.data?.list,
+    curPage: result.data?.curPage,
+    rowsPerPage: result.data?.rowsPerPage,
+    isReachingEndData: !!result.data?.nextPage,
+    totalCount: result.data?.totalCount || 0,
+  };
 }

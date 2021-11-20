@@ -4,7 +4,6 @@ import { SWRConfig } from 'swr';
 
 import SEO, { IProps as ISEOProps } from '@components/SEO';
 import { GET_READ_POST_API, requestReadPost } from '@modules/post';
-import { Post } from '@modules/post/@types';
 import { Custom404PageFilter } from '@views/404/utils';
 import PostReadView from '@views/Post/Read';
 import { PostReadPageFilter } from '@views/Post/Read/utils';
@@ -12,7 +11,7 @@ import { PostReadPageFilter } from '@views/Post/Read/utils';
 export interface IProps {
   title: string;
   seo: ISEOProps;
-  fallback: { string: Post };
+  fallback: { [key: string]: any };
 }
 
 const PostReadPage = ({ title, seo, fallback }: IProps) => {

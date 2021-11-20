@@ -4,11 +4,9 @@ import { HYDRATE } from 'next-redux-wrapper';
 import { HASHTAG, hashtagReducer } from '@modules/hashtag';
 
 import { FETCH_STATUS, fetchStatusReducer } from '../fetchStatus';
-import { USER, userReducer } from '../user';
 
 const reducer = combineReducers({
   [FETCH_STATUS]: fetchStatusReducer,
-  [USER]: userReducer,
   [HASHTAG]: hashtagReducer,
 });
 

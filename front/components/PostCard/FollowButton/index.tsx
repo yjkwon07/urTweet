@@ -1,12 +1,10 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { ExclamationCircleOutlined, UserAddOutlined, UserDeleteOutlined } from '@ant-design/icons';
-import { Modal } from 'antd';
-import { useDispatch } from 'react-redux';
+import { message, Modal } from 'antd';
 
-import { useAppSelector } from '@hooks/useAppRedux';
-import { fetchStatusSelector } from '@modules/fetchStatus';
-import { userAction, useReadMyUser } from '@modules/user';
+import { requestFollow, requestUnfollow, useReadMyUser } from '@modules/user';
+import isCustomAxiosError from '@utils/isCustomAxiosError';
 
 import { StyledButton } from './styles';
 
@@ -17,13 +15,10 @@ interface IProps {
 }
 
 const FollowButton = ({ userId }: IProps) => {
-  const dispatch = useDispatch();
-  const { status: followStatus } = useAppSelector(fetchStatusSelector.byFetchAction(userAction.fetchFollow, userId));
-  const { status: unfollowStatus } = useAppSelector(
-    fetchStatusSelector.byFetchAction(userAction.fetchUnFollow, userId),
-  );
-  const { data: myData } = useReadMyUser();
+  const [isFetchFollowPost, setIsFetchFollowPost] = useState(false);
+  const [isFetchUnFollowPost, setIsFetchUnFollowPost] = useState(false);
 
+  const { data: myData, mutate } = useReadMyUser();
   const isFollowing = useMemo(
     () => !!myData?.Followings.find((Following) => Following.id === userId),
     [userId, myData?.Followings],
@@ -31,20 +26,40 @@ const FollowButton = ({ userId }: IProps) => {
 
   const [showUnfollow, setShowUnfollow] = useState(false);
 
-  const handleFollow = useCallback(() => {
-    dispatch(userAction.fetchFollow.request({ userId }, { actionList: [userId] }));
-  }, [userId, dispatch]);
+  const handleFollow = useCallback(async () => {
+    try {
+      setIsFetchFollowPost(true);
+      await requestFollow({ userId });
+      mutate();
+    } catch (error) {
+      if (isCustomAxiosError(error)) {
+        message.error(JSON.stringify(error.response.data.resMsg));
+      }
+    } finally {
+      setIsFetchFollowPost(false);
+    }
+  }, [mutate, userId]);
 
   const handleShowUnfollowConfirm = useCallback(() => {
     confirm({
       title: '정말로 언팔로우 하시겠습니까?',
       icon: <ExclamationCircleOutlined />,
       content: '언팔로우시 해당 멤버의 활동을 자세히 알 수 없게 됩니다.',
-      onOk() {
-        dispatch(userAction.fetchUnFollow.request({ userId }, { actionList: [userId] }));
+      async onOk() {
+        try {
+          setIsFetchUnFollowPost(true);
+          await requestUnfollow({ userId });
+          mutate();
+        } catch (error) {
+          if (isCustomAxiosError(error)) {
+            message.error(JSON.stringify(error.response.data.resMsg));
+          }
+        } finally {
+          setIsFetchUnFollowPost(false);
+        }
       },
     });
-  }, [userId, dispatch]);
+  }, [mutate, userId]);
 
   return (
     <>
@@ -55,7 +70,7 @@ const FollowButton = ({ userId }: IProps) => {
           ghost
           danger={showUnfollow}
           icon={showUnfollow && <UserDeleteOutlined />}
-          loading={unfollowStatus === 'LOADING'}
+          loading={isFetchUnFollowPost}
           onMouseEnter={() => setShowUnfollow(true)}
           onMouseLeave={() => setShowUnfollow(false)}
           onClick={handleShowUnfollowConfirm}
@@ -69,7 +84,7 @@ const FollowButton = ({ userId }: IProps) => {
           type="primary"
           ghost
           icon={<UserAddOutlined />}
-          loading={followStatus === 'LOADING'}
+          loading={isFetchFollowPost}
           onClick={handleFollow}
         >
           Follow

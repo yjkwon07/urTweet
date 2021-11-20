@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 
 import { Global } from '@emotion/react';
 import dayjs from 'dayjs';
@@ -6,7 +6,6 @@ import 'dayjs/locale/ko';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
 import { SWRConfig } from 'swr';
 
 import wrapper from '@modules/store/configStore';
@@ -19,14 +18,8 @@ dayjs.locale('ko');
 dayjs.extend(relativeTime);
 
 const AuthCheck: FC = ({ children }) => {
-  const router = useRouter();
-  const { fetch } = useReadMyUser();
-
-  //  페이지 권한 검사는 이쪽에서 확인
-  useEffect(() => {
-    fetch();
-  }, [fetch, router]);
-
+  useReadMyUser();
+  // 권한 검사는 여기서
   return <>{children}</>;
 };
 
