@@ -8,7 +8,6 @@ import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { SWRConfig } from 'swr';
 
-import wrapper from '@modules/store/configStore';
 import { useReadMyUser } from '@modules/user';
 import { globalStyles } from 'public/styles';
 
@@ -51,4 +50,4 @@ const App = ({ Component, pageProps }: AppProps) => {
   );
 };
 
-export default wrapper.withRedux(App);
+export default App;
