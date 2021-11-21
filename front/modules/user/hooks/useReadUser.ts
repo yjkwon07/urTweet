@@ -1,23 +1,10 @@
-import { useCallback } from 'react';
+import useSWR from 'swr';
 
-import { useDispatch } from 'react-redux';
+import { getItemDataFetcher } from '@utils/fetcher';
 
-import { useAppSelector } from '@hooks/useAppRedux';
-import { fetchStatusSelector } from '@modules/fetchStatus';
+import { User } from '../@types';
+import { GET_READ_USER_API, ReadUserUrlQuery } from '../api';
 
-import { userAction, userSelector } from '../slice';
-
-export default function useReadUser() {
-  const dispatch = useDispatch();
-  const { status, error } = useAppSelector(fetchStatusSelector.byFetchAction(userAction.fetchReadUser));
-  const data = useAppSelector(userSelector.userData);
-
-  const fetch = useCallback(
-    (userId: number) => {
-      dispatch(userAction.fetchReadUser.request({ userId }));
-    },
-    [dispatch],
-  );
-
-  return { status, data, error, fetch };
+export default function useReadUser(query: ReadUserUrlQuery) {
+  return useSWR<User>(GET_READ_USER_API(query), getItemDataFetcher);
 }

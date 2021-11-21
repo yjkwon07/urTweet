@@ -1,13 +1,20 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { List, message, Modal } from 'antd';
 import Router from 'next/router';
-import { useDispatch } from 'react-redux';
 
 import BaseLayout from '@layouts/BaseLayout';
-import { useListReadFollower, useListReadFollowing, userAction, useReadMyUser } from '@modules/user';
-import { getUserId } from '@utils/auth';
+import {
+  ListReadFollowerUrlQuery,
+  ListReadFollowingUrlQuery,
+  requestRemoveFollowerMe,
+  requestUnfollow,
+  useListReadFollower,
+  useListReadFollowing,
+  useReadMyUser,
+} from '@modules/user';
+import isCustomAxiosError from '@utils/isCustomAxiosError';
 
 import EditMyDataForm from './EditMyUserForm';
 import FollowUserCard from './FollowUserCard';
@@ -17,33 +24,41 @@ import { ProfilePageFilter } from './utils';
 const { confirm } = Modal;
 
 const ProfileView = () => {
-  const dispatch = useDispatch();
+  const { isValidating, data: myData, error, mutate } = useReadMyUser();
 
-  const { data: myData, status: myDataStatus } = useReadMyUser();
-
+  const [followingListQuery, setFollowingListQuery] = useState<ListReadFollowingUrlQuery>({
+    page: ProfilePageFilter.defaultOption.DEFAULT_FOLLOWER_CUR_PAGE,
+    pageSize: ProfilePageFilter.defaultOption.DEFAULT_FOLLOWER_PER_PAGE,
+  });
   const {
     data: followingListData,
-    status: followingListStatus,
-    curPage: followingListCurPage,
-    rowsPerPage: followingListRowPerPage,
-    isMoreRead: followingListIsMoreRead,
-    fetch: fetchListReadFollowing,
-  } = useListReadFollowing();
+    isValidating: isFollowingValidating,
+    isReachingEndData: isFollowingReachingEndData,
+    mutate: followingMutate,
+  } = useListReadFollowing(followingListQuery);
 
+  const [followerListQuery, setFollowerListQuery] = useState<ListReadFollowerUrlQuery>({
+    page: ProfilePageFilter.defaultOption.DEFAULT_FOLLOWER_CUR_PAGE,
+    pageSize: ProfilePageFilter.defaultOption.DEFAULT_FOLLOWER_PER_PAGE,
+  });
   const {
     data: followerListData,
-    status: followerStatus,
-    curPage: followerCurPage,
-    rowsPerPage: followerRowPerPage,
-    isMoreRead: followerIsMoreRead,
-    fetch: fetchListReadFollower,
-  } = useListReadFollower();
+    isValidating: isFollowerValidating,
+    isReachingEndData: isFollowerReachingEndData,
+    mutate: followerMutate,
+  } = useListReadFollower(followerListQuery);
 
   const handleLoadMoreFollowingList = useCallback(() => {
-    if (followingListIsMoreRead) {
-      fetchListReadFollowing({ page: followingListCurPage + 1, pageSize: followingListRowPerPage });
+    if (isFollowingReachingEndData) {
+      setFollowingListQuery(
+        (prevFollowerListQuery) =>
+          prevFollowerListQuery && {
+            ...prevFollowerListQuery,
+            page: prevFollowerListQuery.page + 1,
+          },
+      );
     }
-  }, [fetchListReadFollowing, followingListCurPage, followingListIsMoreRead, followingListRowPerPage]);
+  }, [isFollowingReachingEndData]);
 
   const handleCancelFollowing = useCallback(
     (userId) => {
@@ -51,19 +66,33 @@ const ProfileView = () => {
         title: '정말로 언팔로우 하시겠습니까?',
         icon: <ExclamationCircleOutlined />,
         content: '언팔로우시 해당 멤버의 활동을 자세히 알 수 없게 됩니다.',
-        onOk() {
-          dispatch(userAction.fetchRemoveFollowerMe.request({ userId }));
+        async onOk() {
+          try {
+            await requestUnfollow({ userId });
+            await followingMutate();
+            mutate();
+          } catch (error) {
+            if (isCustomAxiosError(error)) {
+              message.error(JSON.stringify(error.response.data.resMsg));
+            }
+          }
         },
       });
     },
-    [dispatch],
+    [followingMutate, mutate],
   );
 
   const handleLoadMoreFollowerList = useCallback(() => {
-    if (followerIsMoreRead) {
-      fetchListReadFollower({ page: followerCurPage + 1, pageSize: followerRowPerPage });
+    if (isFollowerReachingEndData) {
+      setFollowerListQuery(
+        (prevFollowerListQuery) =>
+          prevFollowerListQuery && {
+            ...prevFollowerListQuery,
+            page: prevFollowerListQuery.page + 1,
+          },
+      );
     }
-  }, [fetchListReadFollower, followerCurPage, followerIsMoreRead, followerRowPerPage]);
+  }, [isFollowerReachingEndData]);
 
   const handleCancelFollower = useCallback(
     (userId) => {
@@ -71,35 +100,30 @@ const ProfileView = () => {
         title: '정말로 언팔로우 하시겠습니까?',
         icon: <ExclamationCircleOutlined />,
         content: '언팔로우시 해당 멤버가 나의 활동을 자세히 알 수 없게 됩니다.',
-        onOk() {
-          dispatch(userAction.fetchRemoveFollowerMe.request({ userId }));
+        async onOk() {
+          try {
+            await requestRemoveFollowerMe({ userId });
+            await followerMutate();
+            mutate();
+          } catch (error) {
+            if (isCustomAxiosError(error)) {
+              message.error(JSON.stringify(error.response.data.resMsg));
+            }
+          }
         },
       });
     },
-    [dispatch],
+    [followerMutate, mutate],
   );
 
   useEffect(() => {
-    if (!getUserId() || (myDataStatus === 'FAIL' && !myData)) {
+    if ((isValidating && !myData) || error) {
       message.warn('로그인 후 이용해 주시길 바랍니다.');
       Router.push('/');
     }
-  }, [myData, myDataStatus]);
+  }, [error, isValidating, myData]);
 
-  useEffect(() => {
-    fetchListReadFollowing({
-      page: ProfilePageFilter.defaultOption.DEFAULT_FOLLOWER_CUR_PAGE,
-      pageSize: ProfilePageFilter.defaultOption.DEFAULT_FOLLOWER_PER_PAGE,
-    });
-  }, [fetchListReadFollowing]);
-
-  useEffect(() => {
-    fetchListReadFollower({
-      page: ProfilePageFilter.defaultOption.DEFAULT_FOLLOWING_CUR_PAGE,
-      pageSize: ProfilePageFilter.defaultOption.DEFAULT_FOLLOWING_PER_PAGE,
-    });
-  }, [fetchListReadFollower]);
-
+  if (isValidating || !myData) return null;
   return (
     <BaseLayout>
       <EditMyDataForm />
@@ -109,13 +133,9 @@ const ProfileView = () => {
         size="small"
         header={<div>팔로잉</div>}
         loadMore={
-          followingListIsMoreRead && (
+          isFollowingReachingEndData && (
             <StyledCenter>
-              <StyledButton
-                className="mb-10"
-                onClick={handleLoadMoreFollowingList}
-                loading={followingListStatus === 'LOADING'}
-              >
+              <StyledButton className="mb-10" onClick={handleLoadMoreFollowingList} loading={isFollowingValidating}>
                 더 보기
               </StyledButton>
             </StyledCenter>
@@ -125,7 +145,7 @@ const ProfileView = () => {
         dataSource={followingListData}
         renderItem={(user) => (
           <List.Item>
-            <FollowUserCard data={user} loading={followingListStatus === 'LOADING'} onCancel={handleCancelFollowing} />
+            <FollowUserCard data={user} loading={isFollowingValidating} onCancel={handleCancelFollowing} />
           </List.Item>
         )}
       />
@@ -134,13 +154,9 @@ const ProfileView = () => {
         size="small"
         header={<div>팔로워</div>}
         loadMore={
-          followerIsMoreRead && (
+          isFollowerReachingEndData && (
             <StyledCenter>
-              <StyledButton
-                className="mb-10"
-                onClick={handleLoadMoreFollowerList}
-                loading={followerStatus === 'LOADING'}
-              >
+              <StyledButton className="mb-10" onClick={handleLoadMoreFollowerList} loading={isFollowerValidating}>
                 더 보기
               </StyledButton>
             </StyledCenter>
@@ -150,7 +166,7 @@ const ProfileView = () => {
         dataSource={followerListData}
         renderItem={(user) => (
           <List.Item>
-            <FollowUserCard data={user} loading={followerStatus === 'LOADING'} onCancel={handleCancelFollower} />
+            <FollowUserCard data={user} loading={isFollowerValidating} onCancel={handleCancelFollower} />
           </List.Item>
         )}
       />

@@ -1,15 +1,12 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 import { LockOutlined, MailOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Input, Button, Form, message } from 'antd';
 import Link from 'next/link';
 import { Controller, useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
 
-import { useAppSelector } from '@hooks/useAppRedux';
-import { fetchStatusSelector } from '@modules/fetchStatus';
-import { LOGIN_SCHEMA, userAction } from '@modules/user';
+import { LOGIN_SCHEMA, requestLogin, useReadMyUser } from '@modules/user';
 import { FormLogin } from '@modules/user/@types';
 import { setUserId } from '@utils/auth';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
@@ -19,8 +16,8 @@ import { SignupPageFilter } from '@views/Signup/utils';
 import { StyledForm } from './styles';
 
 const LoginForm = () => {
-  const dispatch = useDispatch();
-  const { status } = useAppSelector(fetchStatusSelector.byFetchAction(userAction.fetchLogin));
+  const [isFetchLogin, setIsFetchLogin] = useState(false);
+  const { mutate } = useReadMyUser();
 
   const {
     control,
@@ -34,15 +31,21 @@ const LoginForm = () => {
   const handleSubmit = useCallback(
     async (formData: FormLogin) => {
       try {
-        const { resData } = await dispatch(userAction.fetchLogin.asyncThunk(formData));
+        setIsFetchLogin(true);
+        const {
+          data: { resData },
+        } = await requestLogin(formData);
         setUserId(resData.id.toString());
+        await mutate();
       } catch (error) {
         if (isCustomAxiosError(error)) {
           message.error(JSON.stringify(error.response.data.resMsg));
         }
+      } finally {
+        setIsFetchLogin(false);
       }
     },
-    [dispatch],
+    [mutate],
   );
 
   return (
@@ -101,7 +104,7 @@ const LoginForm = () => {
           shape="round"
           type="primary"
           htmlType="submit"
-          loading={status === 'LOADING'}
+          loading={isFetchLogin}
         >
           <span>로그인</span>
         </Button>

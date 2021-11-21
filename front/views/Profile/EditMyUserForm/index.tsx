@@ -1,23 +1,19 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { MailOutlined, UserOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Button, Form, Input, message } from 'antd';
 import { Controller, useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
 
-import { useAppSelector } from '@hooks/useAppRedux';
-import { fetchStatusSelector } from '@modules/fetchStatus';
-import { UPDATE_MY_USER_SCHEMA, useReadMyUser, userAction } from '@modules/user';
+import { requestUpdateMyUser, UPDATE_MY_USER_SCHEMA, useReadMyUser } from '@modules/user';
 import { FormUpdateMyUser } from '@modules/user/@types';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
 
 import { StyledForm } from './styles';
 
 const EditMyUserForm = () => {
-  const dispatch = useDispatch();
-  const { status } = useAppSelector(fetchStatusSelector.byFetchAction(userAction.fetchUpdateMyUser));
-  const { data: myData } = useReadMyUser();
+  const [isFetchUpdateMyUser, setIsFetchUpdateMyUser] = useState(false);
+  const { data: myData, mutate } = useReadMyUser();
 
   const {
     control,
@@ -42,15 +38,19 @@ const EditMyUserForm = () => {
     async (formData: FormUpdateMyUser) => {
       if (!myData?.id) return;
       try {
-        await dispatch(userAction.fetchUpdateMyUser.asyncThunk(formData));
+        setIsFetchUpdateMyUser(true);
+        await requestUpdateMyUser(formData);
         message.success('수정 되었습니다.');
+        mutate();
       } catch (error) {
         if (isCustomAxiosError(error)) {
           message.error(JSON.stringify(error.response.data));
         }
+      } finally {
+        setIsFetchUpdateMyUser(false);
       }
     },
-    [myData?.id, dispatch],
+    [mutate, myData?.id],
   );
 
   return (
@@ -94,7 +94,7 @@ const EditMyUserForm = () => {
       </Form.Item>
       <div className="btn-group">
         <Form.Item name="submit">
-          <Button className="submit-button" type="primary" htmlType="submit" loading={status === 'LOADING'}>
+          <Button className="submit-button" type="primary" htmlType="submit" loading={isFetchUpdateMyUser}>
             수정하기
           </Button>
         </Form.Item>

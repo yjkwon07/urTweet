@@ -5,6 +5,7 @@ import { Menu, Col, Layout, Row, BackTop } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
+import { useReadMyUser } from '@modules/user';
 import { PASS_HREF } from '@utils/urls';
 import { PostListReadPageFilter } from '@views/Post/ListRead/utils';
 import { ProfilePageFilter } from '@views/Profile/utils';
@@ -20,6 +21,7 @@ interface IProps {
 
 const BaseLayout: FC<IProps> = ({ filterGroup, children }) => {
   const router = useRouter();
+  const { data: myData } = useReadMyUser();
 
   return (
     <StyledLayout>
@@ -43,13 +45,15 @@ const BaseLayout: FC<IProps> = ({ filterGroup, children }) => {
                     </a>
                   </Link>
                 </Menu.Item>
-                <Menu.Item key={new ProfilePageFilter().url} className="menu-item">
-                  <Link href={new ProfilePageFilter().url} passHref>
-                    <a href={PASS_HREF}>
-                      <UserOutlined /> 프로필
-                    </a>
-                  </Link>
-                </Menu.Item>
+                {myData && (
+                  <Menu.Item key={new ProfilePageFilter().url} className="menu-item">
+                    <Link href={new ProfilePageFilter().url} passHref>
+                      <a href={PASS_HREF}>
+                        <UserOutlined /> 프로필
+                      </a>
+                    </Link>
+                  </Menu.Item>
+                )}
               </Menu>
             </div>
           </Col>

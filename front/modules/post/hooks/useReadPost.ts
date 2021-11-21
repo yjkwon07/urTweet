@@ -1,25 +1,10 @@
-import { useCallback } from 'react';
+import useSWR from 'swr';
 
-import { useDispatch } from 'react-redux';
+import { getItemDataFetcher } from '@utils/fetcher';
 
-import { useAppSelector } from '@hooks/useAppRedux';
-import { fetchStatusSelector } from '@modules/fetchStatus';
+import { Post } from '../@types';
+import { GET_READ_POST_API, ReadPostUrlQuery } from '../api';
 
-import { postSelector, postAction } from '../slice';
-
-export default function useReadPost() {
-  const dispatch = useDispatch();
-  const { status, error } = useAppSelector(fetchStatusSelector.byFetchAction(postAction.fetchReadPost));
-  const data = useAppSelector(postSelector.data);
-
-  const fetch = useCallback(
-    (postId: number) => {
-      if (postId) {
-        dispatch(postAction.fetchReadPost.request({ postId }));
-      }
-    },
-    [dispatch],
-  );
-
-  return { status, data, error, fetch };
+export default function useReadPost(query: ReadPostUrlQuery) {
+  return useSWR<Post>(GET_READ_POST_API(query), getItemDataFetcher);
 }

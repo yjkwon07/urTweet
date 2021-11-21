@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 
 import PostCard from '@components/PostCard';
 import useEndReachScroll from '@hooks/useEndReachScroll';
-import { useListReadPost } from '@modules/post';
+import { useInfiniteListReadPost } from '@modules/post';
 import { useReadMyUser } from '@modules/user';
 
 import PostForm from '../PostForm';
@@ -18,14 +18,27 @@ const InfiniteListRead = () => {
   const { query } = postListReadPageFilter;
 
   const { data: myData } = useReadMyUser();
-  const { status, data: postListData, curPage, isMoreRead, fetch: fetchListPost } = useListReadPost();
+  const {
+    data: postPageListData,
+    isLoading,
+    isReachingEndData,
+    handleMoreRead,
+  } = useInfiniteListReadPost({
+    page: query.page,
+    pageSize: query.pageSize,
+    hashtag: query.hashtag,
+  });
+  const postListData = useMemo(() => postPageListData && postPageListData.flat(), [postPageListData]);
 
-  const handleNextPage = useCallback(() => {
-    if (isMoreRead) {
-      const { pageSize, hashtag, mode } = query;
-      fetchListPost({ page: curPage + 1, pageSize, hashtag }, mode);
+  const handleNextPage = useCallback(async () => {
+    try {
+      if (!isReachingEndData && !isLoading) {
+        await handleMoreRead();
+      }
+    } catch (error) {
+      console.error('error :>> ', error);
     }
-  }, [curPage, fetchListPost, isMoreRead, query]);
+  }, [handleMoreRead, isLoading, isReachingEndData]);
 
   useEndReachScroll({ callback: handleNextPage });
 
@@ -38,15 +51,15 @@ const InfiniteListRead = () => {
             <StyledFormBlock />
           </>
         )}
-        {postListData.map((post) => (
+        {postListData?.map((post) => (
           <PostCard key={post.id} data={post} />
         ))}
-        {status === 'SUCCESS' && !postListData.length && (
+        {!isLoading && !postListData?.length && (
           <StyledCenter>
             <Empty description="조회하신 결과가 없습니다." />
           </StyledCenter>
         )}
-        {status === 'LOADING' && (
+        {isLoading && (
           <StyledCenter>
             <Spin />
           </StyledCenter>
