@@ -56,8 +56,11 @@ export interface ReadPostResData {
 export interface ReadPostRes extends CommonRes {
   resData: ReadPostResData;
 }
+export function GET_READ_POST_API_KEY() {
+  return `/post`;
+}
 export function GET_READ_POST_API(url: ReadPostUrlQuery) {
-  return `/post/${url.postId}`;
+  return `${GET_READ_POST_API_KEY()}/${url.postId}`;
 }
 export const requestReadPost = (url: ReadPostUrlQuery) => {
   return axios.get<ReadPostRes>(GET_READ_POST_API(url));
@@ -81,8 +84,11 @@ export interface ListReadPostResData extends ListReadCommonRes {
 export interface ListReadPostRes extends CommonRes {
   resData: ListReadPostResData;
 }
+export function GET_LIST_READ_POST_API_KEY() {
+  return `/posts`;
+}
 export function GET_LIST_READ_POST_API(url: ListReadPostUrlQuery) {
-  return `/posts?page=${url.page}&pageSize=${url.pageSize}&hashtag=${
+  return `${GET_LIST_READ_POST_API_KEY()}?page=${url.page}&pageSize=${url.pageSize}&hashtag=${
     url.hashtag ? encodeURIComponent(url.hashtag) : ''
   }&userId=${url.userId}`;
 }

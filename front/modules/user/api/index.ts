@@ -14,8 +14,11 @@ export interface ReadMyUserResData {
 export interface ReadMyUserRes extends CommonRes {
   resData: ReadMyUserResData;
 }
-export const GET_READ_MY_USER_API = () => {
+export const GET_READ_MY_USER_API_KEY = () => {
   return `/user`;
+};
+export const GET_READ_MY_USER_API = () => {
+  return `${GET_READ_MY_USER_API_KEY()}`;
 };
 export const requestReadMyUser = () => {
   return axios.get<ReadMyUserRes>(GET_READ_MY_USER_API());
@@ -36,8 +39,11 @@ export interface ReadUserResData {
 export interface ReadUserRes extends CommonRes {
   resData: ReadUserResData;
 }
+export const GET_READ_USER_API_KEY = () => {
+  return `/user`;
+};
 export const GET_READ_USER_API = (url: ReadUserUrlQuery) => {
-  return `/user/${url.userId}`;
+  return `${GET_READ_USER_API_KEY()}/${url.userId}`;
 };
 export const requestReadUser = (url: ReadUserUrlQuery) => {
   return axios.get<ReadUserRes>(GET_READ_USER_API(url));
@@ -140,8 +146,11 @@ export interface ListReadFollowingResData extends ListReadCommonRes {
 export interface ListReadFollowingRes extends CommonRes {
   resData: ListReadFollowingResData;
 }
+export const GET_LIST_READ_FOLLOWING_API_KEY = () => {
+  return `/user`;
+};
 export const GET_LIST_READ_FOLLOWING_API = (url: ListReadFollowingUrlQuery) => {
-  return `/user/followings?page=${url.page}&pageSize=${url.pageSize}`;
+  return `${GET_LIST_READ_FOLLOWING_API_KEY()}/followings?page=${url.page}&pageSize=${url.pageSize}`;
 };
 export const requestListReadFollowing = (url: ListReadFollowingUrlQuery) => {
   return axios.get<ListReadFollowingRes>(GET_LIST_READ_FOLLOWING_API(url));
@@ -163,8 +172,11 @@ export interface ListReadFollowerResData extends ListReadCommonRes {
 export interface ListReadFollowerRes extends CommonRes {
   resData: ListReadFollowerResData;
 }
+export const GET_LIST_READ_FOLLOWER_API_KEY = () => {
+  return `/user`;
+};
 export const GET_LIST_READ_FOLLOWER_API = (url: ListReadFollowerUrlQuery) => {
-  return `/user/followers?page=${url.page}&pageSize=${url.pageSize}`;
+  return `${GET_LIST_READ_FOLLOWER_API_KEY()}/followers?page=${url.page}&pageSize=${url.pageSize}`;
 };
 export const requestListReadFollower = (url: ListReadFollowerUrlQuery) => {
   return axios.get<ListReadFollowerRes>(GET_LIST_READ_FOLLOWER_API(url));
