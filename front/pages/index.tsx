@@ -45,6 +45,7 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
         keywords: `Home`,
       },
       fallback: {
+        [`${GET_LIST_READ_POST_API(filter)}`]: resData,
         [`${getInfiniteKey()}${GET_LIST_READ_POST_API(filter)}`]: [resData],
       },
     },

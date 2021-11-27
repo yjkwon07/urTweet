@@ -3,9 +3,10 @@ import { useCallback } from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 
 import useMatchMutate from '@hooks/useMatchMutate';
+import { getInfiniteRegExpKey } from '@utils/swrHelper';
 
 import { Comment, Post } from '../@types';
-import { GET_READ_POST_API, ListReadPostResData } from '../api';
+import { GET_LIST_READ_POST_API_KEY, GET_READ_POST_API, ListReadPostResData } from '../api';
 
 export function useFetchRemovePostMutate() {
   const mutate = useMatchMutate();
@@ -22,8 +23,12 @@ export function useFetchRemovePostMutate() {
       };
 
       await Promise.all([
-        mutate(new RegExp('^/posts'), postResListData, false),
-        mutate(new RegExp('^\\$inf\\$/posts'), (_: ListReadPostResData[]) => _.map(postResListData), false),
+        mutate(new RegExp(`^${GET_LIST_READ_POST_API_KEY()}`), postResListData, false),
+        mutate(
+          new RegExp(`^${getInfiniteRegExpKey()}${GET_LIST_READ_POST_API_KEY()}`),
+          (_: ListReadPostResData[]) => _.map(postResListData),
+          false,
+        ),
         mutate(new RegExp(`^${GET_READ_POST_API({ postId })}`), postData, false),
       ]);
     },
@@ -53,8 +58,12 @@ export function useFetchLikePostMutate() {
       };
 
       await Promise.all([
-        mutate(new RegExp('^/posts'), postResListData, false),
-        mutate(new RegExp('^\\$inf\\$/posts'), (_: ListReadPostResData[]) => _.map(postResListData), false),
+        mutate(new RegExp(`^${GET_LIST_READ_POST_API_KEY()}`), postResListData, false),
+        mutate(
+          new RegExp(`^${getInfiniteRegExpKey()}${GET_LIST_READ_POST_API_KEY()}`),
+          (_: ListReadPostResData[]) => _.map(postResListData),
+          false,
+        ),
         mutate(new RegExp(`^${GET_READ_POST_API({ postId })}`), postData, false),
       ]);
     },
@@ -84,8 +93,12 @@ export function useFetchUnLikePostMutate() {
       };
 
       await Promise.all([
-        mutate(new RegExp('^/posts'), postResListData, false),
-        mutate(new RegExp('^\\$inf\\$/posts'), (_: ListReadPostResData[]) => _.map(postResListData), false),
+        mutate(new RegExp(`^${GET_LIST_READ_POST_API_KEY()}`), postResListData, false),
+        mutate(
+          new RegExp(`^${getInfiniteRegExpKey()}${GET_LIST_READ_POST_API_KEY()}`),
+          (_: ListReadPostResData[]) => _.map(postResListData),
+          false,
+        ),
         mutate(new RegExp(`^${GET_READ_POST_API({ postId })}`), postData, false),
       ]);
     },
@@ -109,8 +122,12 @@ export function useFetchCreatePostMutate() {
       };
 
       await Promise.all([
-        mutate(new RegExp('^/posts'), postResListData, false),
-        mutate(new RegExp('^\\$inf\\$/posts'), (_: ListReadPostResData[]) => _.map(postResListData), false),
+        mutate(new RegExp(`^${GET_LIST_READ_POST_API_KEY()}`), postResListData, false),
+        mutate(
+          new RegExp(`^${getInfiniteRegExpKey()}${GET_LIST_READ_POST_API_KEY()}`),
+          (_: ListReadPostResData[]) => _.map(postResListData),
+          false,
+        ),
       ]);
     },
     [mutate],
@@ -138,8 +155,12 @@ export function useFetchUpdatePostMutate() {
       };
 
       await Promise.all([
-        mutate(new RegExp('^/posts'), postResListData, false),
-        mutate(new RegExp('^\\$inf\\$/posts'), (_: ListReadPostResData[]) => _.map(postResListData), false),
+        mutate(new RegExp(`^${GET_LIST_READ_POST_API_KEY()}`), postResListData, false),
+        mutate(
+          new RegExp(`^${getInfiniteRegExpKey()}${GET_LIST_READ_POST_API_KEY()}`),
+          (_: ListReadPostResData[]) => _.map(postResListData),
+          false,
+        ),
         mutate(new RegExp(`^${GET_READ_POST_API({ postId })}`), postData, false),
       ]);
     },
@@ -168,8 +189,12 @@ export const useFetchCreateCommentMutate = () => {
       };
 
       await Promise.all([
-        mutate(new RegExp('^/posts'), postResListData, false),
-        mutate(new RegExp('^\\$inf\\$/posts'), (_: ListReadPostResData[]) => _.map(postResListData), false),
+        mutate(new RegExp(`^${GET_LIST_READ_POST_API_KEY()}`), postResListData, false),
+        mutate(
+          new RegExp(`^${getInfiniteRegExpKey()}${GET_LIST_READ_POST_API_KEY()}`),
+          (_: ListReadPostResData[]) => _.map(postResListData),
+          false,
+        ),
         mutate(new RegExp(`^${GET_READ_POST_API({ postId })}`), postData, false),
       ]);
     },
