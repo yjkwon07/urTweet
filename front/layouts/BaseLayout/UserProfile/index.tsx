@@ -1,27 +1,34 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
-import { Avatar, Button } from 'antd';
+import { Avatar, Button, message } from 'antd';
 import Link from 'next/link';
-import { useDispatch } from 'react-redux';
 
-import { useAppSelector } from '@hooks/useAppRedux';
-import { fetchStatusSelector } from '@modules/fetchStatus';
-import { userAction, useReadMyUser } from '@modules/user';
+import { requestLogout, useReadMyUser } from '@modules/user';
 import { removeUserId } from '@utils/auth';
+import isCustomAxiosError from '@utils/isCustomAxiosError';
 import { PASS_HREF } from '@utils/urls';
 import { UserReadPageFilter } from '@views/User/Read/utils';
 
 import { StyledCard, StyledCardMeta } from './styles';
 
 const UserProfile = () => {
-  const dispatch = useDispatch();
-  const { status: logoutStatus } = useAppSelector(fetchStatusSelector.byFetchAction(userAction.fetchLogout));
-  const { data: myData } = useReadMyUser();
+  const [isFetchLogout, setIsFetchLogout] = useState(false);
+  const { data: myData, mutate } = useReadMyUser();
 
-  const handleLogout = useCallback(() => {
-    removeUserId();
-    dispatch(userAction.fetchLogout.request());
-  }, [dispatch]);
+  const handleLogout = useCallback(async () => {
+    try {
+      setIsFetchLogout(true);
+      removeUserId();
+      await requestLogout();
+      await mutate(null, false);
+    } catch (error) {
+      if (isCustomAxiosError(error)) {
+        message.error(JSON.stringify(error.response.data.resMsg));
+      }
+    } finally {
+      setIsFetchLogout(false);
+    }
+  }, [mutate]);
 
   if (!myData) return null;
   return (
@@ -55,7 +62,7 @@ const UserProfile = () => {
         title={
           <div className="title">
             {myData.nickname}
-            <Button className="logout-button" shape="round" onClick={handleLogout} loading={logoutStatus === 'LOADING'}>
+            <Button className="logout-button" shape="round" onClick={handleLogout} loading={isFetchLogout}>
               <span>로그아웃</span>
             </Button>
           </div>

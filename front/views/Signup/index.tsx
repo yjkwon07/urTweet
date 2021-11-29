@@ -1,16 +1,13 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { LockOutlined, MailOutlined, UserOutlined } from '@ant-design/icons';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Form, Input, Checkbox, Button, Typography, message } from 'antd';
 import Router from 'next/router';
 import { Controller, useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
 
-import { useAppSelector } from '@hooks/useAppRedux';
 import BaseLayout from '@layouts/BaseLayout';
-import { fetchStatusSelector } from '@modules/fetchStatus';
-import { SIGNUP_SCHEMA, userAction, useReadMyUser } from '@modules/user';
+import { requestSignup, SIGNUP_SCHEMA, useReadMyUser } from '@modules/user';
 import { FormSignup } from '@modules/user/@types';
 import isCustomAxiosError from '@utils/isCustomAxiosError';
 import { PostListReadPageFilter } from '@views/Post/ListRead/utils';
@@ -18,8 +15,7 @@ import { PostListReadPageFilter } from '@views/Post/ListRead/utils';
 import { StyledForm } from './styles';
 
 const Signup = () => {
-  const dispatch = useDispatch();
-  const { status } = useAppSelector(fetchStatusSelector.byFetchAction(userAction.fetchSignup));
+  const [isFetchSignup, setIsFetchSignup] = useState(false);
   const { data: myData } = useReadMyUser();
 
   const {
@@ -31,20 +27,20 @@ const Signup = () => {
     resolver: yupResolver(SIGNUP_SCHEMA),
   });
 
-  const handleSubmitCreateUser = useCallback(
-    async (formData: FormSignup) => {
-      try {
-        await dispatch(userAction.fetchSignup.asyncThunk(formData));
-        message.success('회원가입을 완료했습니다.');
-        Router.push(new PostListReadPageFilter().url);
-      } catch (error) {
-        if (isCustomAxiosError(error)) {
-          message.error(JSON.stringify(error.response.data.resMsg));
-        }
+  const handleSubmitCreateUser = useCallback(async (formData: FormSignup) => {
+    try {
+      setIsFetchSignup(true);
+      await requestSignup(formData);
+      message.success('회원가입을 완료했습니다.');
+      Router.push(new PostListReadPageFilter().url);
+    } catch (error) {
+      if (isCustomAxiosError(error)) {
+        message.error(JSON.stringify(error.response.data.resMsg));
       }
-    },
-    [dispatch],
-  );
+    } finally {
+      setIsFetchSignup(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (myData) {
@@ -157,7 +153,7 @@ const Signup = () => {
         </Form.Item>
         <div className="btn-group">
           <Form.Item name="submit">
-            <Button className="submit-button" type="primary" htmlType="submit" loading={status === 'LOADING'}>
+            <Button className="submit-button" type="primary" htmlType="submit" loading={isFetchSignup}>
               가입하기
             </Button>
           </Form.Item>

@@ -1,25 +1,22 @@
-import { FetchStatus } from '@modules/fetchStatus';
 import { useReadMyUser } from '@modules/user';
-import { getUserId } from '@utils/auth';
 
 import LoginForm from '../LoginForm';
 import UserProfile from '../UserProfile';
 import UserSkeleton from '../UserSkeleton';
 
-const isShowUserSkeleton = (status: FetchStatus) => status === 'LOADING';
-const isShowUserProfile = (status: FetchStatus) => status === 'SUCCESS';
-const isShowLoginForm = (status: FetchStatus, isPrevLogin: boolean) =>
-  (status === 'INIT' && !isPrevLogin) || status === 'FAIL';
+const isShowUserSkeleton = (isValidating: boolean, isLogin: boolean) => isValidating && !isLogin;
+const isShowUserProfile = (isLogin: boolean, isError: boolean) => isLogin && !isError;
+const isShowLoginForm = (isValidating: boolean, isLogin: boolean, isError: boolean) =>
+  (!isValidating && !isLogin) || isError;
 
 const UserStatusView = () => {
-  const { status: myDataStatus } = useReadMyUser();
-  const userId = getUserId();
+  const { data: myData, isValidating, error } = useReadMyUser();
 
   return (
     <>
-      {isShowUserSkeleton(myDataStatus) && <UserSkeleton />}
-      {isShowUserProfile(myDataStatus) && <UserProfile />}
-      {isShowLoginForm(myDataStatus, !!userId) && <LoginForm />}
+      {isShowUserSkeleton(isValidating, !!myData) && <UserSkeleton />}
+      {isShowUserProfile(!!myData, !!error) && <UserProfile />}
+      {isShowLoginForm(isValidating, !!myData, !!error) && <LoginForm />}
     </>
   );
 };

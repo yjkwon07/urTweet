@@ -17,8 +17,11 @@ export interface ListReadHashtagResData extends ListReadCommonRes {
 export interface ListReadHashtagRes extends CommonRes {
   resData: ListReadHashtagResData;
 }
+export function GET_LIST_READ_HASHTAG_API_KEY() {
+  return `/hashtags`;
+}
 export function GET_LIST_READ_HASHTAG_API(url: ListReadHashtagUrlQuery) {
-  return `/hashtags?keyword=${url.keyword}`;
+  return `${GET_LIST_READ_HASHTAG_API_KEY()}?keyword=${url.keyword}`;
 }
 export const requestListReadHashtag = (url: ListReadHashtagUrlQuery) => {
   return axios.get<ListReadHashtagRes>(GET_LIST_READ_HASHTAG_API(url));

@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import PostCard from '@components/PostCard';
 import useEndReachScroll from '@hooks/useEndReachScroll';
 import BaseLayout from '@layouts/BaseLayout';
-import { useListReadPost } from '@modules/post';
+import { useInfiniteListReadPost } from '@modules/post';
 import useUser from '@modules/user/hooks/useReadUser';
 
 import { StyledCenter, StyledViewWrapper } from './styles';
@@ -15,18 +15,31 @@ import { UserReadPageFilter } from './utils';
 
 const UserRead = () => {
   const router = useRouter();
-  const { data: userData } = useUser();
   const postListReadPageFilter = useMemo(() => new UserReadPageFilter(router.query, router.query), [router.query]);
   const { query } = postListReadPageFilter;
 
-  const { status, data: postListData, curPage, isMoreRead, fetch: fetchListPost } = useListReadPost();
+  const { data: userData } = useUser({ userId: query.userId });
+  const {
+    data: postPageListData,
+    isLoading,
+    isReachingEndData,
+    handleMoreRead,
+  } = useInfiniteListReadPost({
+    page: query.page,
+    pageSize: query.pageSize,
+    userId: query.userId,
+  });
+  const postListData = useMemo(() => postPageListData && postPageListData.flat(), [postPageListData]);
 
-  const handleNextPage = useCallback(() => {
-    if (isMoreRead) {
-      const { pageSize, userId, mode } = query;
-      fetchListPost({ page: curPage + 1, pageSize, userId }, mode);
+  const handleNextPage = useCallback(async () => {
+    try {
+      if (!isReachingEndData && !isLoading) {
+        await handleMoreRead();
+      }
+    } catch (error) {
+      console.error('error :>> ', error);
     }
-  }, [curPage, fetchListPost, isMoreRead, query]);
+  }, [handleMoreRead, isLoading, isReachingEndData]);
 
   useEndReachScroll({ callback: handleNextPage });
 
@@ -37,15 +50,15 @@ const UserRead = () => {
           {userData && (
             <>
               <UserInfo data={userData} />
-              {postListData.map((post) => (
+              {postListData?.map((post) => (
                 <PostCard key={post.id} data={post} />
               ))}
-              {status === 'SUCCESS' && !postListData.length && (
+              {!isLoading && !postListData?.length && (
                 <StyledCenter>
                   <Empty description="조회하신 결과가 없습니다." />
                 </StyledCenter>
               )}
-              {status === 'LOADING' && (
+              {isLoading && (
                 <StyledCenter>
                   <Spin />
                 </StyledCenter>

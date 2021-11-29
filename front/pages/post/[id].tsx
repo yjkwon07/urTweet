@@ -1,9 +1,9 @@
+import { GetServerSideProps } from 'next';
 import Head from 'next/head';
-import { END } from 'redux-saga';
+import { SWRConfig } from 'swr';
 
 import SEO, { IProps as ISEOProps } from '@components/SEO';
-import { postAction } from '@modules/post';
-import wrapper from '@modules/store/configStore';
+import { GET_READ_POST_API, requestReadPost } from '@modules/post';
 import { Custom404PageFilter } from '@views/404/utils';
 import PostReadView from '@views/Post/Read';
 import { PostReadPageFilter } from '@views/Post/Read/utils';
@@ -11,29 +11,31 @@ import { PostReadPageFilter } from '@views/Post/Read/utils';
 export interface IProps {
   title: string;
   seo: ISEOProps;
+  fallback: { [key: string]: any };
 }
 
-const PostReadPage = ({ title, seo }: IProps) => {
+const PostReadPage = ({ title, seo, fallback }: IProps) => {
   return (
-    <>
+    <SWRConfig value={{ fallback }}>
       <Head>
         <title>{title}</title>
         <SEO title={seo.title} url={seo.url} description={seo.description} name={seo.name} keywords={seo.keywords} />
       </Head>
       <PostReadView />
-    </>
+    </SWRConfig>
   );
 };
 
 // SSR
-export const getServerSideProps = wrapper.getServerSideProps(async ({ store, params }) => {
+export const getServerSideProps: GetServerSideProps = async ({ params }) => {
   try {
     const postId = PostReadPageFilter.parseParam(params).id;
 
     const {
-      resData: { item: postData },
-    } = await store.dispatch(postAction.fetchReadPost.asyncThunk({ postId }));
-    store.dispatch(END);
+      data: {
+        resData: { item: postData },
+      },
+    } = await requestReadPost({ postId });
 
     return {
       props: {
@@ -45,6 +47,9 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, par
           name: `${postData.User.nickname}님의 게시글`,
           keywords: `${postData.User.nickname}`,
         },
+        fallback: {
+          [GET_READ_POST_API({ postId })]: postData,
+        },
       },
     };
   } catch (error) {
@@ -55,6 +60,6 @@ export const getServerSideProps = wrapper.getServerSideProps(async ({ store, par
       },
     };
   }
-});
+};
 
 export default PostReadPage;

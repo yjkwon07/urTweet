@@ -14,7 +14,15 @@ const PaginationRead = () => {
   const postListReadPageFilter = useMemo(() => new PostListReadPageFilter(router.query), [router.query]);
   const { query } = postListReadPageFilter;
 
-  const { status, data: postListData, totalCount } = useListReadPost();
+  const {
+    isValidating,
+    data: postListData,
+    totalCount,
+  } = useListReadPost({
+    page: query.page,
+    pageSize: query.pageSize,
+    hashtag: query.hashtag,
+  });
 
   const handleChangePage = useCallback(
     (page: number) => {
@@ -26,15 +34,15 @@ const PaginationRead = () => {
   return (
     <StyledViewWrapper>
       <Space className="wrapper" direction="vertical" size={10}>
-        {postListData.map((post) => (
+        {postListData?.map((post) => (
           <PostCard key={post.id} data={post} />
         ))}
-        {status === 'SUCCESS' && !postListData.length && (
+        {!isValidating && !postListData?.length && (
           <StyledCenter>
             <Empty description="조회하신 결과가 없습니다." />
           </StyledCenter>
         )}
-        {status === 'LOADING' && (
+        {isValidating && (
           <StyledCenter>
             <Spin />
           </StyledCenter>

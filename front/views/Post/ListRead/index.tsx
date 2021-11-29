@@ -5,7 +5,7 @@ import { Button, Select, Space, Tooltip, Typography } from 'antd';
 import { useRouter } from 'next/router';
 
 import BaseLayout from '@layouts/BaseLayout';
-import { useListReadPost } from '@modules/post';
+import { useInfiniteListReadPost } from '@modules/post';
 
 import AutoCompleteHashTag from './AutoCompleteHashTag';
 import InfiniteMode from './InfiniteListRead';
@@ -21,7 +21,11 @@ const PostListReadView = () => {
   const postListReadPageFilter = useMemo(() => new PostListReadPageFilter(router.query), [router.query]);
   const { query } = postListReadPageFilter;
 
-  const { curPage, totalCount } = useListReadPost();
+  const { curPage, totalCount } = useInfiniteListReadPost({
+    page: query.page,
+    pageSize: query.pageSize,
+    hashtag: query.hashtag,
+  });
 
   const handleRefreshPostListData = useCallback(() => {
     postListReadPageFilter.search({

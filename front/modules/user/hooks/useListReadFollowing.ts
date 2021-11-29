@@ -1,26 +1,18 @@
-import { useCallback } from 'react';
+import useSWR from 'swr';
 
-import { useDispatch } from 'react-redux';
+import { getDataFetcher } from '@utils/fetcher';
 
-import { useAppSelector } from '@hooks/useAppRedux';
-import { fetchStatusSelector } from '@modules/fetchStatus';
+import { ListReadFollowingUrlQuery, ListReadFollowingResData, GET_LIST_READ_FOLLOWING_API } from '../api';
 
-import { ListReadFollowingUrlQuery } from '../api';
-import { userAction, userSelector } from '../slice';
+export default function useListReadFollowing(query: ListReadFollowingUrlQuery) {
+  const result = useSWR<ListReadFollowingResData>(GET_LIST_READ_FOLLOWING_API(query), getDataFetcher);
 
-export default function useListReadFollowing() {
-  const dispatch = useDispatch();
-
-  const { status, error } = useAppSelector(fetchStatusSelector.byFetchAction(userAction.fetchListReadFollowing));
-  const data = useAppSelector(userSelector.followingListData);
-  const { curPage, rowsPerPage, isMoreRead, totalCount } = useAppSelector(userSelector.following);
-
-  const fetch = useCallback(
-    (query: ListReadFollowingUrlQuery) => {
-      dispatch(userAction.fetchListReadFollowing.request(query));
-    },
-    [dispatch],
-  );
-
-  return { status, data, error, curPage, rowsPerPage, isMoreRead, totalCount, fetch };
+  return {
+    ...result,
+    data: result.data?.list,
+    curPage: result.data?.curPage,
+    rowsPerPage: result.data?.rowsPerPage,
+    isReachingEndData: !!result.data?.nextPage,
+    totalCount: result.data?.totalCount || 0,
+  };
 }

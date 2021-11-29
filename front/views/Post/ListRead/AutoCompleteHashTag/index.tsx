@@ -2,9 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { SearchOutlined } from '@ant-design/icons';
 import { AutoComplete, Input } from 'antd';
-import debounce from 'lodash/debounce';
 import { useRouter } from 'next/router';
 
+import useDebounce from '@hooks/useDebounce';
 import { useListReadHashtag } from '@modules/hashtag';
 
 import { PostListReadPageFilter } from '../utils';
@@ -17,10 +17,11 @@ function AutoCompleteHashTag({ hashtag }: IProps) {
   const router = useRouter();
 
   const [hashtagKeyword, setHashtagKeyword] = useState('');
-  const { data: hashtagListData, error: hashtagListError, fetch: fetchListHashtag } = useListReadHashtag();
+  const debounceHashtagKeyword = useDebounce(hashtagKeyword, 300);
+  const { data: hashtagListData, error: hashtagListError } = useListReadHashtag({ keyword: debounceHashtagKeyword });
 
   const hashTagOptions = useMemo(() => {
-    if (!hashtagListError) {
+    if (hashtagListData && !hashtagListError) {
       return hashtagListData.map((hashtag) => ({
         value: hashtag.name,
         label: `#${hashtag.name}`,
@@ -47,12 +48,6 @@ function AutoCompleteHashTag({ hashtag }: IProps) {
   useEffect(() => {
     setHashtagKeyword(hashtag);
   }, [hashtag]);
-
-  useEffect(() => {
-    debounce(() => {
-      if (hashtagKeyword) fetchListHashtag({ keyword: hashtagKeyword });
-    }, 300)();
-  }, [fetchListHashtag, hashtagKeyword]);
 
   return (
     <AutoComplete
