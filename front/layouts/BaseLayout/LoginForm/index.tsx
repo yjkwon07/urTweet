@@ -36,7 +36,7 @@ const LoginForm = () => {
           data: { resData },
         } = await requestLogin(formData);
         setUserId(resData.id.toString());
-        await mutate();
+        await mutate(resData, false);
       } catch (error) {
         if (isCustomAxiosError(error)) {
           message.error(JSON.stringify(error.response.data.resMsg));

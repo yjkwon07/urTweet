@@ -117,7 +117,7 @@ const ProfileView = () => {
   );
 
   useEffect(() => {
-    if ((isValidating && !myData) || error) {
+    if ((!isValidating && !myData) || error) {
       message.warn('로그인 후 이용해 주시길 바랍니다.');
       Router.push('/');
     }
