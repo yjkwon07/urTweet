@@ -13,7 +13,7 @@
 전역으로 데이터를 관리 함으로써 `컴포넌트`, `데이터 fetch` 관심사 분리를 한다. 현재는 SWR로 데이터를 관리하고 있다.
 
 option 1. [redux + redux-saga](https://github.com/yjkwon07/urTweet/tree/config/redux) <br/>
-option 2. [swr](https://github.com/yjkwon07/urTweet/tree/config/swr) <br/>
+option 2. [swr](https://github.com/yjkwon07/urTweet/) <br/>
 
 **현재 레파지토리에 정의한 코드를 시각화 표현하였다.**
 
