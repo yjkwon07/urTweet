@@ -167,7 +167,7 @@ router.post('/', async (req, res, next) => {
 });
 
 // POST /user/login (로그인)
-router.post('/login', isNotLoggedIn, (req, res, next) => {
+router.post('/login', (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     if (err) {
       return next(err);
